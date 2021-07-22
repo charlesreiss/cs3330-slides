@@ -1,0 +1,132 @@
+\title{x86-64 assembly review}
+\date{}
+\usepackage{xspace}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted[ccode]{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeT]{c}{linenos=false,fontsize=\scriptsize,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+
+\usetikzlibrary{calc,positioning}
+
+\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\newcommand{\xOF}{\ensuremath{\mathtt{OF}}\xspace}
+\newcommand{\xSF}{\ensuremath{\mathtt{SF}}\xspace}
+\newcommand{\xCF}{\ensuremath{\mathtt{CF}}\xspace}
+\newcommand{\xZF}{\ensuremath{\mathtt{ZF}}\xspace}
+\section{assembly: syntax, registers}
+\input{../common/layers}
+\layersHighlighting{asm}
+
+\subsection{AT\&T syntax}
+\input{../asm/attSyn}
+
+\subsection{swap example}  % FIXME: interleave swap example and split AT\&T syntax
+\input{../asm/attSwap}
+
+\subsection{x86-64 registers}
+\input{../asm/overlapRegs}
+
+\subsection{on labels}
+\input{../asm/labels}
+
+\subsection{AT\&T syntax exercise}
+\input{../asm/attExercise}
+
+\subsection{LEA}
+\input{../asm/leaIntro}
+
+\subsubsection{exercise}
+\input{../asm/leaExercise}
+
+\subsection{review: calling convention}
+\input{../asm/callConv}
+
+\subsection{what we won't cover}
+\input{../asm/wont-cover}
+
+\section{assembly: control flow}
+
+\subsection{condition codes: briefly}
+\input{../asm/condCodeIntro}
+
+\subsection{condition codes: detail}
+\input{../asm/condCodeSFZF}
+
+\subsection{condition code example}
+\input{../asm/condCodeExample1}  %FIXME: loop reference?
+
+\subsection{cmp}
+\input{../asm/condCodeCmp}
+
+\subsection{what sets condition codes}
+\input{../asm/condCodeWhatSets}
+
+\subsection{example with cmp}
+\input{../asm/condCodeExampleCmp}
+
+\subsection{omitting cmps}
+\input{../asm/condCodeExampleLoopNoCmp}
+
+\subsection{exercise}
+\input{../asm/condCodeExer}
+
+\section{C to assembly}
+
+\subsection{if to assembly}
+
+\input{../asm/ifToAsm}
+
+% POSSIBLY SIMPLIFY?
+\subsubsection{exercise}
+
+\input{../asm/ifToAsmExercise}
+
+\subsection{loops to assembly}
+
+\input{../asm/whileToAsm}
+
+\subsection{exercise: while to assembly}
+
+\input{../asm/whileToAsmEx}
+
+\subsection{while to assembly: opt levels}
+
+\input{../asm/whileOptLevels}
+
+\subsection{switch statements}
+
+\input{../asm/compilingSwitches}  % FIXME: picture
+\section{backup slides}
+
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{addt'l CC examples}
+\input{../asm/condCodeExample2}
+
+\subsection{do-while to asm}
+
+\input{../asm/loopToAsm}
+
+\subsection{condition codes [more]}
+
+\input{../asm/condCode}
+
+\end{document}
+

@@ -1,0 +1,55 @@
+\graphicspath{{./figures/}}
+\title{compilation steps / C}
+\date{}
+\usepackage{cancel}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+
+\input{../common/highBoxLib}
+\input{../common/programMemory}
+
+
+\section{Compilation Steps}
+
+\subsection{Intro: Program Layout}
+
+% FIXME: consider moving?
+\input{../compileSteps/programLayout}
+
+\subsection{Compilation Pipeline}
+
+\input{../compileSteps/compPipeline}
+    % FIXME: diagram of memory layout with parts of object files?
+
+\subsection{What's in those files?}
+
+\input{../compileSteps/inFiles}
+
+\subsection{Exercises}
+
+\input{../compileSteps/whereDataEx}  % exercise 2
+
+\subsection{aside: dynamic linking}
+\input{../compileSteps/noteDynLinking}
+\subsection{aside: Relocation Types}
+\input{../compileSteps/noteRelocTypes}
+
+
+\section{Backup Slides}
+
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{viewing .o files}
+\input{../compileSteps/viewO}
+
+\end{document}

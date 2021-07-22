@@ -1,0 +1,18 @@
+\begin{frame}[fragile,label=cmovcc]{cmovCC}
+    \begin{itemize}
+    \item \myemph{conditional move}
+    \item exist on x86-64 (but you probably didn't see them)
+    \item Y86-64: register-to-register only
+    \item instead of:
+\begin{lstlisting}
+    jle skip_move
+    rrmovq %rax, %rbx
+skip_move:
+    // ...
+\end{lstlisting}
+    can do:
+\begin{lstlisting}
+    cmovg %rax, %rbx
+\end{lstlisting}
+    \end{itemize}
+\end{frame}

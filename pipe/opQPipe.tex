@@ -1,0 +1,54 @@
+\begin{frame}[fragile,label=OPqProcessor]{OPq processor}
+\renewcommand{\aluText}{ALU}
+\vspace{-.5cm}
+\begin{tikzpicture}
+    \tikzset{pipeline regs/.style={thin},}
+    \pipeAddQ
+    \begin{visibleenv}<3>
+    %\draw[red,very thick,-Latex] (split.north) |- node [midway,fill=white] {ifunc} ([yshift=.25cm]fdDstE.north) -| (alu.90);
+    \draw[red,very thick,-Latex] (split.north) |- node [midway,fill=white] {ifunc} ([yshift=1.5cm]fdSrcA.north) -| (alu.90);
+    \end{visibleenv}
+
+    \begin{visibleenv}<4->
+    \node[red,very thick,hRegT,above=2pt of deDstE] (deFunc) {};
+    \node[red,very thick,hRegT,anchor=center] at (fdSrcA.north |- deFunc.east) (fdFunc) {};
+    \draw[red,very thick,-Latex] (split.north) |- (fdFunc.west);
+    \draw[red,very thick,-Latex] (fdFunc.east) |- (deFunc.west);
+    \draw[red,very thick,-Latex] (deFunc.east) -| (alu.90);
+    \end{visibleenv}
+
+    \begin{visibleenv}
+        \node[
+            draw,rectangle,label={90:fetch/decode},
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB) (fdFunc)] {};
+
+        \begin{scope}[overlay]
+        \node[
+            draw,rectangle,label={[inner sep=1pt]90:decode/execute},
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB) (deFunc)] {};
+        \end{scope}
+
+        \node[
+            draw,rectangle,label={-45:execute/writeback},
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+
+        \node[
+            draw,rectangle,label={90:fetch/fetch},
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] (fetchBox) {};
+    \end{visibleenv}
+
+\end{tikzpicture}
+\end{frame}
+

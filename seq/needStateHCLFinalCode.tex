@@ -1,0 +1,167 @@
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw}
+}
+
+\begin{frame}{example: counter circuit (real HCLRS)}
+\begin{tikzpicture}
+    \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+    \node[hRegSmall={count},draw=red,thick,fill=red!10] (reg) at (5.5, 2) {};
+    \draw[wire,->,alt=<6>{red,line width=3pt}] (add1) -- (reg);
+    \draw[wire,->,alt=<7>{red,line width=3pt}] (reg) -- (7, 2) -- (7, 0) -- (0, 0) -- (0, 2) -- (add1);
+    \coordinate (pinPoint) at (7, 1);
+    \begin{visibleenv}<2->
+        \node[align=left,font=\tt] (codeBox) at (4, -3) {
+            register \alt<4>{%
+                \setlength\fboxrule{2pt}%
+                \fcolorbox{red}{white}{{\color{green!80!black}x}{\color{blue!80!black}Y}}%
+            }{%
+                \setlength\fboxrule{2pt}%
+                \fcolorbox{white}{white}{{\color{green!80!black}x}{\color{blue!80!black}Y}}%
+            } \{ \\ %
+            \hspace{1cm} \alt<5>{%
+                    \setlength{\fboxrule}{2pt}\fcolorbox{red}{white}{count}%
+                }{%
+                    \setlength{\fboxrule}{2pt}\fcolorbox{white}{white}{count}%
+                } : 3 = %
+                \setlength{\fboxrule}{2pt}%
+                \alt<8>{%
+                    \fcolorbox{red}{white}{0b000}%
+                }{%
+                    \fcolorbox{white}{white}{0b000}%
+                }; \\ %
+            \} \\ %
+            \setlength\fboxrule{2pt}%
+            \alt<6>{%
+                \fcolorbox{red}{white}{{\color{green!80!black}x}\_count}%
+            }{%
+                \fcolorbox{white}{white}{{\color{green!80!black}x}\_count}%
+            } %
+            = %
+            \alt<7>{%
+                \fcolorbox{red}{white}{{\color{blue!80!black}Y}\_count}%
+            }{%
+                \fcolorbox{white}{white}{{\color{blue!80!black}Y}\_count}%
+            } %
+            + 0b001;%
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<2->
+        \path[fill=green]  (reg.west) circle (.1cm);
+        \path[fill=blue]  (reg.east) circle (.1cm);
+    \end{visibleenv}
+    \begin{visibleenv}<3>
+        \draw[ultra thick,red] ([xshift=8cm,yshift=0em]codeBox.north west) -- ++ (0cm, -1.8cm) node[align=left,midway,right] (bank label) {
+            register ``bank'' \\
+            can have multiple (related) registers
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<4>
+        \draw[ultra thick,red,yshift=-1cm] ([xshift=3.5cm,yshift=-.25em]codeBox.north west) -- ++ (3cm, .25cm) node[align=left,above right,yshift=-1cm] (prefix label) {
+            label for left/right side of registers \\
+            {\tt x}: label for input side (always lowercase) \\
+            {\tt Y}: label for output side (always uppercase)
+        };
+        \draw[ultra thick,red] ([yshift=1mm]prefix label.south west) -- ([yshift=-1mm]prefix label.north west);
+    \end{visibleenv}
+    \begin{visibleenv}<5>
+        \draw[ultra thick,red,yshift=-1cm] ([xshift=3cm,yshift=-1.75em]codeBox.north west) -- ++ (2cm, .1cm) node[align=left,above right] (regname label) {
+            register ``name'' \\
+            input/output = \texttt{\textit{prefix}\_name}
+        };
+        \draw[ultra thick,red] (regname label.south west) -- (regname label.north west);
+    \end{visibleenv}
+    \begin{visibleenv}<6>
+        \draw[ultra thick,red,yshift=-1cm] ([xshift=1cm,yshift=-5.5em]codeBox.north west) -- ++ (1cm, -.5cm) node[align=left,below right] (input label) {
+            input wire to register
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<7>
+        \draw[ultra thick,red,yshift=-1cm] ([xshift=5cm,yshift=-5.5em]codeBox.north west) -- ++ (1cm, -.5cm) node[align=left,below right] (output label) {
+            output wire of register
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<8>
+        \draw[ultra thick,red,yshift=-1cm] ([xshift=6cm,yshift=-1.5em]codeBox.north west) -- ++ (1cm, .5cm) node[align=left,above right] (init label) {
+            initial value of register \\
+            first value for output wire (\texttt{Y\_count})
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{example: counter circuit}
+\begin{tikzpicture}
+    \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+    \node[hRegSmall={count},draw=red,thick,fill=red!10] (reg) at (5.5, 2) {};
+    \draw[wire,->,alt=<0>{red,line width=3pt}] (add1) -- (reg);
+    \draw[wire,->,alt=<0>{red,line width=3pt}] (reg) -- (7, 2) -- (7, 0) -- (0, 0) -- (0, 2) -- (add1);
+    \coordinate (pinPoint) at (7, 1);
+    \begin{visibleenv}<1->
+        \node[align=left,font=\small\tt,anchor=north west] (codeBox) at (8, 2) {
+            register \alt<0>{%
+                \setlength\fboxrule{2pt}%
+                \fcolorbox{red}{white}{{\color{green!80!black}x}{\color{blue!80!black}Y}}%
+            }{%
+                \setlength\fboxrule{2pt}%
+                \fcolorbox{white}{white}{{\color{green!80!black}x}{\color{blue!80!black}Y}}%
+            } \{ \\%
+            \hspace{1cm} \alt<0>{%
+                    \setlength{\fboxrule}{2pt}\fcolorbox{red}{white}{count}%
+                }{%
+                    \setlength{\fboxrule}{2pt}\fcolorbox{white}{white}{count}%
+                } : 3 = %
+                \setlength{\fboxrule}{2pt}%
+                \alt<0>{%
+                    \fcolorbox{red}{white}{0b000}%
+                }{%
+                    \fcolorbox{white}{white}{0b000}%
+                }; \\ %
+            \} \\%
+            \setlength\fboxrule{2pt}%
+            \alt<0>{%
+                \fcolorbox{red}{white}{{\color{green!80!black}x}\_count}%
+            }{%
+                \fcolorbox{white}{white}{{\color{green!80!black}x}\_count}%
+            } %
+            = %
+            \alt<0>{%
+                \fcolorbox{red}{white}{{\color{blue!80!black}Y}\_count}%
+            }{%
+                \fcolorbox{white}{white}{{\color{blue!80!black}Y}\_count}%
+            } %
+            + 0b001;%
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<2->
+    \matrix[tight matrix no line,anchor=north west,
+            nodes={text width=2.5cm,font=\small,align=center},
+            column 1/.style={nodes={align=left,text width=4cm}},
+            row 1/.style={row sep=1mm},
+        ] (timeline) at (0, -.5) {
+        time \& \tt Y\_count \& \tt x\_count \\
+        start \& \tt 000 \& \tt 001  \\
+        start + 1 rising edge \& \tt 001 \& \tt 010 \\
+        start + 2 rising edges \& \tt 010 \& \tt 011 \\
+        start + 3 rising edges \& \tt 011 \& \tt 100 \\
+        \ldots \& \ldots \& \ldots \\
+    };
+    \draw[very thick] (timeline-1-1.south west) -- (timeline-1-3.south east);
+    \node[fit=(timeline),draw,very thick,inner sep=0.1mm] {};
+    \end{visibleenv}
+    \begin{visibleenv}<3>
+        \node[draw,red,very thick,fit=(timeline-2-3),inner xsep=-.25cm,inner ysep=0cm] (box 1 in) {};
+        \node[draw,red,very thick,fit=(timeline-3-2),inner xsep=-.25cm,inner ysep=0cm] (box 1 out) {};
+        \draw[red,-Latex,very thick] (box 1 in.west) -- (box 1 out.east);
+        \node[draw,red!50!white,very thick,fit=(timeline-3-3),inner xsep=-.25cm,inner ysep=0cm] (box 2 in) {};
+        \node[draw,red!50!white,very thick,fit=(timeline-4-2),inner xsep=-.25cm,inner ysep=0cm] (box 2 out) {};
+        \draw[red!50!white,-Latex,very thick] (box 2 in.west) -- (box 2 out.east);
+        \node[draw,red!25!white,very thick,fit=(timeline-4-3),inner xsep=-.25cm,inner ysep=0cm] (box 3 in) {};
+        \node[draw,red!25!white,very thick,fit=(timeline-5-2),inner xsep=-.25cm,inner ysep=0cm] (box 3 out) {};
+        \draw[red!25!white,-Latex,very thick] (box 3 in.west) -- (box 3 out.east);
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}

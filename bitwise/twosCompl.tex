@@ -1,0 +1,39 @@
+
+\begin{frame}[fragile,label=twosComplement]{two's complement refresher}
+\begin{tikzpicture}[visible on=<1->]
+\matrix [matrix of nodes,nodes={text width=1.5em,inner xsep=0pt,outer sep=0pt,every label/.style={font=\scriptsize}}] (places) {
+    |[label={90:$-2^{31}$}]|1 \& |[label={90:$+2^{30}$}]|1 \& |[label=90:$+2^{29}$]|1 \& \ldots \&  |[label={90:$+2^2$}]| 1 \& |[label={90:$+2^1$}]| 1 \& |[label={90:$+2^0$}]| 1 \\
+};
+\node[left=1ex of places,yshift=-1ex] (minusOne) {$-1 =$};
+\end{tikzpicture}
+
+\begin{tikzpicture}[scale=1.2]
+\onslide<2->{
+\draw[ultra thick,opacity=0.1,black] (0,0) circle (2cm);
+\begin{scope}[every node/.style={font=\scriptsize},outer sep=0pt,inner sep=1pt]
+\node[color=red!40!black] (minusOne) at (115:2cm) {$-1$};
+\node (zero) at (90:2cm) {$0$};
+\node[color=green!40!black] (one) at (65:2cm) {$1$};
+\node[color=green!40!black] (intmax) at (300:2cm) {$2^{31}-1$};
+\node[color=red!40!black] (intmin) at (270:2cm) {$-2^{31}$};
+\node[color=red!40!black] (intmin1) at (240:2cm) {$-2^{31}+1$};
+\end{scope}
+
+\draw[green!40!black,dotted,thick,-latex] (60:2cm) arc (60:-50:2cm);
+\draw[red!40!black,dotted,thick,-latex] (230:2cm) arc (230:120:2cm);
+\draw[red!40!black,thin,-latex] (260:2cm) arc (260:250:2cm);
+\draw[thin,-latex] (290:2cm) arc (290:280:2cm);
+}
+\onslide<3->{
+\begin{scope}[every node/.style={font=\tiny,inner sep=1mm,outer sep=0mm}]
+\node[below right=1pt of intmax,color=green!40!black] (intmaxDecode) {\lstinline|0111 1111 |\ldots\lstinline| 1111|};
+\node[below=3pt of intmin,color=red!40!black] (intminDecode) {\lstinline|1000 0000 |\ldots\lstinline| 0000|};
+\node[above left=1pt of minusOne,color=red!40!black] (minusOneDecode) {\lstinline|1111 1111 |\ldots\lstinline| 1111|};
+\end{scope}
+\draw[thin,black!70!green] (intmax) -- (intmaxDecode);
+\draw[thin,black!70!red] (intmin) -- (intminDecode);
+\draw[thin,black!70!red] (minusOne) -- (minusOneDecode);
+}
+\end{tikzpicture}
+\end{frame}
+

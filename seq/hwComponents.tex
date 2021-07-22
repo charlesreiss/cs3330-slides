@@ -1,0 +1,232 @@
+\usetikzlibrary{patterns,positioning}
+
+\begin{frame}[fragile,label=SumRegisterOperation]{registers}
+    \begin{tikzpicture}
+        \node[hReg=PC] (pc) {};
+        \draw[a,latex-] (pc.west) -- ++(-1cm, 0cm);
+        \draw[a] (pc.east) -- ++(1cm, 0cm);
+        \node[below=1.5cm of pc,visible on=<1>] (everyCC) {
+            updates every \myemph{clock cycle}
+        };
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.5cm)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (3, 0) -- (3, 1) -- (4, 1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+            \draw[ultra thick,red!95!black] (3, 0) -- (3, 1);
+        \end{scope}
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.6cm)$)}] 
+            \fill[color=blue!80!black] (0, 0) rectangle (0.99, -.5);
+            \fill[color=green!40!white] (1.01, 0) rectangle (2.99, -.5);
+            \fill[color=violet!60!black] (3.01, 0) rectangle (4., -.5);
+            \node[anchor=east,font=\small] at (0,-.25) {register output};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[color=green!40!white] (0.2, -0.6) rectangle (1.01, -1.1);
+            \fill[pattern=north west lines] (1.01, -0.6) rectangle (1.7, -1.1);
+            \fill[color=violet!60!black] (1.7, -0.6) rectangle (3.01, -1.1);
+            \fill[pattern=north west lines] (3.01, -0.6) rectangle (3.9, -1.1);
+            \fill[color=orange!40] (3.9, -0.6) rectangle (4., -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {register input};
+        \end{scope}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SumY86stateOnly]{state in Y86-64}
+    \begin{tikzpicture}
+        \tikzset{
+            imemPcPre/.style={visible on=<1-|handout:1>},
+            regPre/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<1-|handout:1>},
+            imemPc/.style={visible on=<0|handout:0>},
+            instrRegsPreSingle/.style={visible on=<1-|handout:1>},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            instrRegs/.style={visible on=<0|handout:0>},
+            regsLogic/.style={visible on=<0|handout:0>},
+            logicDmem/.style={visible on=<0|handout:0>},
+            pcDecode/.style={visible on=<0|handout:0>},
+            dmemPre/.style={visible on=<1-|handout:1>},
+            dmemWB/.style={visible on=<0|handout:0>},
+            dmemPC/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            ccsNorm/.style={visible on=<1-|handout:1>},
+        }
+        \circuitLayout
+        \begin{visibleenv}<2|handout:0>
+            \node[draw,red,ultra thick,fit=(pc)] {};
+        \end{visibleenv}
+        \begin{visibleenv}<3|handout:0>
+            \node[draw,red,ultra thick,fit=(imem)] {};
+        \end{visibleenv}
+        \begin{visibleenv}<4|handout:0>
+            \node[draw,red,ultra thick,fit=(regs)] {};
+        \end{visibleenv}
+        \begin{visibleenv}<5|handout:0>
+            \node[draw,red,ultra thick,fit=(dmem)] {};
+        \end{visibleenv}
+        \begin{visibleenv}<2|handout:0>
+            \node[draw,red,ultra thick,fit=(ccs)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SumMem]{memories}
+    \begin{tikzpicture}
+        \node[mem] (imem) {Instr. \\ Mem.};
+        \coordinate (imemData) at (imem.east);
+        \coordinate (imemAddr) at (imem.west);
+        \draw[thick,-latex] (imemData) -- +(.5cm,0cm) node [font=\small,right] { data };
+        \draw[thick,latex-] (imemAddr) -- +(-.3cm,0cm) node [font=\small,left] { address };
+        \onslide<2->{
+            \node[mem,right=6cm of imem] (dmem) {Data \\ Mem.};
+            \coordinate (dmemInHigh) at ($(dmem.west) + (0cm,-.5cm)$);
+            \coordinate (dmemInLow) at ($(dmem.west) + (0cm,.5cm)$);
+            \coordinate (dmemDataOut) at (dmem.east);
+            \coordinate (dmemWE) at ([xshift=-.2cm]dmem.south);
+            \coordinate (dmemRE) at ([xshift=.2cm]dmem.south);
+            \draw[thick,-latex] (dmemDataOut) -- +(.3cm,0cm) node[right,font=\small] {data output};
+            \draw[thick,latex-] (dmemInHigh) -- +(-.3cm,0cm) node[left,font=\small] { address };
+            \draw[thick,latex-] (dmemInLow) -- +(-.3cm,0cm) node[left,font=\small,align=right] { input \\ to write };
+
+            \draw[thin,latex-] (dmemWE) |- +(-1cm,-.3cm) node[left,inner sep=.05mm,font=\small] { write enable? };
+            \draw[thin,latex-] (dmemRE) |- +(1cm,-.9cm) node[right,inner sep=.05mm,font=\small] { read enable? };
+        }
+        \begin{scope}[shift={($(imem.south east) + (-1, -3)$)}] 
+            \node[anchor=east,font=\small] at (0,-.25) {address input};
+            \fill[color=red!80!black] (0.1, 0) rectangle (2.0, -.5);
+            \fill[pattern=north west lines] (0.0, -.6) rectangle (0.9, -1.1);
+            \fill[color=blue!80!black] (0.9, -.6) rectangle (2.0, -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {data output};
+            \draw[thin,-latex] (0.0, -1.3) -- (1.5, -1.3) node[right,font=\scriptsize] {time};
+        \end{scope}
+
+        \onslide<3->{
+        \begin{scope}[shift={($(dmem.south east) + (-1, -2.9)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (2.3, 0);
+            \draw[very thick,opacity=0.2] (2.3,0) -- (3,0) -- (3,1) --  (4,1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+        \end{scope}
+        \begin{scope}[shift={($(dmem.south east) + (-1, -3)$)}] 
+            \node[anchor=east,font=\small] at (0,-.25) {address input};
+            \fill[color=orange!70!black] (0.1, 0) rectangle (1.03, -.5);
+            \node[anchor=east,font=\small] at (0,-.85) {input to write};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[color=green!60!white] (0.2, -.6) rectangle (1.02, -1.1);
+            \node[anchor=east,font=\small] at (0,-1.45) {value in memory};
+            \fill[color=blue!80!black] (0, -1.2) rectangle (0.99, -1.7);
+            \fill[color=green!60!white] (1.0, -1.2) rectangle (2.3, -1.7);
+        \end{scope}
+        }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SumY86RegFile]{register file}
+    \begin{tikzpicture}
+        \tikzset{
+            readReg/.style={blue!50!black},
+            writeReg/.style={green!50!black}
+        }
+        \node[regFile] (regs) {register file \\ \scriptsize \%rax, \%rdx, \ldots{}};
+        \coordinate (regSelect1) at ($(regs.north west) - (0cm, .4cm)$);
+        \coordinate (regSelect2) at ($(regs.north west) - (0cm, .8cm)$);
+        \coordinate (regSelect3) at ($(regs.north west) - (0cm, 1.4cm)$);
+        \coordinate (regSelect4) at ($(regs.north west) - (0cm, 1.8cm)$);
+        \coordinate (regWriteIn1) at ($(regs.north west) - (0cm, 2.8cm)$);
+        \coordinate (regWriteIn2) at ($(regs.north west) - (0cm, 3.2cm)$);
+        \coordinate (regRead1) at ($(regs.north east) - (0cm, .4cm)$);
+        \coordinate (regRead2) at ($(regs.north east) - (0cm, .8cm)$);
+        \foreach \x in {regSelect1,regSelect2} {
+            \draw[readReg,latex-] (\x) -- +(-.5cm,0cm);
+        }
+        \foreach \x in {regSelect3,regSelect4} {
+            \draw[writeReg,latex-] (\x) -- +(-.5cm,0cm);
+        }
+        \foreach \x in {regRead1,regRead2} {
+            \draw[readReg,thick,-latex] (\x) -- +(.5cm,0cm);
+        }
+        \node[readReg,ll,above right=2pt of regRead1,outer sep=1pt,inner sep=0pt] {reg values};
+        \draw[writeReg,thick,latex-] (regWriteIn1) -- +(-.5cm,0cm);
+        \draw[writeReg,thick,latex-] (regWriteIn2) -- +(-.5cm,0cm);
+        \node[readReg,ll,above left=2pt of regSelect1,outer sep=1pt,inner sep=0pt] (regNumLabel) {read reg \#s};
+        \node[writeReg,ll,above left=2pt of regSelect3,outer sep=1pt,inner sep=0pt] (regNumLabel) {write reg \#s};
+        \node[writeReg,ll,above left=2pt of regWriteIn1,outer sep=1pt,inner sep=0pt,align=right] {data to write};
+
+        \begin{visibleenv}<2>
+            \draw[red,thick,latex-] (regSelect1) -- ++(-.5cm,0cm);
+            \draw[red,thick,-latex] (regRead1) -- ++(.5cm,0cm);
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+            \begin{scope}[shift={($(regs.south east) + (-1, -0.5)$)}] 
+                \node[anchor=east,font=\small,alt=<2>{red}] at (0,-.25) {register number input};
+                \fill[color=red!80!black] (0.1, 0) rectangle (2.0, -.5);
+                \fill[pattern=north west lines] (0.0, -.6) rectangle (0.9, -1.1);
+                \fill[color=blue!80!black] (0.9, -.6) rectangle (2.0, -1.1);
+                \node[anchor=east,font=\small,alt=<2>{red}] at (0,-.85) {register value output};
+                \draw[thin,-latex] (0.0, -1.3) -- (1.5, -1.3) node[right,font=\scriptsize] {time};
+            \end{scope}
+        \end{visibleenv}
+
+        \begin{visibleenv}<3>
+            \draw[red,thick,latex-] (regSelect3) -- ++(-.5cm,0cm);
+            \draw[red,thick,latex-] (regWriteIn1) -- ++(-.5cm,0cm);
+        \end{visibleenv}
+
+        \begin{visibleenv}<3->
+        \begin{scope}[shift={($(regs.south east) + (6, -0.4)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (2.3, 0);
+            \draw[very thick,opacity=0.2] (2.3,0) -- (3,0) -- (3,1) --  (4,1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+        \end{scope}
+        \begin{scope}[shift={($(regs.south east) + (6, -0.5)$)}] 
+            \node[anchor=east,font=\small,alt=<3>{red}] at (0,-.25) {register number input};
+            \fill[color=orange!70!black] (0.1, 0) rectangle (1.03, -.5);
+            \node[anchor=east,font=\small,alt=<3>{red}] at (0,-.85) {data input};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[color=green!60!white] (0.2, -.6) rectangle (1.02, -1.1);
+            \node[anchor=east,font=\small] at (0,-1.45) {value in register};
+            \fill[color=blue!80!black] (0, -1.2) rectangle (0.99, -1.7);
+            \fill[color=green!60!white] (1.0, -1.2) rectangle (2.3, -1.7);
+        \end{scope}
+        \end{visibleenv}
+        
+        \begin{visibleenv}<4->
+            \node[align=left] at ([xshift=4cm]regs.east) {
+                write register \#15: write is ignored \\
+                read register \#15: value is always 0
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SumALUs]{ALUs}
+    \tikzset{alu/.style={trapezium,
+            trapezium angle=30,
+            shape border rotate=270,
+            minimum width=4cm,
+            minimum height=3cm,
+            trapezium stretches=true,
+            append after command={%
+                    \pgfextra
+                        \draw (\tikzlastnode.top left corner) --
+                           (\tikzlastnode.top right corner) -- 
+                           (\tikzlastnode.bottom right corner) -- 
+                           ($(\tikzlastnode.bottom right corner)!.666!(\tikzlastnode.bottom side)$)--
+                           ([xshift=8mm]\tikzlastnode.bottom side)--
+                           ($(\tikzlastnode.bottom side)!.334!(\tikzlastnode.bottom left corner)$)--
+                           (\tikzlastnode.bottom left corner)--
+                           (\tikzlastnode.top left corner);
+                    \endpgfextra}}}
+    \begin{tikzpicture}
+        \node[alu] (alu) {ALU};
+        \draw[a] (alu.east) -- ++(0:5mm) node[right] (outLabel) {{\color{blue}A} {\it OP} {\color{green}B}};
+        \draw[a,latex-] (alu.130) -- ++(180:5mm) node[left] {\color{blue} A};
+        \draw[a,latex-] (alu.230) -- ++(180:5mm) node[left] {\color{green} B};
+        \draw[b,latex-] (alu.south) -- ++(-90:2cm) node[below] {operation select};
+        \node[draw, rectangle,below right=1cm and .2cm of outLabel, align=left] {
+            Operations needed: \\
+            add --- \addq, addresses \\
+            sub --- \subq \\
+            xor --- \xorq \\
+            and --- \andq \\
+            more?
+        };
+    \end{tikzpicture}
+\end{frame}
+

@@ -1,0 +1,24 @@
+\begin{frame}[fragile,label=exercise2]{exercise}
+\begin{itemize}
+    \item Which of these are true only if $x$ has all of bit 0, 3, 6, and 9 set
+        (where bit 0 = least significant bit)?
+\end{itemize}
+\begin{ccodeS*}{texcomments=false}
+/* version A */ 
+    x = (x >> 6) & x;
+    x = (x >> 3) & x;
+    return x & 1;
+
+/* version B */
+    return ((x >> 9) & 1) & ((x >> 6) & 1) & ((x >> 3) & 1) & x;
+
+/* version C */
+    return (x & 0x100) & (x & 0x40) & (x & 0x04) & (x & 0x01);
+
+/* version D */
+    return (x & 0x145) == 0x145;
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}
+\end{frame}

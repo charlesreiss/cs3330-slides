@@ -1,0 +1,66 @@
+\documentclass[aspectratio=1610]{mytalk}
+\usepackage{cancel}
+\graphicspath{{./figures/}}
+\title{}
+\date{}
+\begin{document}
+\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
+
+\newcommand<>{\mathHL}[1]{%
+\alt#2{
+\text{\colorbox{green!20}{\ensuremath{#1}}}%
+}{
+\text{\colorbox{white!20}{\ensuremath{#1}}}%
+}%
+}
+\usepgflibrary{shapes.gates.logic.mux}
+\input{../common/y86Util}
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw},
+    >=Latex,
+}
+
+\newcommand<>{\highBox}[2]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#3
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,fill=green!20,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\newcommand<>{\highBoxX}[3]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#4
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,#3,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\newcommand<>{\highBoxB}[2]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#3
+        \coordinate (start) at ([yshift=1.7ex,xshift=1.5ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,fill=green!20,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\input{andMotivationNoOp}
+\end{document}

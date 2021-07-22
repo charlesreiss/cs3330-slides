@@ -1,0 +1,27 @@
+\begin{frame}<1-3>[label=Y86mov]{Y86-64: movq}
+\begin{tikzpicture}
+    \begin{scope}[every node/.style={font=\Huge\tt,outer sep=0pt,inner sep=0pt,text depth=1ex,text height=4ex}]
+    \node (X) {\it S};
+    \node[right=1pt of X] (Y) {\it D};
+    \node[right=1pt of Y] (movq) {movq};
+    \end{scope}
+    \node[above left=1cm and 1cm of X] (source) { \Large source };
+    \node[above left=1.5cm and -2cm of Y] (dest) {\Large destination };
+    \draw[thick] (X.north) -- (source);
+    \draw[thick] (Y.north) -- (dest);
+    \node[below right=-.5cm and 1cm of dest,align=left] {
+        {\tt i} --- immediate \\
+        {\tt r} --- register \\
+        {\tt m} --- memory
+    };
+    \matrix[matrix of nodes,below=1cm of movq,align=left,font=\tt,
+            visible on=<2->,
+            column 3/.style={visible on=<2|handout:0>}] {
+        irmovq \& \color<3>{black!30}\xcancel{immovq} \& \color{black!50}\xcancel{iimovq} \\
+        rrmovq \& rmmovq \& \color{black!50}\xcancel{rimovq} \\
+        mrmovq \& \color<3>{black!30}\xcancel{mmmovq} \& \color{black!50}\xcancel{mimovq} \\
+    };
+\end{tikzpicture}
+\end{frame}
+
+

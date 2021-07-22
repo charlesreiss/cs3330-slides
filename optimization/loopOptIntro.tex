@@ -1,0 +1,118 @@
+\begin{frame}[fragile,label=loopUnrollAsmSetup]{sum array ASM (gcc 8.3 -Os)}
+\lstset{
+    language=C,
+    style=smaller,
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<3|handout:0>]{~3~}{~end~},
+}
+\begin{lstlisting}
+long sum_array(long *values, int size) {
+    long sum = 0;
+    for (int i = 0; i < size; ++i) {
+        sum += values[i];
+    }
+    return sum;
+}
+\end{lstlisting}
+    \vspace{-.25cm}
+\lstset{
+    language=myasm,
+    style=smaller,
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<3|handout:0>]{~3~}{~end~},
+}
+\begin{lstlisting}
+sum_array:
+        xorl    %edx, %edx                  // i = 0
+        xorl    %eax, %eax                  // sum = 0
+loop:
+        cmpq    %edx, %esi                  
+        jle     endOfLoop                   // if (i < size) break
+        addq    (%rsi,%rdx,8), %rax         // sum += values[i]
+        incq    %rdx                        // i += 1
+        jmp     loop
+endOfLoop:
+        ret
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=loopUnrollAsm]{loop unrolling (ASM)}
+\lstset{
+    language=myasm,
+    style=smaller,
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<3|handout:0>]{~3~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+loop:
+	cmpl	%edx, %esi 
+	jle	endOfLoop               // if (i < size) break
+	addq	(%rdi,%rdx,8), %rax     // sum += values[i]
+	incq    %rdx                    // i += 1
+	jmp     loop
+endOfLoop:
+\end{lstlisting}
+\only<2->{\texttt{size} iterations $\times$  5 instructions}
+
+    \vspace{-.4cm}
+\hrulefill
+\begin{lstlisting}
+loop:
+	cmpl	%edx, %esi
+	jle	endOfLoop             // if (i < size) break
+	~2~addq	(%rdi,%rdx,8), %rax~end~    // sum += values[i]
+	~2~addq	8(%rdi,%rdx,8), %rax~end~   // sum += values[i+1]
+	addq    $2, %rdx              // i += 2
+	jmp	loop
+        // plus handle leftover?
+endOfLoop:
+\end{lstlisting}
+\only<2->{\texttt{size} $\div 2$ iterations $\times$  6 instructions}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollC]{loop unrolling (C)}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<3|handout:0>]{~3~}{~end~},
+}
+\begin{lstlisting}
+    for (int i = 0; i < N; ++i)
+        sum += A[i];
+\end{lstlisting}
+\hrulefill
+\begin{lstlisting}
+    int i;
+    for (i = 0; i + 1 < N; i += 2) {
+        sum += A[i];
+        sum += A[i+1];
+    }
+    // handle leftover, if needed
+    if (i < N)
+        sum += A[i];
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollC2]{more loop unrolling (C)}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<3|handout:0>]{~3~}{~end~},
+}
+\begin{lstlisting}
+    int i;
+    for (i = 0; i + 4 <= N; i += 4) {
+        sum += A[i];
+        sum += A[i+1];
+        sum += A[i+2];
+        sum += A[i+3];
+    }
+    // handle leftover, if needed
+    for (; i < N; i += 1)
+        sum += A[i];
+\end{lstlisting}
+\end{frame}

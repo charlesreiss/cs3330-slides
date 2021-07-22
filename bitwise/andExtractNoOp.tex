@@ -1,0 +1,36 @@
+
+\begin{frame}[fragile,label=extractOp3]{extract 0x3 from 0x1234}
+\begin{ccodeNL}
+unsigned get_second_nibble1(unsigned value) {
+    return (value >> 4) & 0xF; // 0xF: 00001111
+    // like (value / 16) % 16
+}
+\end{ccodeNL}
+{\small\tt aaaabbbbccccdddd $\rightarrow$ aaaabbbbcccc $\rightarrow$ 00000000cccc}
+\vspace{1.5cm}
+\begin{ccodeNL}
+unsigned get_second_nibble2(unsigned value) {
+    return (value & 0xF0) >> 4; // 0xF0: 11110000
+         //    "mask and shift"
+    // like (value % 256) / 16; 
+}
+\end{ccodeNL}
+{\small\tt aaaabbbbccccdddd $\rightarrow$ 000000000cccc0000 $\rightarrow$ 00000000cccc}
+\end{frame}
+
+\begin{frame}[fragile,label=extractOp4]{extract 0x3 from 0x1234}
+\begin{asmcodeNL}
+get_second_nibble1_bitwise:
+    movl %edi, %eax
+    shrl $4, %eax
+    andl $0xF, %eax
+    ret
+
+get_second_nibble2_bitwise:
+    movl %edi, %eax
+    andl $0xF0, %eax
+    shrl $4, %eax
+    ret
+\end{asmcodeNL}
+\end{frame}
+

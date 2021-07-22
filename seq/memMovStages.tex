@@ -1,0 +1,65 @@
+\begin{frame}[fragile,label=movStages]{stages example: rmmovq/mrmovq}
+    \begin{tikzpicture}
+    \matrix[
+        matrix of nodes,row sep=.2ex,column sep=-\pgflinewidth,
+        nodes={font=\small,align=left},
+        column 1/.style={nodes={text width=2.5cm}},
+        column 2/.style={nodes={text width=4.25cm}},
+        column 3/.style={nodes={text width=4.25cm}},
+        outer sep=0pt
+    ] (stages) {
+        stage \& \lstinline|rmmovq rA, D(rB)| \& \lstinline|mrmovq D(rB), rA| \\
+        fetch \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\valP\assign\PC+10$ \\
+                  $\valC\assign M_8[\PC+2]$} 
+              \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\valP\assign\PC+10$ \\
+                  $\valC\assign M_8[\PC+2]$} 
+              \\
+        decode \& {$\mathHL<2-3>{\valA\assign R[\vrA]}$\\$\valB\assign R[\vrB]$} \& {~\\$\valB\assign R[\vrB]$} \\
+        execute \& {$\valE\assign \valB + \valC$} \& {$\valE\assign \valB + \valC$} \\
+        memory \& {$\mathHL<4>{M_8[\valE] \assign \valA}$} \& {$\mathHL<5>{\valM\assign M_8[\valE]}$} \\
+        write back \& ~ \& {$\mathHL<6>{R[\vrA] \assign \valM}$} \\
+        PC update \& $\PC\assign\valP$ \& $\PC\assign\valP$\\
+    };
+    \begin{scope}[overlay,visible on=<2>]
+        \coordinate (markValAAssign) at ([yshift=-2ex,xshift=1cm]stages-3-2.north west);
+        \node[my callout2=markValAAssign,align=left,below=.5cm of markValAAssign,xshift=1.5cm] {
+            assignment means: \\
+            setting \myemph{register number} input register file \textit{and} \\
+            naming output wires of register file
+        };
+    \end{scope}
+    \begin{scope}[overlay,visible on=<3>]
+        \coordinate (markValAMissing) at ([yshift=-1ex,xshift=1cm]stages-3-3.north west);
+        \node[my callout2=markValAMissing,align=left,below=.5cm of markValAMissing,xshift=-1.5cm] {
+            reading $R[\vrA]$ not needed \\ but would be harmless
+        };
+    \end{scope}
+    \begin{scope}[overlay,visible on=<4>]
+        \coordinate (assignToMem) at ([yshift=-2ex,xshift=2cm]stages-5-2.north west);
+        \node[my callout2=assignToMem,align=left,below=.5cm of assignToMem, align=left,xshift=-1cm] {
+            assignment means: \\
+            setting \myemph{address} wires to $\valE$ \textit{and} \\
+            setting \myemph{value input} wires to $\valA$ \textit{and} \\
+            setting memory \myemph{write enable} to 1
+        };
+    \end{scope}
+    \begin{scope}[overlay,visible on=<5>]
+        \coordinate (assignFromMem) at ([yshift=-2ex,xshift=.5cm]stages-5-3.north west);
+        \node[my callout2=assignFromMem,align=left,above=.5cm of assignFromMem, align=left] {
+            assignment means: \\
+            setting \myemph{address} wires to $\valE$ \textit{and} \\
+            naming the output of the data memory
+        };
+    \end{scope}
+    \begin{scope}[overlay,visible on=<6>]
+        \coordinate (assignToReg) at ([yshift=-2ex,xshift=.5cm]stages-6-3.north west);
+        \node[my callout2=assignToReg,align=left,above=.5cm of assignToReg, align=left] {
+            assignment means: \\
+            setting register file input wires to $\valM$ \\
+            setting register file \myemph{write reigster number}
+        };
+    \end{scope}
+    \end{tikzpicture}
+\end{frame}

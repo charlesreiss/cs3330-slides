@@ -1,0 +1,294 @@
+\newcommand{\aluText}{ADD}
+\usetikzlibrary{calc}
+\usepgflibrary{shapes.gates.logic.mux,shapes.geometric}
+
+\tikzset{
+    deValAIn/.style={},
+    deValBIn/.style={},
+}
+
+\newcommand{\seqAddQ}{
+    \tikzset{
+        add/.style={trapezium,
+            trapezium angle=40,
+            shape border rotate=270,
+            minimum width=0.8cm,
+            minimum height=1cm,
+            text depth=.5cm,
+            inner sep=0cm,
+            trapezium stretches=true,
+            append after command={%
+                    \pgfextra
+                        \draw (\tikzlastnode.top left corner) --
+                           (\tikzlastnode.top right corner) -- 
+                           (\tikzlastnode.bottom right corner) -- 
+                           ($(\tikzlastnode.bottom right corner)!.666!(\tikzlastnode.bottom side)$)--
+                           ([xshift=4mm]\tikzlastnode.bottom side)--
+                           ($(\tikzlastnode.bottom side)!.334!(\tikzlastnode.bottom left corner)$)--
+                           (\tikzlastnode.bottom left corner)--
+                           (\tikzlastnode.top left corner);
+                    \endpgfextra},
+            text opacity=0.0,
+            label={[anchor=east,font=\scriptsize,inner sep=2pt]east:\aluText}},
+    }
+    \circuitStateToALU
+    \draw[a] (pc.east) -- (imemAddr);
+    \node[logicBlock,right=0.2cm of imem,minimum height=1cm,font=\scriptsize] (split) {split};
+    \draw[a] (imemData) -- (split.west);
+    \coordinate (splitRAOut) at ([yshift=.3cm]split.east);
+    \coordinate (splitRBOut) at ([yshift=-.3cm]split.east);
+
+    %\coordinate (splitRBOutPost) at ([xshift=0.5cm]splitRBOut);
+    %\draw[bN] (splitRBOut) -- (splitRBOutPost) -- ([yshift=-.125cm]splitRBOutPost |- regSelect1);
+    %\draw[b] ([yshift=.125cm]splitRBOutPost |- regSelect1) |- (fdDstE.west);
+    %\draw[b] (splitRBOut) -- (splitRBOutPost) -- ([yshift=-.125cm]splitRBOutPost |- regSelect1);
+
+    \draw[b] (splitRAOut) -- ++ (0.125cm,0cm) coordinate (splitrA) |- (regSelect1);
+
+    \draw[b] (splitRBOut) -- ++ (0.25cm,0cm) coordinate (splitrB) |- (regSelect2);
+
+    \draw[bR] (regSelect3) -- ++ (-0.1cm,0cm) node[left,inner sep=1pt,font=\tiny]{\tt 0xF};
+
+    \node[add,right=1.25cm of regs] (alu) {ADD};
+    %\draw[b] (fdDstE.east) -- (deDstE.west);
+
+    \draw[a] (regRead1) -- ++ (.4cm,0cm) coordinate (regReadAfter1) |- (alu.120) coordinate (aluTop);
+    \draw[a] (regRead2) -- ++ (.3cm,0cm) coordinate (regReadAfter2) |- (alu.-120) coordinate (aluBottom);
+
+
+    \draw[a] (alu.east) -- ++ (.5cm,0cm) coordinate (afterAlu) |- ([xshift=-.5cm,yshift=-1cm]regWriteIn2) coordinate (preWriteIn2) |- (regWriteIn2);
+
+    \draw[b] (splitRBOut) -- ++(0.25cm, 0cm) |- ([xshift=-.75cm]regSelect4) -- (regSelect4);
+
+    \node[logicBlock,anchor=north] (pcAdd) at ([yshift=-1cm]pc.south) {add 2};
+    \draw[a] (pc.east) -- ++ (.5cm,0cm) |- (pcAdd.east);
+    \draw[a] (pcAdd.west) -- ++ (-.25cm,0cm) |- (pc.west);
+}
+\newcommand{\addqAddDist}{1.25cm}
+\newcommand{\deDist}{.5cm}
+\newcommand{\pipeAddQ}{
+    \tikzset{
+        add/.style={trapezium,
+            trapezium angle=40,
+            shape border rotate=270,
+            minimum width=0.8cm,
+            minimum height=1cm,
+            text depth=.5cm,
+            inner sep=0cm,
+            trapezium stretches=true,
+            append after command={%
+                    \pgfextra
+                        \draw (\tikzlastnode.top left corner) --
+                           (\tikzlastnode.top right corner) -- 
+                           (\tikzlastnode.bottom right corner) -- 
+                           ($(\tikzlastnode.bottom right corner)!.666!(\tikzlastnode.bottom side)$)--
+                           ([xshift=4mm]\tikzlastnode.bottom side)--
+                           ($(\tikzlastnode.bottom side)!.334!(\tikzlastnode.bottom left corner)$)--
+                           (\tikzlastnode.bottom left corner)--
+                           (\tikzlastnode.top left corner);
+                    \endpgfextra},
+            text opacity=0.0,
+            label={[anchor=east,font=\scriptsize,inner sep=2pt]east:\aluText}},
+    }
+    \circuitStateToALU
+    \draw[a] (pc.east) -- (imemAddr);
+    \node[logicBlock,right=0.2cm of imem,minimum height=1cm,font=\scriptsize] (split) {split};
+    \draw[a] (imemData) -- (split.west);
+    \coordinate (splitRAOut) at ([yshift=.3cm]split.east);
+    \coordinate (splitRBOut) at ([yshift=-.3cm]split.east);
+    % fetch/decode regs
+    \begin{scope}[every node/.style={pipeline regs}]
+        %\node[hRegT] (fdDstE) at ([yshift=.75cm,xshift=-.5cm]regs.north west) {};
+        \node[hRegT] (fdSrcA) at ([xshift=-1cm]regSelect1) {};
+        \node[hRegT] (fdSrcB) at ([xshift=-1cm]regSelect2) {};
+    \end{scope}
+
+    %\coordinate (splitRBOutPost) at ([xshift=0.5cm]splitRBOut);
+    %\draw[bN] (splitRBOut) -- (splitRBOutPost) -- ([yshift=-.125cm]splitRBOutPost |- regSelect1);
+    %\draw[b] ([yshift=.125cm]splitRBOutPost |- regSelect1) |- (fdDstE.west);
+    %\draw[b] (splitRBOut) -- (splitRBOutPost) -- ([yshift=-.125cm]splitRBOutPost |- regSelect1);
+
+    \draw[b] (splitRAOut) -- ++ (0.125cm,0cm) |- (fdSrcA.west);
+    \draw[b] (fdSrcA.east) -- (regSelect1);
+
+    \draw[b] (splitRBOut) -- ++ (0.25cm,0cm) |- (fdSrcB.west);
+    \draw[b] (fdSrcB.east) -- (regSelect2);
+
+    \draw[bR] (regSelect3) -- ++ (-0.1cm,0cm) node[left,inner sep=1pt,font=\tiny]{\tt 0xF};
+
+    % decode/execute regs
+    \begin{scope}[every node/.style={pipeline regs}]
+        \node[hRegT] (deDstE) at ([yshift=.75cm,xshift=\deDist]regs.north east) {};
+        \node[hRegT] (deValA) at ([xshift=\deDist]regRead1) {};
+        \node[hRegT] (deValB) at ([xshift=\deDist,yshift=\extraDown]regRead2) {};
+    \end{scope}
+    
+    \coordinate (splitSrcBOut) at ([xshift=.25cm]fdSrcB.east);
+    \draw[bN] (splitSrcBOut) -- ([yshift=-.125cm]splitSrcBOut |- regSelect1);
+    \draw[b] ([yshift=.125cm]splitSrcBOut |- regSelect1) |- (deDstE.west);
+
+    \node[add,right=\addqAddDist of regs] (alu) {ADD};
+    \draw[a,deValAIn] (regRead1) -- (deValA.west);
+    \draw[a,deValBIn] (regRead2) -- (deValB.west);
+    %\draw[b] (fdDstE.east) -- (deDstE.west);
+
+    \draw[a] (deValA.east) -- ++ (.25cm,0cm) |- (alu.120);
+    \draw[a] (deValB.east) -- ++ (.125cm,0cm) |- (alu.-120);
+
+    % execute/writeback regs
+    \begin{scope}[every node/.style={pipeline regs}]
+        \node[hRegT] (ewDstE) at ([yshift=-1.2cm]regs.south) {};
+        \node[hRegT] (ewValE) at ([yshift=-.7cm]regs.south) {};
+    \end{scope}
+
+    \draw[a] (alu.east) -- ++ (.5cm,0cm) |- (ewValE.east);
+    \draw[a] (ewValE.west) -| ([xshift=-.5cm]regWriteIn2) -- (regWriteIn2);
+
+    \draw[b] (deDstE.east) -| ([xshift=1.75cm]alu.west) |- (ewDstE.east);
+    \draw[b] (ewDstE.west) -| ([xshift=-.75cm]regSelect4) -- (regSelect4);
+
+    \node[logicBlock,anchor=north] (pcAdd) at ([yshift=-1cm]pc.south) {add 2};
+    \draw[a] (pc.east) -- ++ (.5cm,0cm) |- (pcAdd.east);
+    \draw[a] (pcAdd.west) -- ++ (-.25cm,0cm) |- (pc.west);
+}
+\newcommand{\extraDown}{0cm}
+\newcommand{\pipeAddQWide}{
+    \renewcommand{\addqAddDist}{3cm}
+    \renewcommand{\pcMemDist}{1cm}
+    \renewcommand{\deDist}{2cm}
+    \renewcommand{\extraDown}{-0cm}
+    \renewcommand{\regBDist}{0.8cm}
+    \pipeAddQ
+}
+
+\newcommand{\pipeAddQNarrow}{
+    \renewcommand{\addqAddDist}{3cm}
+    \renewcommand{\pcMemDist}{.7cm}
+    \renewcommand{\regMemDist}{1cm}
+    \renewcommand{\deDist}{2cm}
+    \renewcommand{\regBDist}{1.2cm}
+    \renewcommand{\extraDown}{-0cm}
+    \pipeAddQ
+}
+\newcommand{\pipeAddQRegAndForwardBefore}{
+    \tikzset{
+        label distance=1pt,
+        pipeline regs/.style={thin},
+        rAPreConnect/.style={opacity=0},
+        rBPreConnect/.style={opacity=0},
+        deValAIn/.style={visible on=<0|handout:0>},
+        deValBIn/.style={visible on=<0|handout:0>},
+    }
+    \pipeAddQWide
+    \pipeAddQRegBoxes
+
+        \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nn,red,thick,fill=white,anchor=input 1,yshift=.6cm]
+             (postValAMux) at ([xshift=-.6cm]deValA.west) {MUX};
+        \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nn,red,thick,fill=white,anchor=input 1,yshift=-.6cm]
+             (postValBMux) at ([xshift=-.6cm]deValB.west) {MUX};
+        \draw[aN] (ewValE) -- ++(0.5cm,0cm) -- ++(0cm,.35cm) -|
+            ([xshift=-.25cm,yshift=-.1cm]postValBMux.input 1);
+        \draw[a]
+            ([xshift=-.25cm,yshift=.1cm]postValBMux.input 1) --
+            ([xshift=-.25cm]postValAMux.input 2) -- (postValAMux.input 2);
+        \draw[a] (ewValE) -- ++(0.5cm,0cm) -- ++(0cm,.35cm) -|
+            ([xshift=-.25cm]postValBMux.input 2) -- (postValBMux.input 2);
+        \draw[a] (regRead1) -- ++(.1cm,0cm) |- (postValAMux.input 1);
+        \draw[a] (regRead2) -- ++(.1cm,0cm) |- (postValBMux.input 1);
+        \draw[a] (postValAMux.output) -- (deValA);
+        \draw[a] (postValBMux.output) -- (deValB);
+ }
+
+\newsavebox{\pipeAddQBox}
+\savebox{\pipeAddQBox}{%
+    \begin{tikzpicture}
+    \tikzset{pipeline regs/.style={}}
+    \pipeAddQNarrow
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] {};
+    \end{tikzpicture}%
+}
+
+\newcommand{\pipeAddQRegBoxes}{
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] (fdBox) {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] (deBox) {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] (ewBox) {};
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] (fetchBox) {};
+}
+\newcommand{\pipeAddQRegBoxesLabeled}{
+        \node[
+            draw,rectangle,label={180:fetch$\rightarrow$decode},
+            label distance=1pt,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] (fdBox) {};
+
+        \begin{scope}[overlay]
+        \node[
+            draw,rectangle,label={[inner sep=1pt]90:decode$\rightarrow$execute},
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] (deBox) {};
+        \end{scope}
+
+        \node[
+            draw,rectangle,label={-45:execute$\rightarrow$writeback},
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] (ewBox) {};
+        \node[
+            draw,rectangle,label={90:fetch$\rightarrow$fetch},
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] (fetchBox) {};
+}

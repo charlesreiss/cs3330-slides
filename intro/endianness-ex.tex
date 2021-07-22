@@ -1,0 +1,55 @@
+\usetikzlibrary{decorations.pathreplacing,matrix}
+\begin{frame}<1-5>[fragile,label=endianEx]{exercise}
+\lstset{
+    language=C++,style=smaller,
+    moredelim=**[is][\btHL<2>]{@2}{2@},
+    moredelim=**[is][\btHL<3>]{@3}{3@},
+    moredelim=**[is][\btHL<4>]{@4}{4@},
+}
+\begin{lstlisting}
+unsigned char buffer[8] =
+    { 0, 0, /* ..., */ 0 };
+/* uint32_t = 32-bit unsigned int */
+uint32_t value1 = 0x12345678;
+uint32_t value2 = 0x9ABCDEF0;
+@2unsigned char *ptr_value1 = (unsigned char *) &value1;2@
+@2unsigned char *ptr_value2 = (unsigned char *) &value2;2@
+@3for (int i = 0; i < 4; ++i) {3@ /* copy value1/2 into buffer */
+    @3buffer[i] = ptr_value1[i];3@
+    @3buffer[i+4] = ptr_value2[i];3@
+@3}3@
+@4for (int i = 0; i < 4; ++i) {4@ /* copy buffer[1..5] into value1 */
+    @4ptr_value1[i] = buffer[i+1];4@
+@4}4@
+\end{lstlisting}
+What is \texttt{value1} after this runs on a little-endian system? \\
+\begin{tabular}{lll}
+\textbf{A.} \texttt{0x0F654321} & \textbf{B.} \texttt{0x123456F0}  & \textbf{C.}  \texttt{0x3456789A} \\
+\textbf{D.} \texttt{0x345678F0} & \textbf{E.} \texttt{0x9A123456} & \textbf{F.} \texttt{0x9A785634} \\
+\textbf{G.} \texttt{0xF0123456} & \textbf{H.} \texttt{0xF2345678} & \textbf{I.} something else \\
+\end{tabular}
+\begin{tikzpicture}[overlay,remember picture]
+\coordinate (base) at ([xshift=-1cm,yshift=-1.5cm]current page.north east);
+\matrix[tight matrix,nodes={text width=.45cm},anchor=north east,label={[label distance=.5cm]north:buffer}] (buffer) at (base) {
+    ~ \& ~ \& ~ \& ~ \&
+    ~ \& ~ \& ~ \& ~ \\
+};
+\begin{visibleenv}<3->
+    \draw[decorate,decoration={brace},very thick,alt=<2>{red}]
+        ([yshift=1mm,xshift=1mm]buffer-1-1.north west) --
+        ([yshift=1mm,xshift=-1mm]buffer-1-4.north east)
+        node[midway,above,font=\tt\fontsize{9}{10}\selectfont] {0x12345678};
+
+    \draw[decorate,decoration={brace},very thick,alt=<2>{red}]
+        ([yshift=1mm,xshift=1mm]buffer-1-5.north west) --
+        ([yshift=1mm,xshift=-1mm]buffer-1-8.north east)
+        node[midway,above,font=\tt\fontsize{9}{10}\selectfont] {0x9ABCDEF0};
+\end{visibleenv}
+\begin{pgfonlayer}{bg}
+    \begin{visibleenv}<4->
+        \draw[blue,very thick,fill=blue!10] (buffer-1-2.north west) rectangle (buffer-1-5.south east);
+        \draw[blue,->,very thick] (buffer-1-4.south west) -- ++ (0cm, -.5cm) node[below,font=\tt\fontsize{9}{10}\selectfont] {value1};
+    \end{visibleenv}
+\end{pgfonlayer}
+\end{tikzpicture}
+\end{frame}

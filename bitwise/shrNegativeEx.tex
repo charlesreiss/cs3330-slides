@@ -1,0 +1,19 @@
+\begin{frame}[fragile,label=negativeShrExercise]{exercise}
+\begin{itemize}
+\item \texttt{int foo(int)}
+\begin{lstlisting}[language=myasm]
+foo:
+        movl %edi, %eax
+        shrl $1, %eax
+        ret
+\end{lstlisting}
+\item what is the value of \texttt{foo(-2)}? \\
+\begin{tabular}{llll}
+A. -4 & B. -2 & C. -1 & D. 0 \\
+\end{tabular}
+\begin{tabular}{ll}
+E. a small positive number & F. a large positive number \\
+G. a large negative number & H. something else \\
+\end{tabular}
+\end{itemize}
+\end{frame}

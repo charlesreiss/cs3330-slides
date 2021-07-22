@@ -1,0 +1,103 @@
+\begin{frame}
+    \titlepage
+\end{frame}
+
+
+{
+\setbeamercolor{background canvas}{bg=blue!40!black,fg=blue!10!white}
+\setbeamercolor{normal text}{bg=blue!40!black,fg=blue!10!white}
+\setbeamercolor{itemize/enumerate body}{fg=white}
+\setbeamercolor{itemize/enumerate subbody}{fg=white}
+\setbeamercolor{titlelike}{bg=blue!40!black,fg=blue!10!white}
+\begin{frame}<1|handout:1>[noframenumbering]{Changelog}
+    \begin{itemize}
+        \item Changes made in this version not seen in first lecture:
+        \begin{itemize}
+            \item 21 September 2017: \sout{data memory value MUX input for call is PC + 10, not PC}
+            \item 21 September 2017: slide 23: add input to pre R[dstE] mux for irmovq
+            \item 21 September 2017: slide 26: need MUX for 0 ALU input
+            \item 21 September 2017: correct a couple instances of `HCL2D' to `HCLRS'
+            \item 27 September 2017: data memory value MUX input for call is PC + 9, not PC + 10
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw}
+    >=Latex,
+    pinOn/.style={
+        pin edge={-,thick,visible on=#1},
+        visible on=#1,
+    },
+}
+\newcommand{\vemphA}[1]{\myemph<2>{#1}}
+\newcommand{\vemphB}[1]{\myemph<3>{#1}}
+\newcommand{\vemphC}[1]{\myemph<4>{#1}}
+\newcommand<>{\mathHL}[1]{%
+\alt#2{
+\text{\colorbox{green!20}{\ensuremath{#1}}}%
+}{
+\text{\colorbox{white!20}{\ensuremath{#1}}}%
+}%
+}
+\newcommand{\keywordstyle}{\tt\bfseries}
+\input{../common/y86Util}
+\usepgflibrary{shapes.gates.logic.mux}
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeT]{c}{linenos=false,fontsize=\scriptsize,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+
+\input{lastTime}
+
+\input{stagesWalk}
+
+\input{descHW}
+
+\input{nopHCL}
+
+\input{nopHCLRun}
+
+\input{nopHalt}
+
+\input{HCLMux}
+
+\againframe<3>{nopHltCPU}
+
+\input{HCLExtract}
+
+\input{instrEndianness}
+
+\againframe<4-6>{nopHltCPU}
+
+\input{nopJmp}
+
+\input{nopJmpRun}
+
+\input{bookDiff}
+
+% FIXME: long-split?
+\input{hclComp}
+
+% FIXME: correct for actual output
+\input{debugging}
+
+\input{summary}
+
+\input{aluExample}
+
+\input{freedomToChoose}
+
+\input{compareToYis}
+
+\input{settingMuxes}

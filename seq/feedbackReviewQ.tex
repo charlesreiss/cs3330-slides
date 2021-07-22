@@ -1,0 +1,77 @@
+\begin{frame}{anonymous feedback (1)}
+\begin{itemize}
+\item 
+``How on earth do you except us to answer a similar question on the quiz as the 
+final example during class, to which you gave a half-explained answer? \ldots'' (paraphrased:) and your
+explanation didn't give a yes/no answer to yes/no questions
+\end{itemize}
+\end{frame}
+
+\begin{frame}{the question last week}
+\begin{itemize}
+    \item nop+add --- where do we need a MUX (or similar logic)?
+\vspace{.5cm}
+\item register to read --- no; read and ignore result on nop
+    \begin{itemize}
+    \item but `cleaner' to specify no register explicitly??
+    \end{itemize}
+\item PC input --- yes; need to handle instruction length
+\item register \#/value to write --- yes (either one); don't change register on nop
+    \begin{itemize}
+    \item register number for ``none'' (15) \textit{or} new value = old value
+    \end{itemize}
+\item instruction memory address --- no; always equal to PC output
+\end{itemize}
+\end{frame}
+
+\begin{frame}{the question this week}
+\begin{itemize}
+\item jmp+addq+mrmovq
+\vspace{.5cm}
+\item read reg. \# --- no; read and ignore for jmp
+\item PC input --- yes; varibale instruction length, jumps
+\item write reg. \# --- need MUX on this \textit{or register value input}
+\item write enable for memory --- no; hard-wire to false
+\item address input to instruction memory --- no; equal to PC output
+\item ALU inputs --- yes; mrmovq needs to add constant from instruction
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{anonymous feedback (2)}
+\begin{itemize}
+    \item (paraphrased) the question on timing on the post-quiz was unfair since it was in next week's textbook material
+        \vspace{.5cm}
+    \item intention: how addq CPU + register file + registers worked
+    \item (but, yes, easier if you had read ahead)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{anonymous feedback (3)}
+\begin{itemize}
+\item (paraphrased) competition scoreboard for bomb HW was intimidating/demoralizing
+\vspace{.5cm}
+\item competitions make \textit{some} of our students learn more
+\item I like it better than extra credit because it's more optional
+\vspace{.5cm}
+\item But better ways of making it feel optional?
+    \begin{itemize}
+    \item really should be no obligation to do more than assignment says
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{anonymous feedback (4)}
+\begin{itemize}
+\item (paraphrased) you should drop any question most students get wrong on the quizzes
+    \vspace{.5cm}
+\item I think this policy would create some perverse incentives
+\end{itemize}
+\end{frame}
+
+\begin{frame}{anonymous feedback (4)}
+\begin{itemize}
+\item (paraphrased) please check your slides more carefully
+\end{itemize}
+\end{frame}
+

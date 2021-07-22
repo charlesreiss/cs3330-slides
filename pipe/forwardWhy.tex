@@ -1,0 +1,99 @@
+\begin{frame}{revisiting data hazards}
+    \begin{itemize}
+    \item stalling worked
+    \item but very unsatisfying --- wait 2 extra cycles to use anything?!
+        \begin{itemize}
+        \item \ldots or more with 5-stage pipeline
+        \end{itemize}
+    \vspace{.5cm}
+    \item observation: \myemph{value} ready before it would be needed
+        \begin{itemize}
+        \item (just not stored in a way that let's us get it)
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\newsavebox{\pipeAddQBoxForwardEDA}
+\savebox{\pipeAddQBoxForwardEDA}{%A
+    \begin{tikzpicture}
+    \tikzset{pipeline regs/.style={}}
+    \pipeAddQNarrow
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] {};
+    \draw[blue,fill=blue!10, ultra thick] ([xshift=1cm]ewValE.west) circle (.2cm);
+    \draw[red,fill=red!10, ultra thick] ([xshift=-.5cm]deValA.west) circle (.2cm);
+    \end{tikzpicture}%
+}
+
+
+\begin{frame}[fragile,label=anExample]{motivation}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east,label={north:location of values during cycle 2:}] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBoxForwardEDA}}};
+\end{tikzpicture}
+\vspace{1cm}
+\lstset{
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{@2@}{@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3@}{@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4@}{@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5@}{@},
+}
+\begin{lstlisting}
+// initially %r8 = 800,
+//           %r9 = 900, etc.
+addq %r8, %r9 
+addq %r9, %r8
+addq ...
+addq ...        
+\end{lstlisting}
+\begin{tikzpicture}
+\matrix[tight matrix,nodes={text width=1cm,font=\scriptsize\tt},
+        column 8/.append style={nodes={text width=2cm}},
+        row 1/.append style={nodes={font=\scriptsize}},
+        row 2/.append style={nodes={font=\scriptsize}},
+        ] (tbl) {
+ \& |[fill=yellow!10!white,align=center]| fetch \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+cycle \& PC \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+0 \& 0x0 \\
+1 \& 0x2 \& 8  \& 9    \\ 
+2 \&    \& 9  \& 8   \& 800  \& 900 \& 9 \\
+3 \&    \&    \&       \& |[alt=<2>{red,fill=red!15,very thick}]| 900 \&  800 \& 8  \& |[alt=<2>{blue,fill=blue!15,very thick}]| 1700 \& 9 \\
+4 \&     \&    \&       \&      \&      \&    \& 1700 \& 8  \\
+};
+\begin{scope}[every node/.style={draw,inner sep=0pt},
+              every label/.style={font=\scriptsize,draw=none}]
+    \node[fit=(tbl-1-3) (tbl-1-4),fill=yellow!50!orange!10!white,label={center:fetch/decode}] {};
+    \node[fit=(tbl-1-5) (tbl-1-7),fill=orange!50!green!10!white,label={center:decode/execute}] {};
+    \node[fit=(tbl-1-8) (tbl-1-9),fill=green!50!blue!10!white,label={center:execute/writeback}] {};
+\end{scope}
+
+\node[inner sep=1mm,red,draw,thick,label={[red]-90:should be 1700},fit=(tbl-6-5)] {};
+\node[inner sep=1mm,blue,draw,thick,fit=(tbl-6-8)] {};
+\end{tikzpicture}
+\end{frame}
+

@@ -1,0 +1,15 @@
+\begin{frame}{shared libraries}
+\begin{itemize}
+\item C standard library has lots of common code:
+\begin{itemize}
+\item {\tt printf}
+\item {\tt fopen}
+\item {\tt qsort}
+\item \ldots
+\end{itemize}
+\item would like to not have multiple copies
+\vspace{.5cm}
+\item solution: multiple virtual read-only copies, one physical copy
+\end{itemize}
+\end{frame}
+

@@ -1,0 +1,48 @@
+\begin{frame}[fragile,label=condJmp]{stalling for conditional jmps}
+% FIXME: colors for rows
+\begin{tikzpicture}
+    \matrix[tight matrix,matrix stages,
+        nodes={text width=2cm,minimum height=0.5cm,text depth=.1ex,font=\small},
+        column 1/.append style={nodes={text width=.8cm}},
+        column 2/.append style={nodes={text width=2.2cm}},
+        column 3/.append style={nodes={text width=1.8cm}},
+        column 4/.append style={nodes={text width=2.6cm}},
+        column 5/.append style={nodes={text width=2.0cm}},
+        column 6/.append style={nodes={text width=1.8cm}}] (timeline) {
+        time \& fetch \& decode \& execute \& memory \& writeback \\
+        1    \& OPq   \\
+        2    \& jCC \& OPq \\
+        3    \& wait for jCC \& jCC \& OPq (set ZF) \\
+        4    \& wait for jCC \& nothing \& jCC (use ZF) \& OPq \\
+        5    \& irmovq \& nothing \& nothing \& jCC (done) \& OPq \\
+    };
+    \node[anchor=south west] at ([yshift=.25cm]timeline.north west) {
+\begin{lstlisting}
+        subq %r8, %r8
+        je label
+
+label:  irmovq ...
+\end{lstlisting}
+};
+    \begin{visibleenv}<2|handout:0>
+        \node[hiBox,fit=(timeline-3-2)] {};
+        \node[hiBox,fit=(timeline-4-3)] {};
+        \node[hiBox,fit=(timeline-5-4)] {};
+        \node[hiBox,fit=(timeline-6-5)] {};
+    \end{visibleenv}
+
+    \begin{visibleenv}<3|handout:0>
+        \node[hiBox,fit=(timeline-4-4)] {};
+        \node[hiBox,fit=(timeline-5-4)] {};
+        \draw[red,-Latex,thick] (timeline-4-4.east) to[bend right] (timeline-5-4.east);
+        \node[red,anchor=west] at ([xshift=0.3cm]timeline-4-4.east) {ZF sent via register};
+    \end{visibleenv}
+
+    \begin{visibleenv}<4|handout:0>
+        \node[hiBox,fit=(timeline-5-4)] {};
+        \node[hiBox,fit=(timeline-6-2)] {};
+        \draw[red,-Latex,thick] (timeline-5-4.west) -- (timeline-6-2) node [below=1em,midway] {``taken'' sent from execute to fetch};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+

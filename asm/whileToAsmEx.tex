@@ -1,0 +1,83 @@
+\begin{frame}[fragile,label=whileEx]{while exercise}
+\begin{ccodeNL}
+while (b < 10) { foo(); b += 1; }
+\end{ccodeNL}
+Assume b is in \myemph{callee-saved} register \%rbx.
+Which are correct assembly translations?
+\begin{tikzpicture}
+%\tikzset{every node/.style={inner sep=0cm,outer sep=0cm}}
+\node (vA) {
+\begin{asmcodeT}
+// version A
+start_loop:
+  call foo
+  addq $1, %rbx
+  cmpq $10, %rbx
+  jl start_loop
+\end{asmcodeT}
+};
+\node[anchor=north west] (vB) at ([xshift=1cm]vA.north east) {
+\begin{asmcodeT}
+// version B
+start_loop:
+  cmpq $10, %rbx
+  jge end_loop
+  call foo
+  addq $1, %rbx
+  jmp start_loop
+end_loop:
+\end{asmcodeT}
+};
+\node[anchor=north west] (vC) at ([xshift=1cm]vB.north east) {
+\begin{asmcodeT}
+// version C
+start_loop:
+  movq $10, %rax
+  subq %rbx, %rax
+  jge end_loop
+  call foo
+  addq $1, %rbx
+  jmp start_loop
+end_loop:
+\end{asmcodeT}
+};
+\begin{comment}
+\node[anchor=north west] (vD) at ([xshift=1cm]vC.north east) {
+\begin{asmcodeT}
+// version D
+  cmpq $10, %rbx
+  jge end_loop
+  movq $10, %r12
+  subq %rbx, %r12
+start_loop:
+  call foo
+  decq %r12
+  jge start_loop
+end_loop:
+  movq $10, %rbx
+\end{asmcodeT}
+};
+\end{comment}
+    \draw[thick] ([xshift=.5cm]vA.north east) -- ([xshift=.5cm]vA.south east);
+    \draw[thick] ([xshift=.5cm]vB.north east) -- ([xshift=.5cm]vB.south east);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=whileExWork]{while exercise: translating?}
+\begin{ccodeNL}
+while (b < 10) {
+    foo();
+    b += 1;
+}
+\end{ccodeNL}
+\hrule
+\begin{visibleenv}<2>
+\begin{ccodeNL}
+start_loop: if (b < 10) goto end_loop;
+            foo();
+            b += 1;
+            goto start_loop;
+end_loop:
+\end{ccodeNL}
+\end{visibleenv}
+\end{frame}

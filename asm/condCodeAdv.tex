@@ -1,0 +1,68 @@
+\begin{frame}<1>[fragile,label=exShort]{condition codes: closer look}
+\begin{itemize}
+    \item x86 condition codes:
+        \begin{itemize}
+        \item \xZF (``zero flag'') --- was result zero? (sub/cmp: equal)
+        \item \xSF (``sign flag'') --- was result negative? (sub/cmp: less)
+        \item<2-> \xOF (``overflow flag'') --- did computation overflow (as signed)?
+            \begin{itemize}
+            \item<3-> signed conditional jumps: JL, JLE, JG, JGE, \ldots
+            \item<3-> e.g. JL (jump if less) checks SF + OF
+            \end{itemize}
+        \item<2-> \xCF (``carry flag'') --- did computation overflow (as unsigned)?
+            \begin{itemize}
+            \item<3-> unsigned conditional jumps: JA, JAE, JB, JBE, \ldots
+            \item<3-> e.g. JB (jump if below) checks CF
+            \end{itemize}
+        \item \only<1>{(and some more, e.g. to handle overflow)}\only<2>{(and one more)}
+        \end{itemize}
+    \item GDB: part of ``eflags'' register
+    \item set by cmp, test, arithmetic
+\end{itemize}
+\end{frame}
+
+%\againframe<2>{ccEx1}
+
+%\againframe<2>{ccEx2}
+
+\begin{frame}<1,3>[fragile,label=ccEx1B]{condition codes: exercise (1)}
+\begin{lstlisting}[language=myasm]
+  movq $-10, %rax
+  movq $20, %rbx
+  cmpq %rax, %rbx
+// result = %rbx - %rax = 30
+\end{lstlisting}
+\begin{itemize}
+\item as signed: $20 - (-10) = 30$
+\item \alt<1-3>{~}{(as unsigned: $20 - (2^{64} - 10) = \xcancel{-2^{64} - 30}\;\;30$ (overflow!))}
+\end{itemize}
+\begin{tabular}{l@{\hspace{1cm}}l@{\hspace{1cm}}l}
+\alt<3->{$\xZF = 0$ (false)}{$\xZF =$ ?} & \only<3->{not zero} & \only<3->{rax and rbx not equal}\\
+\alt<3->{$\xSF = 0$ (false)}{$\xSF =$ ?} & \only<3->{not negative} & \only<3->{rax $<=$ rbx\*} \\
+\only<4>{$\xOF = $ ?}\only<5->{$\xOF = 0$ (false)} & \only<5->{no overflow as signed} & \only<5->{correct for signed}\\
+\only<4>{$\xOF = $ ?}\only<5->{$\xCF = 1$ (true)} & \only<5->{overflow as unsigned} & \only<5->{incorrect for unsigned}\\
+\end{tabular}
+\end{frame}
+
+\againframe<2>{ccEx3}
+
+\againframe<2>{ccEx4}
+
+\begin{frame}<1-2>[fragile,label=ccEx2B]{condition codes: exercise (2)}
+\begin{lstlisting}[language=myasm]
+  movq  $-1, %rax
+  addq  $-2, %rax
+// result = -3
+\end{lstlisting}
+\begin{itemize}
+\item as signed: $-1 + (-2) = -3$
+\item \alt<1-3>{as unsigned: $(2^{64} - 1) + (2^{64} - 2) = \xcancel{2^{65} - 3}\;\;2^{64}-3$ (overflow)}{~}
+\end{itemize}
+\begin{tabular}{l@{\hspace{1cm}}l@{\hspace{1cm}}l}
+\alt<2->{$\xZF = 0$ (false)}{$\xZF =$ ?} & \only<2->{not zero} & \only<2->{result not zero}\\
+\alt<2->{$\xSF = 1$ (true)}{$\xSF =$ ?} & \only<2->{negative} & \only<2->{result is negative} \\
+    \alt<4->{$\xOF = 0$ (false)}{\only<3->{$\xOF =$ ?}} & \only<4->{no overflow as signed} & \only<4->{correct for signed} \\
+\alt<4->{$\xCF = 1$ (true)}{\only<3->{$\xOF =$ ?}} & \only<4->{overflow as unsigned} & \only<4->{incorrect for unsigned} \\
+\end{tabular}
+\end{frame}
+

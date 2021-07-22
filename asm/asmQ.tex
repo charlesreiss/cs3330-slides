@@ -1,0 +1,22 @@
+\begin{frame}[fragile,label=asmQ]{question}
+\begin{lstlisting}[language=myasm,style=small]
+pushq $0x1
+pushq $0x2
+addq $0x3, 8(%rsp)
+popq %rax
+popq %rbx
+\end{lstlisting}
+
+What is value of {\tt \%rax} and {\tt \%rbx} after this?
+\vspace{1ex}
+\begin{tabular}{ll}
+    a.& {\tt \%rax} = {\tt 0x2}, {\tt \%rbx} = {\tt 0x4} \\
+    b.& {\tt \%rax} = {\tt 0x5}, {\tt \%rbx} = {\tt 0x1} \\
+    c.& {\tt \%rax} = {\tt 0x2}, {\tt \%rbx} = {\tt 0x1} \\
+    d.& the snippet has invalid syntax or will crash \\
+    e.&  more information is needed \\
+    f.& something else? \\
+\end{tabular}
+\end{frame}
+
+

@@ -1,0 +1,11 @@
+\begin{frame}[fragile,label=indirectBranch]{indirect branches?}
+\lstset{language=myasm}
+\begin{itemize}
+\item \lstinline|jmp *0x1234(%rax,8)|, \lstinline|call *(%rax)|
+\item e.g. switch statement (jump to case with table)
+\item e.g. virtual method call (choose function based on which subclass)
+\vspace{.5cm}
+\item simple solution: branch target buffer remembers last target
+\item there are better solutions (but we probably won't have time)
+\end{itemize}
+\end{frame}

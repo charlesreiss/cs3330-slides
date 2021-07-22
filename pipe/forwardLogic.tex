@@ -1,0 +1,141 @@
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+
+
+\begin{frame}[fragile,label=forwardingState]{forwarding}
+\begin{tikzpicture}[circuit logic US]
+    \tikzset{
+           label distance=1pt,
+        pipeline regs/.style={thin},
+        rAPreConnect/.style={alt=<4->{opacity=0}{}},
+        rBPreConnect/.style={alt=<6->{opacity=0}{}},
+        deValAIn/.style={visible on=<1-4>},
+        deValBIn/.style={visible on=<1-5>},
+    }
+    \pipeAddQWide % FIXME: was late regs?
+    \pipeAddQRegBoxes
+
+    \node[above=2cm of fetchBox,xshift=1.6cm,inner sep=.1mm] (l1) {
+\begin{lstlisting}[
+    style=small,
+    moredelim={**[is][\btHL<2|handout:0>]{@2@}{@}},
+    moredelim={**[is][\btHL<3|handout:0>]{@3@}{@}},
+    moredelim={**[is][\btHL<4-6|handout:0>]{@4@}{@}},
+    moredelim={**[is][\btHL<5|handout:0>]{@5@}{@}},
+]
+addq %r8, @4@%r9@ // (1)
+\end{lstlisting}
+    };
+
+    \node[inner sep=.1mm,anchor=north west] (l2a) at (l1.south west) {
+\begin{lstlisting}[style=small,
+    moredelim={**[is][\btHL<2|handout:0>]{@2@}{@}},
+    moredelim={**[is][\btHL<3|handout:0>]{@3@}{@}},
+    moredelim={**[is][\btHL<4-5|handout:0>]{@4@}{@}},
+    moredelim={**[is][\btHL<5|handout:0>]{@5@}{@}},
+]
+addq @4@%r9@, %r8 // (2)
+\end{lstlisting}
+    };
+    \begin{visibleenv}<6->
+        \node[draw,thick,cross out,fit=(l2a),inner sep=-1mm] {};
+        \node[inner sep=.1mm,anchor=north west] (l2b) at (l2a.south west) {
+\begin{lstlisting}[style=small,
+    moredelim={**[is][\btHL<2|handout:0>]{@2@}{@}},
+    moredelim={**[is][\btHL<3|handout:0>]{@3@}{@}},
+    moredelim={**[is][\btHL<4|handout:0>]{@4@}{@}},
+    moredelim={**[is][\btHL<5|handout:0>]{@5@}{@}},
+    moredelim={**[is][\btHL<6|handout:0>]{@6@}{@}},
+]
+addq %r10, @6@%r9@ // (2b)
+\end{lstlisting}
+        };
+    \end{visibleenv}
+
+
+    \tikzset{stageLine/.style={red,thick,densely dotted,Latex-}}
+    \tikzset{stageLineR/.style={red,thick,densely dotted,-Latex}}
+    \begin{visibleenv}<2>
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize] (regBox2) at ([xshift=-3cm,yshift=1cm]fdBox.east) {reg \#s 9, 8 from (2)};
+            %\draw[stageLineR] (regBox2.east) -- (fdDstE);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcA.west);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcB.west);
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1) at ([xshift=.9cm,yshift=.5cm]deBox.west) {reg \# 9,\\R8=800; R9=900 (1)};
+            \draw[stageLineR] (valBox1.west) -- (deDstE.west);
+            \draw[stageLineR] (valBox1.west) -- (deValA.west);
+            \draw[stageLineR] (valBox1.west) -- (deValB.west);
+
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<3-4>
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1) at ([xshift=.9cm,yshift=.25cm]deBox.west) {(2) \\ \textbf{old} R9=900,\\R8=800};
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<5>
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1) at ([xshift=.9cm,yshift=.45cm]deBox.west) {(2) \\ R9=\textbf{1700} (forwarded)\\R8=800};
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<6->
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1B) at ([xshift=.9cm,yshift=.25cm]deBox.west) {(2b) \\ R10=1000,\\R9=1700 (forwarded)};
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+        \begin{scope}[overlay]
+            \draw[stageLineR] (valBox1.west) -- (deValA.west);
+            \draw[stageLineR] (valBox1.west) -- (deValB.west);
+            \node[red,font=\scriptsize,align=left,anchor=west] (postExecBox) at ([xshift=.9cm,yshift=0cm]ewBox.west) {new R9=1700 (1)};
+            \draw[stageLineR] (postExecBox.west) -- (ewValE.east);
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<4>
+        \begin{scope}[overlay]
+            \draw[red,very thick,dashed,-Latex] ([xshift=.5cm]ewValE.east) -- ++(0cm,.25cm) -| ([xshift=-.4cm]deValA.west)
+                                        -- (deValA.west);
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \begin{scope}[overlay]
+            \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nn,red,thick,fill=white,anchor=input 1,anchor=output]
+                 (postValAMux) at ([xshift=-.7cm]deValA.west) {MUX};
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<6->
+        \begin{scope}[overlay]
+            \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nn,red,thick,fill=white,anchor=input 1,anchor=output]
+                 (postValBMux) at ([xshift=-.7cm]deValB.west) {MUX};
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \begin{scope}[overlay]
+            \draw[a] (regRead1) -- ++(.1cm,0cm) |- (postValAMux.input 1);
+            \draw[a] (postValAMux.output) -- (deValA);
+
+            \draw[aN] (ewValE) -- ++(0.5cm,0cm) -- ++(0cm,.35cm) -|
+                ([xshift=-.25cm,yshift=-.15cm]postValBMux.input 1);
+            \draw[a]
+                ([xshift=-.25cm,yshift=.1cm]postValBMux.input 1) --
+                ([xshift=-.25cm]postValAMux.input 2) -- (postValAMux.input 2);
+        \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<5>
+        \draw[red,very thick] (postValAMux.input 2) -- (postValAMux.output);
+        \draw[dotted,red,line width=1mm,opacity=0.5] ([xshift=.3cm]ewValE.east) -- ++ (0cm, .3cm) -| ([xshift=-.3cm]postValAMux.input 2) -- (postValAMux.input 2) -- (postValAMux.output) -- (deValA);
+    \end{visibleenv}
+    \begin{visibleenv}<6>
+        \draw[red,very thick] (postValBMux.input 2) -- (postValBMux.output);
+        \draw[dotted,red,line width=1mm,opacity=0.5] ([xshift=.3cm]ewValE.east) -- ++ (0cm, .3cm) -| ([xshift=-.3cm]postValBMux.input 2) -- (postValBMux.input 2) -- (postValBMux.output) -- (deValB);
+    \end{visibleenv}
+    \begin{visibleenv}<6->
+        \begin{scope}[overlay]
+            \draw[a] (regRead2) -- ++(.1cm,0cm) |- (postValBMux.input 1);
+            \draw[a] (postValBMux.output) -- (deValB);
+            \draw[a] (ewValE) -- ++(0.5cm,0cm) -- ++(0cm,.35cm) -|
+                ([xshift=-.25cm]postValBMux.input 2) -- (postValBMux.input 2);
+        \end{scope}
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}

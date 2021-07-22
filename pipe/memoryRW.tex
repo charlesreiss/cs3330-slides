@@ -1,0 +1,80 @@
+\begin{frame}{memory read/write logic}
+\begin{tikzpicture}
+    \node[memBig,dmemNorm,font=\normalsize] (dmem) {data memory};
+    \coordinate (dmemIn) at (dmem.west);
+    \coordinate (dmemInHigh) at ([yshift=1cm]dmem.west);
+    \coordinate (dmemInLow) at ([yshift=-1cm]dmem.west);
+    \coordinate (dmemDataOut) at (dmem.east);
+    \coordinate (dmemReadP) at ([xshift=-1cm]dmem.south);
+    \coordinate (dmemWriteP) at ([xshift=1cm]dmem.south);
+    
+    \draw[aR] (dmemInHigh) -- ++(-.25cm,0cm) node[left] {address};
+    \draw[aR] (dmemInLow) -- ++(-.25cm,0cm) node[left,align=right] {data\\input};
+    \draw[a] (dmemDataOut) -- ++(.25cm,0cm) node[right,align=left] {data\\output};
+    \draw[bR] (dmemReadP) -- ++(0cm,-1cm) node[minimum width=2cm,logicBlock,below] (readBox) {is read?};
+    \draw[bR] (dmemWriteP) -- ++(0cm,-2cm) node[minimum width=2cm,logicBlock,below] (writeBox) {is write?};
+
+    \coordinate (icodeFrom) at ([xshift=-4cm]$(readBox.west)!0.5!(writeBox.west)$);
+
+    \begin{visibleenv}<1>
+        \draw[a] (icodeFrom) -- ++(2cm,0cm) |- (readBox.west);
+        \draw[a] (icodeFrom) -- ++(2cm,0cm) |- (writeBox.west);
+        \node[anchor=east,align=right ] at (icodeFrom) {\begin{tabular}{r}icode \\ \scriptsize from instr. mem\end{tabular}};
+    \end{visibleenv}    
+
+    \begin{visibleenv}<2->
+        \node[hReg={}] (icodeReg) at (icodeFrom) {};
+        \node (regTop) at ([yshift=3cm]icodeReg.north) {};
+        \node[rounded corners,fill=green!50!blue,opacity=0.3,fit=(icodeReg) (regTop)] (emRegBox) {};
+
+        \draw[a] (icodeReg.east) -- ++(2cm,0cm) |- (readBox.west);
+        \draw[a] (icodeReg.east) -- ++(2cm,0cm) |- (writeBox.west);
+    \end{visibleenv}
+
+    \begin{visibleenv}<3->
+        \node[hReg={},left=.4cm of icodeReg] (deIcode) {};
+        \node[rounded corners,fill=orange!50!green,opacity=0.3,fit=(deIcode)] (deRegBox) {};
+        \node[hReg={},left=.4cm of deIcode] (fdIcode) {};
+        \node[rounded corners,fill=yellow!50!orange,opacity=0.3,fit=(fdIcode)] (fdRegBox) {};
+        \draw[a] (fdIcode.east) -- (deIcode.west);
+        \draw[a] (deIcode.east) -- (icodeReg.west);
+        \draw[aR] (fdIcode.west) -- ++(-0.2cm,0cm) node[left,align=right] {from \\ instr. \\ mem.};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=readWriteLogicSeq]{memory read/write: SEQ code}
+\lstset{
+    language=C,
+    moredelim=**[is][\btHL<1-|handout:1->]{@}{@},
+}
+\begin{lstlisting}
+icode = i10bytes[4..8];
+mem_readbit = [
+    @icode@ == MRMOVQ || ...: 1;
+    0;
+];
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=readWriteLogicPipe]{memory read/write: PIPE code}
+\lstset{
+    language=C,
+    moredelim=**[is][\btHL<1|handout:1>]{@1}{@},
+    moredelim=**[is][\btHL<2|handout:1>]{@2}{@},
+}
+\begin{lstlisting}
+f_icode = i10bytes[4..8];
+@2register fD@ { /* and dE and eM and mW */
+    icode : 4 = NOP;
+}
+d_icode = D_icode;
+...
+e_icode = E_icode;
+mem_readbit = [
+    @1M_icode@ == MRMOVQ || ...: 1;
+    0;
+];
+\end{lstlisting}
+\end{frame}
+

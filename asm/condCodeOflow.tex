@@ -1,0 +1,45 @@
+\againframe<2->{exShort}
+
+\againframe<2,4->{ccEx1B}
+
+\againframe<3->{ccEx2B}
+
+\begin{frame}[fragile,label=ccEx3B]{condition codes: exercise (3)}
+\begin{lstlisting}[language=myasm,style=small]
+  // 2^63 - 1
+  movq $0x7FFFFFFFFFFFFFFF, %rax
+  // 2^63 (unsigned); -2**63 (signed)
+  movq $0x8000000000000000, %rbx
+  cmpq %rax, %rbx
+// result = %rbx - %rax
+\end{lstlisting}
+\begin{tabular}{ll}
+    $\xZF = $ & ? \\
+    $\xSF = $ & ? \\
+    $\xOF = $ & ? \\
+    $\xCF = $ & ? \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile,label=cc4B]{condition codes: exercise (3 solution)}
+\begin{lstlisting}[language=myasm,style=small]
+  // 2**63 - 1
+  movq $0x7FFFFFFFFFFFFFFF, %rax
+  // 2**63 (unsigned); -2**63 (signed)
+  movq $0x8000000000000000, %rbx
+  cmpq %rax, %rbx
+// result = %rbx - %rax
+\end{lstlisting}
+\begin{itemize}
+\item as signed: $-2^{63} - \left(2^{63} - 1\right) = \xcancel{-2^{64} + 1}\;\;1$ (overflow)
+\item as unsigned: $2^{63} - \left(2^{63} - 1\right) = 1$
+\end{itemize}
+\begin{tabular}{l@{\hspace{1cm}}l@{\hspace{1cm}}l}
+$\xZF = 0$ (false) & not zero & rax and rbx not equal\\
+\only<3->{$\xSF = 0$ (false)} & \only<3->{not negative} & \only<3->{rax $<=$ rbx (if correct)} \\
+\only<4->{$\xOF = 1$ (true)} & \only<4->{overflow as signed} & \only<4->{incorrect for signed}\\
+\only<5->{$\xCF = 0$ (false)} & \only<5->{no overflow as unsigned} & \only<5->{correct for unsigned}\\
+\end{tabular}
+\end{frame}
+
+

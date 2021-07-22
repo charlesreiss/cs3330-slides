@@ -1,0 +1,27 @@
+\begin{frame}[fragile,label=attExercise]{exericse}
+\begin{lstlisting}[language=myasm,style=smaller]
+hello:
+    .string "Hello, World!" ; nul-terminated string
+example:
+    movb hello+1, %bl
+    subb $1, %bl
+    movb %bl, hello
+    movq $hello, %rdi
+    ; int puts(const char *s [%rdi])
+    callq puts
+    ret
+\end{lstlisting}
+What is the the argument to puts, \%rdi?
+
+\small
+\begin{tabular}{ll}
+A. a pointer to `Hello, World!' & B. a pointer to `dello, World!' \\
+C. a pointer to `Hdllo, World!' & D. a pointer to `fello, World!' \\
+E. a pointer to `Jello, World!' & F. a pointer to a different string \\
+\end{tabular}
+\begin{tabular}{l}
+G. an integer constructed from the ASCII for `Hello, W' (puts probably crashes) \\
+H. an integer constructed from the ASCII for `Jello, W' (puts probably crashes) \\
+I. an integer constructed from the ASCII for a different string (puts probably crashes) \\
+\end{tabular}
+\end{frame}

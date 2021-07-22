@@ -1,0 +1,91 @@
+\begin{frame}[fragile,label=exceptAndTimeSlice]{exceptions and time slicing}
+\begin{tikzpicture}
+\tikzset{
+    prog1/.style={draw,fill=cyan},
+    prog2/.style={draw,fill=green},
+    prog3/.style={draw,fill=violet!30},
+    proglabel/.style={font=\tt\scriptsize},
+    labelprog1/.style={execute at begin node={\strut loop.exe}},
+    labelprog2/.style={execute at begin node={\strut ssh.exe}},
+    labelprog3/.style={execute at begin node={\strut firefox.exe}},
+    >=Latex,
+}
+
+\begin{scope}[xscale=1.5,yscale=1]
+\foreach \s/\e/\p [count=\x] in {0/2/1,2/3/2,3/5/3,5/6/1,6/7/2}{
+    \coordinate (s-\x) at (\s, 0);
+    \coordinate (e-\x) at (\e, 0);
+    \draw[prog\p] (\s, 0) rectangle (\e, 1) coordinate[midway] (mid-\x);
+    \node[anchor=center,proglabel,labelprog\p] at (mid-\x) {};
+    \begin{pgfonlayer}{fg}
+    \draw[fill=white] ([xshift=-.05cm]e-\x) rectangle ([xshift=.05cm,yshift=1cm]e-\x);
+    \draw[pattern=north west lines] ([xshift=-.05cm]e-\x) rectangle ([xshift=.05cm,yshift=1cm]e-\x);
+    \end{pgfonlayer}
+}
+\end{scope}
+\node[draw] (etLookup) at (1, -2) {exception table lookup};
+\draw[thick,->] (3, 0) -- (etLookup) node[midway,fill=white] {timer interrupt};
+\node[draw] (execCode) at (4, -5) {
+\lstset{
+    language=myasm,
+    style=small,
+    deletekeywords=loop,
+    morekeywords={set_exception_table_base,mov_from_saved_pc,movq,mov_to_saved_pc,returnfrom_exception},
+    moredelim=**[is][\btHL<1|handout:1>]{@1}{@},
+}
+\begin{lstlisting}[style=small,language=myasm]
+handle_timer_interrupt:
+    ...
+    ...
+    set_address_space ssh_address_space
+    mov_to_saved_pc saved_ssh_pc
+    return_from_exception
+\end{lstlisting}
+};
+\draw[thick,->] (etLookup) -- (execCode);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=defeatTimeSlice1]{defeating time slices?}
+\lstset{
+    language=myasm,
+    style=small,
+    deletekeywords=loop,
+    morekeywords={return_from_exception,set_exception_table_base},
+    moredelim=**[is][\btHL<1|handout:1>]{@1}{@},
+}
+\begin{lstlisting}
+my_exception_table:
+    ...
+my_handle_timer_interrupt:
+    // HA! Keep running me!
+    return_from_exception
+
+main:
+    @1set_exception_table_base my_exception_table@
+loop:
+    jmp loop
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=defeatTimeSlice2]{defeating time slices?}
+\begin{itemize}
+\item wrote a program that tries to set the exception table:
+\end{itemize}
+\begin{lstlisting}[style=small,language=myasm]
+my_exception_table:
+    ...
+
+main:
+    // "Load Interrupt
+    //  Descriptor Table"
+    // x86 instruction to set exception table
+    lidt my_exception_table
+    ret
+\end{lstlisting}
+\begin{itemize}
+\item result: {\color{red!90}\tt Segmentation fault} (exception!)
+\end{itemize}
+\end{frame}
+
+

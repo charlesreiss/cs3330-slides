@@ -1,0 +1,40 @@
+\begin{frame}[fragile,label=loop1]{do-while-to-assembly (1)}
+\begin{ccodeS}
+int x = 99;
+do {
+    foo()
+    x--;
+} while (x >= 0);
+\end{ccodeS}
+\hrule
+\begin{visibleenv}<2->
+\begin{ccodeS}
+    int x = 99;
+start_loop:
+    foo()
+    x--;
+    if (x >= 0) goto start_loop;
+\end{ccodeS}
+\end{visibleenv}
+\end{frame}
+
+\begin{frame}[fragile,label=loop2]{do-while-to-assembly (2)}
+\begin{ccodeS}
+int x = 99;
+do {
+    foo()
+    x--;
+} while (x >= 0);
+\end{ccodeS}
+\hrule
+\begin{lstlisting}[language=myasm,style=small]
+    movq $99, %r12 // register for x
+start_loop:
+    call foo
+    subq $1, %r12
+    cmpq $0, %r12
+    // computes r12 - 0 = r12
+    jge start_loop // jump if r12 - 0 >= 0
+\end{lstlisting}
+\end{frame}
+

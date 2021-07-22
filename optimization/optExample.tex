@@ -1,0 +1,182 @@
+\begin{frame}[fragile,label=unopt]{example assembly (unoptimized)}
+\lstset{language=C,style=smaller}
+    \vspace{-.25cm}
+\begin{lstlisting}
+long sum(long *A, int N) {
+    long result = 0;
+    for (int i = 0; i < N; ++i)
+        result += A[i];
+    return result;
+}
+\end{lstlisting}
+\lstset{language=myasm,style=smaller}
+\begin{lstlisting}
+sum:    ...
+the_loop:   
+        ...
+	leaq	0(,%rax,8), %rdx// offset <- i * 8
+	movq	-24(%rbp), %rax // get A from stack
+	addq	%rdx, %rax      // add offset
+        movq	(%rax), %rax    // get *(A+offset)
+	addq	%rax, -8(%rbp)  // add to sum, on stack
+	addl	$1, -12(%rbp)   // increment i
+condition:
+	movl	-12(%rbp), %eax
+	cmpl	-28(%rbp), %eax
+	jl	the_loop
+        ...
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=optS]{example assembly (gcc 5.4 -Os)}
+\lstset{language=C,style=smaller}
+\begin{lstlisting}
+long sum(long *A, int N) {
+    long result = 0;
+    for (int i = 0; i < N; ++i)
+        result += A[i];
+    return result;
+}
+\end{lstlisting}
+\lstset{language=myasm,style=smaller}
+\begin{lstlisting}
+sum:
+	xorl	%edx, %edx
+	xorl	%eax, %eax
+the_loop:
+	cmpl	%edx, %esi
+	jle	done
+	addq	(%rdi,%rdx,8), %rax
+	incq	%rdx
+	jmp	the_loop
+done:
+	ret
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=opt2]{example assembly (gcc 5.4 -O2)}
+\lstset{language=C,style=smaller}
+\begin{lstlisting}
+long sum(long *A, int N) {
+    long result = 0;
+    for (int i = 0; i < N; ++i)
+        result += A[i];
+    return result;
+}
+\end{lstlisting}
+\lstset{language=myasm,style=smaller}
+    \vspace{-.25cm}
+\begin{lstlisting}
+sum:
+	testl	%esi, %esi
+	jle	return_zero
+	leal	-1(%rsi), %eax
+	leaq	8(%rdi,%rax,8), %rdx // rdx=end of A
+	xorl	%eax, %eax
+the_loop:    
+        addq	(%rdi), %rax // add to sum 
+	addq	$8, %rdi     // advance pointer
+	cmpq	%rdx, %rdi
+	jne     the_loop
+	rep ret
+return_zero:    ...
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=opt3]{example assembly (gcc 9.2 -O3)}
+\lstset{language=myasm,style=smaller}
+\begin{lstlisting}
+sum:
+        testl   %esi, %esi
+	... /* approx 10 lines omitted */
+the_loop:
+        movdqu  (%rax), %xmm2 /* <-- load 16 bytes from array */
+        addq    $16, %rax
+        paddq   %xmm2, %xmm0  /* <-- add 2 pairs of longs */
+        cmpq    %rdx, %rax
+        jne     the_loop
+	... /* approx 20 lines omitted */
+        ret
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=opt3a]{example assembly (gcc 9.2 -O3 -march=skylake)}
+\lstset{language=myasm,style=smaller}
+\begin{lstlisting}
+sum:
+        testl   %esi, %esi
+	... /* approx 10 lines omitted */
+the_loop:
+        vpaddq  (%rax), %ymm0, %ymm0  /* <- add 4 pairs of longs */
+        addq    $32, %rax 
+        cmpq    %rdx, %rax
+        jne     the_loop
+	... /* approx 20 lines omitted */
+        ret
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=opt3b]{gcc 9.2 -O3 -funroll-loops -march=skylake}
+\lstset{language=myasm,style=smaller}
+\begin{lstlisting}
+sum:
+        testl   %esi, %esi
+	... /* approx 60 lines omitted */
+the_loop:  /* loop unrolled 8 times + instrs that add 4 pairs at a time*/
+        vpaddq  (%r8), %ymm0, %ymm1  /* <-- add 4 pairs of longs */
+        addq    $256, %r8
+        vpaddq  -224(%r8), %ymm1, %ymm2
+        vpaddq  -192(%r8), %ymm2, %ymm3
+        vpaddq  -160(%r8), %ymm3, %ymm4
+        vpaddq  -128(%r8), %ymm4, %ymm5
+        vpaddq  -96(%r8), %ymm5, %ymm6
+        vpaddq  -64(%r8), %ymm6, %ymm7
+        vpaddq  -32(%r8), %ymm7, %ymm0
+        cmpq    %rcx, %r8
+        jne     .L4
+	... /* approx 20 lines omitted */
+        ret
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=opt4]{example assembly (clang 9.0 -O -march=skylake)}
+\lstset{language=myasm,style=script}
+\begin{lstlisting}
+sum:
+        testl   %esi, %esi
+	... /* approx 35 lines omitted */
+the_loop: /* loop unrolled + multiple accumulators + instrs that 4 pairs at a time */
+        vpaddq  (%rdi,%rsi,8), %ymm0, %ymm0
+        vpaddq  32(%rdi,%rsi,8), %ymm1, %ymm1
+        vpaddq  64(%rdi,%rsi,8), %ymm2, %ymm2
+        vpaddq  96(%rdi,%rsi,8), %ymm3, %ymm3
+        vpaddq  128(%rdi,%rsi,8), %ymm0, %ymm0
+        vpaddq  160(%rdi,%rsi,8), %ymm1, %ymm1
+        vpaddq  192(%rdi,%rsi,8), %ymm2, %ymm2
+        vpaddq  224(%rdi,%rsi,8), %ymm3, %ymm3
+        vpaddq  256(%rdi,%rsi,8), %ymm0, %ymm0
+        vpaddq  288(%rdi,%rsi,8), %ymm1, %ymm1
+        vpaddq  320(%rdi,%rsi,8), %ymm2, %ymm2
+        vpaddq  352(%rdi,%rsi,8), %ymm3, %ymm3
+        vpaddq  384(%rdi,%rsi,8), %ymm0, %ymm0
+        vpaddq  416(%rdi,%rsi,8), %ymm1, %ymm1
+        vpaddq  448(%rdi,%rsi,8), %ymm2, %ymm2
+        vpaddq  480(%rdi,%rsi,8), %ymm3, %ymm3
+        addq    $64, %rsi
+        addq    $4, %rax
+	jne the_loop
+	... 
+        ret
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{optimizing compilers}
+    \begin{itemize}
+    \item these usually make your code fast
+    \item often not done by default
+    \item compilers and humans are good at \myemph{different kinds} of optimizations
+    \end{itemize}
+\end{frame}
+

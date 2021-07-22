@@ -1,0 +1,54 @@
+\begin{frame}[label=ISAVariants]{ISA variation}
+    \begin{tabular}{l|p{2cm}p{2cm}p{2cm}}
+    instruction set & instr. length & \# normal registers & \emph{approx.} \# instrs. \\ \hline
+    x86-64 & 1--15 byte & 16 & 1500 \\
+    Y86-64 & 1--10 byte & 15 & 18 \\
+    ARMv7 & 4 byte* &16 & 400 \\
+    POWER8 & 4 byte &  32 & 1400 \\
+    MIPS32 & 4 byte &  31 & 200 \\
+    Itanium & 41 bits* & 128 & 300 \\
+    Z80 & 1--4 byte & 7 & 40 \\
+    VAX & 1--14 byte & 8 & 150 \\
+    z/Architecture & 2--6 byte  & 16 & 1000 \\
+    RISC V & 4 byte*  & 31 & 500* \\
+    \end{tabular}
+\end{frame}
+
+\begin{frame}[label=ISAChoices,fragile]{other choices: condition codes?}
+    \begin{itemize}
+        \item instead of:
+\begin{lstlisting}
+cmpq %r11, %r12
+je somewhere
+\end{lstlisting}
+        \item could do:
+\begin{lstlisting}
+/* _B_ranch if _EQ_ual */
+beq  %r11, %r12, somewhere
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[label=ISAChoicesAddrModes,fragile]{other choices: addressing modes}
+    \begin{itemize}
+        \item ways of specifying \myemph{operands}. examples:
+        \item x86-64: \lstinline|10(%r11,%r12,4)|
+        \item ARM: \lstinline|%r11 << 3| {\small (shift register value by constant)}
+        \item VAX: \lstinline|((%r11))| {\small (register value is pointer to pointer)}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[label=ISAChoicesOperands,fragile]{other choices: number of operands}
+    \begin{itemize}
+        \item \lstinline|add src1, src2, dest|
+        \begin{itemize}
+            \item ARM, POWER, MIPS, SPARC, \ldots{}
+        \end{itemize}
+        \item \lstinline|add src2, src1=dest|
+        \begin{itemize}
+            \item x86, AVR, Z80, \ldots{}
+        \end{itemize}
+        \item VAX: both
+    \end{itemize}
+\end{frame}
+

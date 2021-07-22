@@ -1,0 +1,73 @@
+\usetikzlibrary{calc,fit,matrix,positioning}
+
+\begin{frame}[fragile,label=ex]{exercise}
+\begin{ccode*}{texcomments=false}
+char foo[4] = "foo"; 
+    // {'f', 'o', 'o', '\0'}
+char *pointer;
+pointer = foo;
+*pointer = 'b';
+pointer = pointer + 2;
+pointer[0] = 'z';
+*(foo + 1) = 'a';
+\end{ccode*}
+\vspace{.2cm}
+Final value of \lstinline!foo!? \\
+\begin{tabular}{ll}
+\textit{A.} \lstinline!"fao"! \hspace{2cm} &  \textit{D.} \lstinline!"bao"! \\
+\textit{B.} \lstinline!"zao"! &  \textit{E.} something else/crash \\
+\myemph<2|handout:0>{\textit{C.}} \lstinline!"baz"! \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile,label=exex]{exercise explanation}
+\small
+\begin{tikzpicture}[overlay,remember picture]
+\node [right=.5cm of {pic cs:p0},yshift=.1cm,visible on=<5->] {\color{black!70}\scriptsize better style: \small\cinline|*pointer = 'z';|};
+\node [right=.5cm of {pic cs:f1},yshift=.1cm,visible on=<6->] {\color{black!70}\scriptsize better style: \small\cinline|foo[1] = 'a';|};
+\end{tikzpicture}
+    \highBox<2>{start2}{end2}
+    \highBox<3>{start3}{end3}
+    \highBox<4>{start4}{end4}
+    \highBox<5>{start5}{end5}
+    \highBox<6>{start6}{end6}
+\begin{ccode*}{texcomments=false}
+char foo[4] = "foo";
+    // {'f', 'o', 'o', '\0'}
+char *pointer;
+@\tikzmark{start2}@pointer = foo;@\tikzmark{end2}@
+@\tikzmark{start3}@*pointer = 'b';@\tikzmark{end3}@
+@\tikzmark{start4}@pointer = pointer + 2;@\tikzmark{end4}@
+@\tikzmark{start5}@pointer[0] = 'z';@\tikzmark{end5}\tikzmark{p0}@
+@\tikzmark{start6}@*(foo + 1) = 'a';@\tikzmark{end6}\tikzmark{f1}@
+\end{ccode*}
+\begin{tikzpicture}
+    \tikzset{
+        mybox part/.style={minimum width=2cm,font=\scriptsize,align=left,fill=black!10!white},
+        mybox/.style={draw,rectangle,mybox part},
+        mycodebox/.style={draw,rectangle,mybox part,fill=white},
+        mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        myline/.style={line width=1pt,-latex},
+        myline emph/.style={line width=4pt,-latex,color=blue!70!black},
+    }
+    \matrix[matrix of nodes,
+        mylabel={\lstinline|foo| (on stack)}{<1->},mybox,
+        nodes={draw,rectangle,minimum width=0mm,minimum height=.5cm, inner sep=0mm,anchor=south,
+               font=\tt\scriptsize},
+        xshift=3cm,
+        inner sep=0mm,outer sep=0mm,
+    ] (data) {
+        \only<1-2|handout:0>{\tt 'f'}\only<3->{\myemph<3>{\tt 'b'}}\&%
+        \only<1-5|handout:0>{\tt 'o'}\only<6->{\myemph<6>{\tt 'a'}}\&%
+        \only<1-4|handout:0>{\tt 'o'}\only<5->{\myemph<5>{\tt 'z'}}\&%
+        \lstinline|'\0'|\\
+    };
+    \node[mybox,below=1cm of data-1-3,xshift=.5cm,visible on=<2->] (pointer) { pointer };
+    \draw[visible on=<2-3|handout:0>,myline] (pointer) -- (data-1-1.south);
+    \draw[visible on=<4->,myline] (pointer) -- (data-1-3.south);
+    \draw[visible on=<4|handout:0>,myline emph] (pointer) -- (data-1-3.south);
+    \node[mybox,dashed,below left=1cm of data, visible on=<6->] (foo1) { \cinline|foo + 1 == &foo[0] + 1|};
+    \draw[myline,dashed,visible on=<6->] (foo1) -- (data-1-2.south);
+\end{tikzpicture}
+\end{frame}
+

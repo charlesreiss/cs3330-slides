@@ -1,0 +1,96 @@
+\begin{frame}[fragile,label=inliningMot]{loop with a function call}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+int addWithLimit(int x, int y) {
+    int total = x + y;
+    if (total > 10000)
+        return 10000;
+    else
+        return total;
+}
+...
+int sum(int *array, int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+        sum = ~2~addWithLimit~end~(sum, array[i]);
+    return sum;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=inlining]{function call assembly}
+\lstset{language=myasm,style=small,
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+    movl (%rbx), %esi // mov array[i]
+    movl %eax, %edi   // mov sum
+    call addWithLimit
+    ...
+    ...
+addWithLimit:
+    ... /* code here */
+    ret
+\end{lstlisting}
+    \begin{itemize}
+        \item extra instructions executed: two moves, a call, and a ret
+        \item<2-> alternative: \textit{inline} the call
+    \end{itemize}
+\begin{visibleenv}<2->
+\begin{lstlisting}
+    ... /* code here (+ small changes for arguments
+                        being in different places) */
+    ret
+\end{lstlisting}
+\end{visibleenv}
+\end{frame}
+
+\begin{frame}[fragile,label=manualInlining]{manual inlining}
+\begin{lstlisting}
+int sum(int *array, int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum = sum + array[i];
+        if (sum > 10000)
+            sum = 10000;
+    }
+    return sum;
+}
+
+\end{lstlisting}
+\end{frame}
+
+% FIXME: #define
+
+\begin{frame}[fragile,label=inlineProCon]{inlining pro/con}
+    \begin{itemize}
+        \item avoids call, ret, extra move instructions
+        \item allows compiler to \myemph{use more registers}
+            \begin{itemize}
+            \item no caller-saved register problems
+            \end{itemize}
+        \vspace{.5cm}
+        \item but not always faster:
+        \item worse for instruction cache
+            \begin{itemize}
+            \item (more copies of function body code)
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{compiler inlining}
+    \begin{itemize}
+    \item compilers will inline, but\ldots
+    \item will usually \myemph{avoid making code much bigger}
+        \begin{itemize}
+        \item heuristic: inline if function is small enough
+        \item heuristic: inline if called exactly once
+        \end{itemize}
+    \item will usually \myemph{not inline across .o files}
+    \vspace{.5cm}
+    \item some compilers allow hints to say ``please inline/do not inline this function''
+    \end{itemize}
+\end{frame}
+

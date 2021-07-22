@@ -1,0 +1,56 @@
+\begin{frame}[fragile,label=vecInst1]{vector instructions}
+    \begin{itemize}
+    \item modern processors have registers that hold ``vector'' of values
+    \item example: current x86-64 processors have 256-bit registers
+        \begin{itemize}
+        \item 8 ints or 8 floats or 4 doubles or \ldots
+        \end{itemize}
+    \item 256-bit registers named \lstinline|%ymm0| through \lstinline|%ymm15|
+    \item instructions that act on \myemph{all values in register}
+        \begin{itemize}
+        \item vector instructions or SIMD (single instruction, multiple data) instructions
+        \end{itemize}
+    \item extra copies of ALUs only accessed by vector instructions
+    \item (also 128-bit versions named \lstinline|%xmm0| through \lstinline|%xmm15|)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=vecInstEx]{example vector instruction}
+    \begin{itemize}
+\item \lstinline|vpaddd %ymm0, %ymm1, %ymm2| {\small (packed add dword (32-bit))}
+\item Suppose registers contain (interpreted as 4 ints)
+    \begin{itemize}
+        \item \%ymm0: [1, 2, 3, 4, 5, 6, 7, 8]
+        \item \%ymm1: [9, 10, 11, 12, 13, 14, 15, 16]
+    \end{itemize}
+\item Result will be:
+    \begin{itemize}
+        \item \%ymm2: [10, 12, 14, 16, 18, 20, 22, 24]
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=vecInst]{vector instructions}
+\begin{lstlisting}[language=C,style=smaller]
+void add(int * restrict a, int * restrict b) {
+    for (int i = 0; i < 512; ++i)
+        a[i] += b[i];
+}
+\end{lstlisting}
+\hrulefill
+    \lstset{language=myasm,style=smaller,morekeywords={vpaddd,vmovdqu},deletekeywords=add}
+\begin{lstlisting}
+add:
+  xorl %eax, %eax
+the_loop:
+  vmovdqu (%rdi,%rax), %ymm0  /* load A into ymm0 */
+  vmovdqu (%rsi,%rax), %ymm1  /* load B into ymm1 */
+  vpaddd %ymm1, %ymm0, %ymm0  /* ymm1 + ymm0 -> ymm0 */
+  vmovdqu %ymm0, (%rdi,%rax)  /* store ymm0 into A */
+  addq $32, %rax              /* increment index by 32 bytes */
+  cmpq $2048, %rax          
+  jne the_loop
+  vzeroupper        /* <-- for calling convention reasons */
+  ret
+\end{lstlisting}
+\end{frame}

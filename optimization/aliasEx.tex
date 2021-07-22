@@ -1,0 +1,53 @@
+\begin{frame}[fragile,label=aliasingEx]{aliasing exercise}
+\begin{lstlisting}[language=C++,style=smaller]
+void add(int *s1, int *s2, int *d) {
+    for (int i = 0; i < 1000; ++i)
+        d[i] = s1[i] + s2[i];
+}
+\end{lstlisting}
+\hrule
+The compiler \textbf{cannot} generate code equivalent to this:
+\begin{lstlisting}[language=C++,style=smaller]
+void add(int *s1, int *s2, int *d) {
+    for (int i = 0; i < 1000; i += 2) {
+        int temp1 = s1[i] + s2[i];
+        int temp2 = s1[i+1] + s2[i+1];
+        d[i] = temp1; d[i+1] = temp2;
+    }
+}
+\end{lstlisting}
+Which is an example of a call where the results could disagree:
+{\small
+\begin{tabular}{lll}
+A. \texttt{add(\&A[0], \&A[1], \&B[0])} & B. \texttt{add(\&A[0], \&A[0], \&A[1])} \\
+C. \texttt{add(\&B[0], \&A[10], \&A[0])} & D. \texttt{add(\&A[1000], \&A[1001], \&A[0])} \\
+\end{tabular}
+}
+{\small (assume A, B are distinct, large arrays)}
+\end{frame}
+
+\begin{frame}<0>[fragile,label=aliasingExExplain]{aliasing exercise}
+recall: s1=s2=A+0; d=A+1
+\begin{lstlisting}[language=C++,style=smaller]
+for (int i = 0; i < 1000; ++i)
+    d[i] = s1[i] + s2[i];
+
+/* i = 0: */ A[1] = A[0] + A[0];
+/* i = 1: */ A[2] = A[1] + A[1];
+\end{lstlisting}
+\hrule
+\begin{lstlisting}[language=C++,style=smaller]
+for (int i = 0; i < 1000; i += 2) {
+    temp1 = s1[i] + s2[i];
+    temp2 = s1[i] + s2[i];
+    d[i] = temp1;
+    d[i] = temp2;
+
+/* i = 0: */ temp1 = A[0] + A[0];
+             temp2 = A[1] + A[1];
+             A[1] = temp1;
+             A[2] = temp2;
+\end{lstlisting}
+\end{frame}
+
+\iftoggle{heldback}{}{\againframe<1>{aliasingExExplain}}

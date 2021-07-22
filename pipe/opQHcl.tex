@@ -1,0 +1,17 @@
+\begin{frame}[fragile,label=OPqHCL]{OPq HCL}
+\begin{Verbatim}[fontsize=\small]
+f_icode = i10bytes[4..8];
+register fD {
+    icode : 4 = NOP;
+    ...
+}
+...
+D_icode = f_icode;
+...
+register dE {
+    icode : 4 = NOP;
+    ...
+}
+/* use E_icode to do ALU operation */
+\end{Verbatim}
+\end{frame}

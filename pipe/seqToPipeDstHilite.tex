@@ -1,0 +1,40 @@
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+
+\begin{frame}{computing destinations early}
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            pcStyle/.style={fill=yellow},
+            pipe/.style={draw,hhReg,alt=<1>{draw=red,ultra thick}{draw=black,thick}},
+            wbPCLine/.style={alt=<2>{red,very thick,dashed},alt=<3->{opacity=0}},
+        }
+        \seqStagesStyles
+        \tikzset{
+            muxDst/.style={red,thick,fill=red!20}
+        }
+        \seqStagesBase
+        \seqStagesBoxLocs
+        \seqStagesRegs
+        \node[fit=(muxDstEAbove) (muxDstMAbove),draw=red,ultra thick,
+            label={[align=right,xshift=-2cm,red!70!black]north:destination register\\computed in decode}] {};
+        \draw[blue,ultra thick] ([xshift=-6.5cm]dstMUpperRightCorner) circle (0.25cm) coordinate (mark1);
+        \draw[blue,ultra thick] ([xshift=-5cm]dstMUpperRightCorner) circle (0.25cm) coordinate (mark2);
+        \draw[blue,ultra thick] ([xshift=-1cm]dstMUpperRightCorner) circle (0.25cm) coordinate (mark3);
+        \draw[blue,thick] (mark1) ++(0, .25cm) -- ++(1cm, 1.2cm) node[above right,align=left,blue!70!black] {available early \\ for forwarding/etc. logic};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{textbook convention on destinations}
+    \begin{itemize}
+    \item dstE/dstM computed mostly in decode
+        \begin{itemize}
+        \item passed through pipeline as d\_dstE, e\_dstE, \ldots
+        \end{itemize}
+    \item valE/valM only set to value to be stored in dstE/dstM
+        \begin{itemize}
+        \item passed through pipeline as e\_valE, m\_valE, \ldots
+        \end{itemize}
+    \vspace{.5cm}
+    \item simplifies forwarding/stalling logic
+    \end{itemize}
+\end{frame}

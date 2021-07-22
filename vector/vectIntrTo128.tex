@@ -1,0 +1,13 @@
+\begin{frame}[fragile,label=vect128]{128-bit version, too}
+\begin{itemize}
+\item history: 256-bit vectors added in extension called AVX (c. 2011)
+\item before: 128-bit vectors added in extension called SSE (c. 1999)
+\vspace{.5cm}
+\item 128-bit intrinsics exist, too:
+    \begin{itemize}
+    \item \texttt{\_\_m256i} becomes \texttt{\_\_m128i}
+    \item \texttt{\_mm256\_add\_epi32} becomes \texttt{\_mm\_add\_epi32}
+    \item \texttt{\_mm256\_loadu\_si256} becomes \texttt{\_mm\_loadu\_si128}
+    \end{itemize}
+\end{itemize}
+\end{frame}

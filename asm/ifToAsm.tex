@@ -1,0 +1,44 @@
+% FIXME: hilight corresponding regions
+\begin{frame}[fragile,label=ifToAsm1]{if-to-assembly (1)}
+\begin{ccodeNL}
+if (b >= 42) {
+    a += 10;
+} else {
+    a *= b;
+}
+\end{ccodeNL}
+\begin{visibleenv}<2>
+\hrule
+\begin{ccodeNL}
+            if (b < 42) goto after_then;
+            a += 10;
+            goto after_else;
+after_then: a *= b;
+after_else:
+\end{ccodeNL}
+\end{visibleenv}
+\end{frame}
+
+\begin{frame}[fragile,label=ifToAsm2]{if-to-assembly (2)}
+\begin{ccodeNL}
+if (b >= 42) {
+    a += 10;
+} else {
+    a *= b;
+}
+\end{ccodeNL}
+\hrule
+\begin{lstlisting}[language=myasm,style=small]
+// a is in %rax, b is in %rbx
+    cmpq $42, %rbx   // computes rbx - 42 to 0
+                     // i.e compare rbx to 42
+    jl after_then    // jump if rbx - 42 < 0 
+                     // AKA rbx < 42
+    addq $10, %rax   // a += 10
+    jmp after_else
+after_then:
+    imulq %rbx, %rax // rax = rax * rbx
+after_else:
+\end{lstlisting}
+\end{frame}
+

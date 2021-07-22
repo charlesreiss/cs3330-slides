@@ -1,0 +1,96 @@
+\usetikzlibrary{chains}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw}
+}
+
+\begin{frame}{circuits: wires}
+\begin{tikzpicture}
+\foreach \x/\v in {0/0,0.4/1,0.8/0,1.2/1,1.6/1} {
+    \draw[simple wire] (0, \x) node[left,binLabel] (\x-\v-num) {\v} -- (10, \x) node[right,binLabel]{\v};
+};
+\onslide<2->{
+    \node[hiBox,inner sep=1mm,fit=(0-0-num),label={south east:binary value --- actually voltage}] {};
+};
+\onslide<3->{
+    \draw[ultra thick,blue,dashed] (1, 0) -- (9, 0) 
+        node[midway,below] {value propagates to rest of wire (small delay)};
+}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits: wire bundles}
+\begin{tikzpicture}
+\foreach \x/\v in {0/0,0.4/1,0.8/0,1.2/1,1.6/1} {
+    \draw[simple wire] (0, \x) node[left] (\x-\v-num) {\tt\v} -- (10, \x) node[right]{\tt\v};
+};
+\node[anchor=center] at (5,-.5) {{\tt 11010} = 26};
+\begin{visibleenv}<2->
+    \node[anchor=center] at (3, 2) {same as};
+    \foreach \x in {0,0.1,0.2,0.3,0.4} {
+        \draw[simple wire] ($(0, \x) + (0, 3)$) -- ($(10, \x) + (0, 3)$);
+    };
+    \node[anchor=east] at (0, 3.2) {26};
+    \node[anchor=west] at (10, 3.2) {26};
+\end{visibleenv}
+\begin{visibleenv}<3->
+    \node[anchor=center] at (3, 4) {same as};
+    \draw[wire] (0, 6) node[left] {26} -- (10, 6) node[right] {26};
+\end{visibleenv}
+\begin{visibleenv}<4-5>
+    \draw[alt=<4>{red},ultra thick] (5, 6) ++ (+0.05, .1) -- ++(-0.1, -.2) node[below] (bit count) {5};
+\end{visibleenv}
+\begin{visibleenv}<4>
+    \draw[very thick,<-] (bit count.east) -- ++ (1, -.5cm) node[right,align=left] {
+        explicit marker for 5-bit wire bundle \\
+        often omitted to avoid clutter
+    };
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits: gates}
+    \begin{tikzpicture}[circuit logic US]
+        \begin{scope}[start chain=inputs going below, every node/.style={on chain}, node distance=.3cm];
+            \node {0};
+            \node {0};
+
+            \node {0};
+            \node {1};
+
+            \node {1};
+            \node {0};
+
+            \node {1};
+            \node {1};
+        \end{scope}
+        \foreach \x/\y/\v in {1/2/0,3/4/1,5/6/1,7/8/0} {
+            \node[xor gate] (xor-\x) at ([xshift=3cm,yshift=-.5cm]inputs-\x) {};
+            \draw[wire] (inputs-\x) -- ++(.5cm,0cm) |- (xor-\x.input 1);
+            \draw[wire] (inputs-\y) -- ++(.5cm,0cm) |- (xor-\x.input 2);
+            \draw[wire] (xor-\x.output) -- ++(1cm,0cm) node[right] {\v};
+        }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits: logic}
+    \begin{itemize}
+    \item want to do calculations?
+    \item generalize gates:
+    \item<2-> output wires contain result of function on input
+        \begin{itemize}
+        \item changes as input changes (with delay)
+        \end{itemize}
+    \item<3-> need not be same width as output
+    \end{itemize}
+\begin{tikzpicture}
+    \node[fill=blue!20] (theLogic) at (0, -1) {``logic''};
+    \draw[wire] (0, 0) node[above] {12} -- (theLogic);
+    \draw[wire small,alt=<3>{red}{}] (theLogic) -- (0, -2) node[left,xshift=.4cm, yshift=-.2cm] (funcValue) {function(12) = ??};
+\end{tikzpicture}
+\end{frame}
+

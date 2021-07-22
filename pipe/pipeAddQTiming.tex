@@ -1,0 +1,29 @@
+
+\begin{frame}{addq processor performance}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+\vspace{-1cm}
+\begin{itemize}
+\item {\small example delays: \\
+\begin{tabular}{ll}
+path & time \\ \hline
+add 2 & 80 ps \\
+instruction memory & 200 ps \\
+register file read & 125 ps \\
+add & 100 ps \\
+register file write & 125 ps \\
+\end{tabular}}
+\item no pipelining: 1 instruction per 550 ps
+    \begin{itemize}
+    \item add up everything but add 2 (\myemph{critical (slowest) path})
+    \end{itemize}
+\item pipelining: 1 instruction per 200 ps + pipeline register delays
+    \begin{itemize}
+    \item \myemph{slowest path through stage} + pipeline register delays
+    \item latency: 800 ps + pipeline register delays (4 cycles)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+

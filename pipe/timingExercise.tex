@@ -1,0 +1,26 @@
+\begin{frame}[fragile,label=timingEx]{exercise}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+\vspace{-1cm}
+\begin{itemize}
+    \item
+\begin{tabular}{ll}
+path & time \\ \hline
+add 2 & 50 ps \\
+instruction memory & 200 ps \\
+register file read & 125 ps \\
+add & 100 ps \\
+register file write & 125 ps \\
+\end{tabular}
+\item pipeline register delay: 10ps
+\item how will throughput improve if we \myemph{double the speed of the instruction memory}? \\
+    \begin{tabular}{ll}
+        \textbf{A.} 2.00x & \textbf{B.} 1.70x to 1.99x \\
+        \textbf{C.} 1.60x to 1.69x & \textbf{D.} 1.50x to 1.59x \\
+        \textbf{E.} less than 1.50x & ~\\
+    \end{tabular}
+        \only<2>{\myemph{\iftoggle{heldback}{~}{$\frac{1}{135}\div\frac{1}{210} = 1.56$x --- D}}}
+\end{itemize}
+\end{frame}

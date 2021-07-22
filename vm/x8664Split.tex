@@ -1,0 +1,14 @@
+\begin{frame}{current x86-64 page tables}
+\includegraphics[width=0.7\textwidth]{../vm/intel4Level}
+\end{frame}
+
+\begin{frame}{current x86-64 page tables}
+\begin{itemize}
+\item 4-level page table
+\item 512 PTEs of 8 bytes each for each page table
+\item choice: exactly one page per page table
+\item allows OS to allocate new page table space in one page units
+\item (just like program memory)
+\end{itemize}
+\end{frame}
+

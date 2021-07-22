@@ -1,0 +1,98 @@
+\begin{frame}[fragile,label=addqHcl]{addq HCL}
+\lstset{language=C,style=small}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{lstlisting}
+...
+/* f: from fetch */
+f_rA = i10bytes[12..16];
+f_rB = i10bytes[8..12];
+
+/* fetch to decode */
+/* f_rA -> D_rA, etc. */
+register fD {
+    rA : 4 = REG_NONE;
+    rB : 4 = REG_NONE;
+}
+
+\end{lstlisting}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{lstlisting}
+/* D: to decode 
+   d: from decode */
+d_dstE = D_rB;
+/* use register file: */
+reg_srcA = D_rA; 
+d_valA = reg_outputA; 
+...
+
+/* decode to execute */
+register dE {
+    dstE : 4 = REG_NONE;
+    valA : 64 = 0;
+    valB : 64 = 0;
+}
+
+...
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile,label=hcl2DStageCode]{addq fetch/decode}
+\begin{tikzpicture}
+\node[label={north:unpipelined},align=left] (before) {
+\begin{lstlisting}[language=C,style=smaller]
+/* Fetch+PC Update*/
+pc = P_pc;
+p_pc = pc + 2;
+rA = i10bytes[12..16];
+rB = i10bytes[8..12];
+/* Decode */
+reg_srcA = rA;
+reg_srcB = rB;
+reg_dstE = rB;
+valA = reg_outputA;
+valB = reg_outputB;
+\end{lstlisting}
+};
+\node[label={north:pipelined},right=.5cm of before,align=left] (after) {
+\begin{lstlisting}[language=C,style=smaller]
+/* Fetch+PC Update*/
+pc = P_pc;
+p_pc = pc + 2;
+f_rA = i10bytes[12..16];
+f_rB = i10bytes[8..12];
+/* Decode */
+reg_srcA = D_rA;
+reg_srcB = D_rB;
+d_dstE = D_rB;
+d_valA = reg_outputA;
+d_valB = reg_outputB;
+\end{lstlisting}
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=hcl2DPipe]{addq pipeline registers}
+\begin{Verbatim}[fontsize=\fontsize{10}{11}\selectfont]
+register pP {
+    pc : 64 = 0;
+};
+/* Fetch+PC Update*/
+register fD {
+    rA : 4 = REG_NONE; rB : 4 = REG_NONE;
+};
+/* Decode */
+register dE {
+    valA : 64 = 0; valB : 64 = E; dstE : 4 = REG_NONE;
+}
+/* Execute */
+register eW {
+    valE : 64 = 0; dstE : 4 = REG_NONE;
+}
+/* Writeback */
+\end{Verbatim}
+\end{frame}
+

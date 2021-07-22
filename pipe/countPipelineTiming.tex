@@ -1,0 +1,33 @@
+
+\begin{frame}<1-2>[fragile,label=countPipelineTiming]{times three pipeline timing}
+\countStyles
+\circuitStyles
+\begin{tikzpicture}
+    \timesThreePipeStuff
+    \coordinate (timelineBase) at ($(aInput.south)+(0cm,-3cm)$);
+    \coordinate (timelineBaseLow) at ($(aInput.south)+(0cm,-4cm)$);
+    \foreach \basis/\ref in {OneReg/aInput,OneAdd/alu1,TwoReg/twoTimesReg,TwoAdd/alu2,ThreeReg/threeTimesReg} {
+        \coordinate (before\basis) at ([xshift=-.5cm]\ref.west);
+        \coordinate (after\basis) at ([xshift=.5cm]\ref.east);
+    }
+    \foreach \basis/\len in {OneReg/$10$ ps,OneAdd/$50$ ps,TwoReg/$10$ ps,TwoAdd/$50$ ps,ThreeReg/$10$ ps} {
+        \begin{scope}[very thick,Latex-Latex]
+            \draw (before\basis |- timelineBase) -- (after\basis |- timelineBase)
+                node[midway,below] {\len};
+        \end{scope}
+    }
+    \begin{visibleenv}<2>
+        \node[anchor=north west,align=left] at (beforeOneReg |- timelineBaseLow) {
+            exercise: minimum clock cycle time: \\
+            A. 50 ps\hspace{1cm}B. 60 ps\hspace{1cm}B. 65 ps\hspace{1cm}C. 70 ps\hspace{1cm}E. 130 ps
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+        \draw[very thick,red,Latex-Latex] (beforeOneReg |- timelineBaseLow) -- (afterOneAdd |- timelineBaseLow)
+            node[midway,below,xshift=2.5cm]{throughput: $\frac{1}{60 \text{ ps}} \approx 16$ G operations/sec};
+    \end{visibleenv}
+    % FIXME: show clock signal
+\end{tikzpicture}
+\end{frame}
+
+\iftoggle{heldback}{}{\againframe<3->{countPipelineTiming}}

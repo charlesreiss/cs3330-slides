@@ -1,0 +1,60 @@
+\begin{frame}[fragile,label=loopUnrollDown]{loop unrolling downsides}
+    \begin{itemize}
+    \item bigger executables $\rightarrow$ instruction cache misses
+    \item slower if small number of loop iterations
+        \begin{itemize}
+        \item extra code to handle leftovers, etc.
+        \end{itemize}
+    \vspace{.5cm}
+    \item want to unroll loops that are run a lot and quick to execute
+    \item problem: compiler probably can't tell if this meets those criteria
+    \end{itemize}
+\begin{lstlisting}[language=C,style=small]
+  for (int i = 0; i < some_variable; ++i) {
+    sum += some_function();
+  }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollDiff]{figuring out how to unroll?}
+exercise: why can the compiler probably not do this transformation?
+\begin{lstlisting}[language=C,style=smaller]
+void foo() { int sum = 0;
+  for (int i = 0; i < some_global_variable; ++i) {
+    sum += some_function();
+  }
+}
+\end{lstlisting}
+\hrule
+\begin{lstlisting}[language=C,style=smaller]
+void foo_transformed() { int sum = 0;
+  int i = 0;
+  if (some_global_variable % 2 == 1) {
+    i += 1;
+    sum += some_function();
+  }
+  for (; i < some_global_variable; i += 2) {
+    sum += some_function();
+    sum += some_function();
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=multAccDown]{multiple accumulators downsides}
+    \begin{itemize}
+    \item downsides of loop unrolling 
+        \begin{itemize}
+        \item bigger executables, slower if small number of iterations
+        \end{itemize}
+    \item + uses extra registers (can't use those regs for something else)
+    \vspace{.5cm}
+    \item want to use multiple accumulators if latency likely bottleneck
+    \item problem: compiler probably can't tell if this meets those criteria
+    \end{itemize}
+\begin{lstlisting}[language=C,style=small]
+  for (int i = 0; i < some_variable; ++i) {
+    sum += some_function();
+  }
+\end{lstlisting}
+\end{frame}

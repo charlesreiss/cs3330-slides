@@ -1,0 +1,17 @@
+\begin{frame}[fragile,label=ternarySimplifyOptions]{ternary as bitwise: simplifying}
+    \begin{itemize}
+    \item \lstinline|(x ? y : z)| {\small \lstinline|if (x) return y; else return z;|}
+    \item task: turn into non-if/else/etc. operators
+        \begin{itemize}
+        \item assembly: no jumps probably
+        \end{itemize}
+    \vspace{.5cm}
+    \item strategy today: build a solution from simpler subproblems
+        \begin{itemize}
+        \item (1) with x, y, z 1 bit: \lstinline|(x ? y : 0)| and \lstinline|(x ? 0 : z)|
+        \item (2) with x, y, z 1 bit: \lstinline|(x ? y : z)|
+        \item (3) with x 1 bit: \lstinline|(x ? y : z)|
+        \item (4) \lstinline|(x ? y : z)|
+        \end{itemize}
+    \end{itemize}
+\end{frame}

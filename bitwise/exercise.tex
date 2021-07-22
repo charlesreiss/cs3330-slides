@@ -1,0 +1,91 @@
+\begin{frame}[fragile,label=exercise]{exercise}
+\begin{itemize}
+    \item Which of these will swap last and second-to-last bit of an {\tt unsigned int} $x$?    
+        (bits $uvwxyz$ become $uvwxzy$)
+\end{itemize}
+\begin{ccodeS*}{texcomments=false}
+/* version A */ 
+    return ((x >> 1) & 1) | (x & (~1));
+
+/* version B */
+    return ((x >> 1) & 1) | ((x << 1) & (~2)) | (x & (~3));
+
+/* version C */
+    return (x & (~3)) | ((x & 1) << 1) | ((x >> 1) & 1);
+
+/* version D */
+    return (((x & 1) << 1) | ((x & 3) >> 1)) ^ x;
+
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}[fragile,label=exerciseA]{version A}
+\begin{ccodeS*}{texcomments=false}
+/* version A */ 
+    return ((x >> 1) & 1) | (x & (~1));
+    //     ^^^^^^^^^^^^^^
+    //      uvwxyz --> 0uvwxy -> 00000y
+
+    //                      ^^^^^^^^^^
+    //      uvwxyz --> uvwxy0
+
+    //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+    //      00000y | uvwxy0 = uvwxyy 
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}[fragile,label=exerciseB]{version B}
+\begin{ccodeS*}{texcomments=false}
+/* version B */
+    return ((x >> 1) & 1) | ((x << 1) & (~2)) | (x & (~3));
+    //     ^^^^^^^^^^^^^^
+    //      uvwxyz --> 0uvwxy --> 00000y
+
+    //                       ^^^^^^^^^^^^^^^
+    //      uvwxyz --> vwxyz0 --> vwxy00
+
+    //                                          ^^^^^^^^^ 
+    //      uvwxyz -->            uvwx00
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}[fragile,label=exerciseC]{version C}
+\begin{ccodeS*}{texcomments=false}
+/* version C */
+    return (x & (~3)) | ((x & 1) << 1) | ((x >> 1) & 1);
+    //     ^^^^^^^^^^
+    //      uvwxyz -->            uvwx00
+
+    //                  ^^^^^^^^^^^^^^
+    //      uvwxyz --> 00000z --> 0000z0
+
+    //                                   ^^^^^^^^^^^^^ 
+    //      uvwxyz --> 0uvwxy --> 00000y
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}[fragile,label=exerciseD]{version D}
+\begin{ccodeS*}{texcomments=false}
+/* version D */
+    return (((x & 1) << 1) | ((x & 3) >> 1)) ^ x;
+    //     ^^^^^^^^^^^^^^^
+    //      uvwxyz --> 00000z --> 0000z0
+
+    //                        ^^^^^^^^^^^^^^
+    //      uvwxyz --> 0000yz --> 00000y
+
+    //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //      0000zy ^ uvwxyz --> uvwx(z XOR y)(y XOR z)
+\end{ccodeS*}
+\end{frame}
+
+\begin{frame}[fragile,label=exResult]{expanded code}
+\begin{ccodeS}
+int lastBit = x & 1;
+int secondToLastBit = x & 2;
+int rest = x & ~3;
+int lastBitInPlace = lastBit << 1;
+int secondToLastBitInPlace = secondToLastBit >> 1;
+return rest | lastBitInPlace | secondToLastBitInPlace;
+\end{ccodeS}
+\end{frame}

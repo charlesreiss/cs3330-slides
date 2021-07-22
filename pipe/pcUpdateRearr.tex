@@ -1,0 +1,139 @@
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+
+\begin{frame}{PC update (adding prediction, stall)}
+\begin{tikzpicture}[circuit logic]
+    \node[hReg={PC},minimum height=2cm,fill=yellow] (pc) {};
+    \node[below right=2.5cm and 2cm of pc,mux,inputs={nnnn},
+          info={center:\scriptsize MUX},minimum height=2cm,
+          rotate=180,logicFill] (pcSelectMux) {};
+    \node[logicBlock,anchor=west] (convertOp) at ([xshift=.25cm,yshift=-0.5cm]pcSelectMux.north) {convert icode};
+    \draw[bR] (convertOp.east) -- ++(1cm,0cm) node[right] {icode \scriptsize(from instr. mem)};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 3] (pcAddTwo) {+2};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 2] (pcAddTen) {+10};
+    \draw[a] (pcAddTwo) -- (pcSelectMux.input 3);
+    \draw[a] (pcAddTen) -- (pcSelectMux.input 2);
+    \draw[aR] (pcSelectMux.input 1) -- ++(.5cm,0cm) node[right] {\ldots};
+    \draw[b] (convertOp.west) -| (pcSelectMux.north);
+    \draw[a] (pc.east) -- +(0.2cm,0) -| ([xshift=-2pt]pcAddTwo.north east);
+    \draw[a] (pc.east) -- +(0.2cm,0) -| ([xshift=-2pt]pcAddTen.north east);
+    \coordinate (beforePC) at ([xshift=-0.5cm]pc.west);
+    \begin{visibleenv}<1>
+    \draw[a] (pcSelectMux.output) -| (beforePC) -- (pc.west);
+    \end{visibleenv}
+    \draw[a] (pc.east) -- +(5cm, 0cm) node[right] { to instr. mem };
+
+    \begin{visibleenv}<2->
+        \node[red,mux,inputs={nnnn},info={center:\scriptsize MUX},minimum height=2cm,minimum width=1cm,
+              rotate=180,logicFill,anchor=input 3] (pcSelect2Mux) at ([xshift=-1cm]pcSelectMux) {};
+        \draw[red,a] (pcSelectMux.output) -- (pcSelect2Mux.input 3);
+        \node[below=2cm of convertOp,logicBlock] (whichjCC){control logic};
+        \draw[red,b] (whichjCC.west) -| (pcSelect2Mux.north);
+        \draw[red,bR] (whichjCC.east) -- +(.5cm,0cm) node[right,overlay] {need to stall?};
+        \draw[red,bR] (whichjCC.east) -- +(.5cm,-.5cm) node[right,overlay] {``taken'' {\scriptsize(from execute)}, ret ready?};
+        \node[anchor=north,red,xshift=1cm] (jumpTarget) at ([yshift=.1cm]convertOp.south) {jump target};
+        \node[anchor=north,red,xshift=3cm] (mispredAddr) at ([yshift=.1cm]jumpTarget.south) {addr. after mispredicted jump/ret address};
+        \draw[red,aR] (pcSelect2Mux.input 2) -- +(.25cm,0cm) |- (jumpTarget.west);
+        \draw[red,aR] (pcSelect2Mux.input 1) -- +(.15cm,0cm) |- (mispredAddr.west);
+        \draw[red,aR] (pcSelect2Mux.input 4) -- +(.25cm,0cm) |- (pc.east);
+        \draw[a,overlay] (pcSelect2Mux.output) -| (beforePC) -- (pc.west);
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{PC update (rearranged)}
+% FIXME: logic between PC reg and instruction memory
+% FIXME: note that it comes from memory/writeback
+\begin{tikzpicture}[circuit logic]
+    \node[hReg={predicted PC\\\fontsize{9}{10}\selectfont(replaces PC)},minimum height=3cm,fill=yellow] (pc) {};
+    \node[below right=2.5cm and 2cm of pc,mux,inputs={nnnnn},
+          info={center:\scriptsize MUX},minimum height=2cm,minimum width=1cm,
+          rotate=180,logicFill] (pcSelectMux) {};
+    \node[logicBlock,anchor=north west] (convertOp) at ([xshift=1cm,yshift=-0.5cm]pcSelectMux.north) {convert icode};
+    \draw[bR] (convertOp.east) -- ++(1cm,0cm) node[right] {icode \scriptsize(from instr. mem)};
+    \draw[bR] (convertOp.east) -- ++(.5cm,-.5cm) node[right] (stallBox) {need to stall?};
+    \begin{pgfonlayer}{fg}
+        \draw[a,alt=<4>{red,thick}{}] (pc.east) -| ([xshift=.25cm]pcSelectMux.input 5) -- (pcSelectMux.input 5);
+        \begin{visibleenv}<4>
+            \draw[a,red,thick] (pcSelectMux.input 5) -- (pcSelectMux.output);
+        \end{visibleenv}
+    \end{pgfonlayer}
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 4] (pcAddTwo) {+2};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 3] (pcAddTen) {+10};
+    \draw[a] (pcAddTwo) -- (pcSelectMux.input 4);
+    \draw[a] (pcAddTen) -- (pcSelectMux.input 3);
+    \draw[aR] (pcSelectMux.input 2) -- ++(.5cm,0cm) node[right] {jump/call target};
+    \draw[aR] (pcSelectMux.input 1) -- ++(.5cm,0cm) node[right] {\ldots};
+    \draw[b] (convertOp.west) -| (pcSelectMux.north);
+    \coordinate (beforePC) at ([xshift=-1.5cm]pc.west);
+    \draw[a] (pcSelectMux.output) -| (beforePC) -- (pc.west);
+    %\draw[a,overlay] (pcSelectMux.output) -- ++(-.3cm,0cm) |- (pc.west);
+
+    \node[red,mux,inputs={nnnn},info={center:\scriptsize MUX},minimum height=2cm,minimum width=1cm,
+          rotate=0,logicFill,anchor=input 4] (pcSelect2Mux) at ([xshift=8cm]pc) {};
+    \node[below=1cm of pcSelect2Mux,logicBlock] (whichjCC){control logic};
+    \draw[a] ([xshift=-.25cm]whichjCC.north east) |- ++ (1cm,1cm) node[right] {to stall logic};
+    \draw[red,aR] (whichjCC.east) -- ++ (1cm,0cm) node[right] (takenEtc) {taken?; etc};
+    \draw[red,b] (whichjCC.north -| pcSelect2Mux.south) |- (pcSelect2Mux.south);
+    \draw[red,aR] (pcSelect2Mux.input 1) -- +(-.5cm,0cm) node[left] {\ldots};
+    \draw[red,aR] (pcSelect2Mux.input 2) -- +(-.5cm,0cm) node[left] (jTarget) {address after mispred. jump};
+    \draw[red,aR] (pcSelect2Mux.input 3) -- +(-.5cm,0cm) node[left] (retTarget) {address from ret};
+    \draw[aR] (pcSelect2Mux.input 4) -- (pc.east);
+    \draw[a] (pcSelect2Mux.output) -- ++(0.5cm,0cm) coordinate (afterPcSelect) node[right] {to instr. mem.};
+   
+    \coordinate (beforeCLogic) at ([xshift=-1cm]whichjCC.west);
+    \draw[a] ([xshift=-.25cm]afterPcSelect) -- ++(0cm,-1.5cm) -| ([xshift=-2pt]pcAddTwo.north east);
+    %\draw[a] (pc.east) -| ([xshift=-2pt]pcAddTen.north east);
+    \draw[a] ([xshift=-.25cm]afterPcSelect) -- ++(0cm,-1.5cm) -| ([xshift=-2pt]pcAddTen.north east);
+
+    \begin{visibleenv}<2|handout:0>
+        \node[hiBox,fit=(whichjCC)] {}; 
+    \end{visibleenv}
+
+    \begin{visibleenv}<3|handout:0>
+        \node[hiBox,fit=(takenEtc)] {}; 
+        \node[hiBox,fit=(jTarget)] {}; 
+    \end{visibleenv}
+    \begin{pgfonlayer}{fg}
+    \begin{visibleenv}<3|handout:0>
+        \node[draw=red,ultra thick,fill=white,align=left] at ([xshift=-3cm,yshift=1cm]afterPcSelect.north) {
+            same logic as before --- but happens in next cycle \\
+            inputs are from slightly different place\ldots
+        };
+    \end{visibleenv}
+    \end{pgfonlayer}
+
+    \begin{visibleenv}<4|handout:0>
+        \node[hiBox,fit=(stallBox)] {}; 
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=hcl2dJccUp]{rearranged PC update in HCL}
+\begin{Verbatim}[fontsize=\small]
+/* replacing the PC register: */
+register fF {
+    predictedPC: 64 = 0;
+}
+    
+/* actual input to instruction memory */
+pc = [
+    conditionCodesSaidNotTaken : jumpValP;
+        /* from later in pipeline */
+    ...
+    1: F_predictedPC;
+];
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}{why rearrange PC update?}
+    \begin{itemize}
+    \item either works
+        \begin{itemize}
+        \item correct PC at beginning or end of cycle?
+        \item still some time in cycle to do so\ldots
+        \end{itemize}
+    \item maybe easier to think about branch prediction this way?
+    \end{itemize}
+\end{frame}

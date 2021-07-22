@@ -1,0 +1,63 @@
+\begin{frame}{one view of vector functional units}
+    \begin{tikzpicture}
+\tikzset{
+    every node/.style={font=\small},
+    >=Latex,
+    stage/.style={draw,rectangle,align=center,minimum height=1cm},
+    stageSmall/.style={draw,rectangle,align=center,minimum height=.75cm},
+    stageTall/.style={draw,rectangle,align=center,minimum height=2.2cm},
+    iqueue/.style={fill=blue!30,align=center,draw,rectangle split,rectangle split horizontal,rectangle split parts=3,
+        inner sep=.5mm,minimum height=4.0cm},
+    buffer/.style={fill=blue!30,align=center,draw,rectangle split,rectangle split parts=5, inner sep=.5mm},
+    hi/.style={red,ultra thick,draw},
+    every label/.style={align=center,red!50!black},
+}
+\begin{scope}[start chain=going right,every join/.style={->,thick},node distance=5mm]
+\node[stageSmall,on chain,anchor=north] (mult11) {ALU (lane 1) \\ (stage 1)};
+\node[stageSmall,on chain,join] (mult12) {ALU (lane 1) \\ (stage 2)};
+\node[stageSmall,on chain,join] (mult13) {ALU (lane1) \\ (stage 3)};
+\end{scope}
+\begin{scope}[start chain=going right,every join/.style={->,thick},node distance=5mm]
+    \node[stageSmall,on chain,anchor=north] (mult21) at ([yshift=-.5cm]mult11.south) {ALU (lane 2) \\ (stage 1)};
+\node[stageSmall,on chain,join] (mult22) {ALU (lane 2) \\ (stage 2)};
+\node[stageSmall,on chain,join] (mult23) {ALU (lane 2) \\ (stage 3)};
+\end{scope}
+\begin{scope}[start chain=going right,every join/.style={->,thick},node distance=5mm]
+    \node[stageSmall,on chain,anchor=north] (mult31) at ([yshift=-.5cm]mult21.south) {ALU (lane 3) \\ (stage 1)};
+\node[stageSmall,on chain,join] (mult32) {ALU (lane 3) \\ (stage 2)};
+\node[stageSmall,on chain,join] (mult33) {ALU (lane 3) \\ (stage 3)};
+\end{scope}
+\begin{scope}[start chain=going right,every join/.style={->,thick},node distance=5mm]
+\node[stageSmall,on chain,anchor=north] (mult41) at ([yshift=-.5cm]mult31.south) {ALU (lane 4) \\ (stage 1)};
+\node[stageSmall,on chain,join] (mult42) {ALU (lane 4) \\ (stage 2)};
+\node[stageSmall,on chain,join] (mult43) {ALU (lane 4) \\ (stage 3)};
+\end{scope}
+        \node [left=1cm of mult11,align=right] (valueInput) {input values \\ (one/cycle)};
+        \node [right=1cm of mult13,align=left] (valueOutput) {output values \\ (one/cycle)};
+        \draw[->,thick] (valueInput) -- (mult11);
+        \draw[->,thick] (mult13) -- (valueOutput);
+        \draw[->,thick] (valueInput.east |- mult21.east) -- (mult21);
+        \draw[->,thick] (mult23) -- (valueOutput.west |- mult23.east);
+        \draw[->,thick] (valueInput.east |- mult31.east) -- (mult31);
+        \draw[->,thick] (mult33) -- (valueOutput.west |- mult33.east);
+        \draw[->,thick] (valueInput.east |- mult41.east) -- (mult41);
+        \draw[->,thick] (mult43) -- (valueOutput.west |- mult41.east);
+        \node[draw,dashed,fit=(mult11) (mult43),label={south:vector ALU}] {};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{why vector instructions?}
+    \begin{itemize}
+        \item lots of logic not dedicated to computation
+            \begin{itemize}
+            \item instruction queue
+            \item reorder buffer
+            \item instruction fetch
+            \item branch prediction
+            \item \ldots
+            \end{itemize}
+        \item adding vector instructions --- \myemph{little extra control logic}
+        \item \ldots but \myemph{a lot more computational capacity}
+    \end{itemize}
+\end{frame}
+

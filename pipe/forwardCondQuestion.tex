@@ -1,0 +1,39 @@
+\begin{frame}[fragile,label=forwardDecideMux]{forwarding: MUX conditions}
+    \begin{tikzpicture}[circuit logic US]
+        \pipeAddQRegAndForwardBefore
+
+    \begin{scope}[overlay]
+    \node[above=1.5cm of fetchBox,xshift=1.6cm,inner sep=.1mm] (l1) {
+\begin{lstlisting}[style=small]
+addq %r8, %r9 // (1)
+\end{lstlisting}
+    };
+
+    \node[inner sep=.1mm,anchor=north west] (l2a) at (l1.south west) {
+\begin{lstlisting}[style=small]
+addq %r9, %r8 // (2)
+\end{lstlisting}
+    };
+\end{scope}
+        \begin{visibleenv}<2-4>
+            \draw[ultra thick,red] (postValAMux.input 2) -- (postValAMux.output);
+        \end{visibleenv}
+        \begin{visibleenv}<3|handout:0>
+            \node[overlay,align=left,font=\small,draw,thick,fill=white,anchor=south] at ([xshift=0cm,yshift=-4cm]imem.south) {
+{\tt d\_valA= [} \\
+\hspace{.5cm} {\tt \myemph{condition} : e\_valE;} \\
+\hspace{.5cm} {\tt 1 : reg\_outputA;}\\
+{\tt ];} \\
+What could \myemph{\tt condition} be? \\
+\begin{tabular}{l}
+a. {\tt W\_rA == reg\_srcA} \\ b. {\tt W\_dstE == reg\_srcA} \\
+c. {\tt e\_dstE == reg\_srcA} \\ d. {\tt d\_rB == reg\_srcA} \\
+e. something else \\
+\end{tabular}
+            };
+        \end{visibleenv}
+        \begin{visibleenv}<5>
+            \draw[ultra thick,red] (postValBMux.input 2) -- (postValBMux.output);
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

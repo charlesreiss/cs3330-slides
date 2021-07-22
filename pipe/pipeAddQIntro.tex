@@ -1,0 +1,225 @@
+\begin{frame}{pipelined addq processor}
+\begin{tikzpicture}
+    \tikzset{
+        label distance=1pt,
+        pipeline regs/.style={red,line width=1pt},
+        stageLine/.style={ultra thick},
+        stageLabel/.style={font=\fontsize{10}{11}\selectfont}
+    }
+    \pipeAddQ
+    \renewcommand{\fetchPrePCDist}{.8cm}
+    \begin{visibleenv}<1>
+        %fetch 
+        \draw[fill=yellow,fill opacity=0.05,rounded corners,yellow,line width=2pt]
+            ([xshift=-.75cm,yshift=-.5cm]pcAdd.south west) |- ([yshift=.24cm]pc.north) -|
+            ([xshift=.5cm,yshift=-.75cm]split.south east) -| ([xshift=-.25cm,yshift=-1cm]imem.south west)
+            |- cycle;
+        \node[anchor=north west,align=left] at ([yshift=-.75cm]imem.south west) {fetch and \\ PC update};
+        
+        %decode
+        \draw[fill=orange,fill opacity=0.05,rounded corners,orange,line width=2pt]
+            ([xshift=-.75cm,yshift=1.2cm]regs.north west) -| ([xshift=.1cm,yshift=-1.25cm]regs.north east)
+            -- ([xshift=-.75cm,yshift=-1.25cm]regs.north west) -- cycle;
+        \node [anchor=south] at ([yshift=1.2cm]regs.north) {decode};
+
+        %execute
+        \draw[fill=green,fill opacity=0.05,rounded corners,green,line width=2pt]
+            ([xshift=-.25cm,yshift=2.5cm]alu.north west) rectangle ([xshift=.25cm,yshift=-1cm]alu.south east);
+        \node [anchor=south] at ([yshift=2cm]alu.north) {execute};
+
+        %writeback
+        \draw[fill=blue,fill opacity=0.05,rounded corners,blue,line width=2pt]
+            ([xshift=-.25cm,yshift=2.5cm]regs.south west) rectangle ([xshift=.1cm,yshift=-.25cm]regs.south east);
+        \node [anchor=west] at ([xshift=.1cm]regs.south east) {writeback};
+
+        \coordinate (deBottom) at ([yshift=-.2cm,xshift=2.4cm]regSelect2);
+    \end{visibleenv}
+
+    \begin{visibleenv}<3->
+        \node[
+            draw,rectangle,label={90:fetch/decode},
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] {};
+
+        \begin{scope}[overlay]
+        \node[
+            draw,rectangle,label={[inner sep=1pt]90:decode/execute},
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] {};
+        \end{scope}
+
+        \node[
+            draw,rectangle,label={-45:execute/writeback},
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+    \end{visibleenv}
+
+    \begin{visibleenv}<4->
+        \node[
+            draw,rectangle,label={90:fetch/fetch},
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] {};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=pipelineAddQExec]{addq execution}
+\begin{tikzpicture}
+    \tikzset{
+           label distance=1pt,
+        pipeline regs/.style={thin},
+    }
+    \pipeAddQ
+
+    \begin{visibleenv}
+        \node[
+            draw,rectangle,label={180:fetch/decode},
+            label distance=1pt,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] (fdBox) {};
+
+        \begin{scope}[overlay]
+        \node[
+            draw,rectangle,label={[inner sep=1pt]90:decode/execute},
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] (deBox) {};
+        \end{scope}
+
+        \node[
+            draw,rectangle,label={-45:execute/writeback},
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+    \end{visibleenv}
+
+    \begin{visibleenv}
+        \node[
+            draw,rectangle,label={90:fetch/fetch},
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] (fetchBox) {};
+    \end{visibleenv}
+
+    \node[above=2cm of fetchBox,xshift=1.6cm] {
+\begin{lstlisting}[style=small]
+addq %r8, %r9  // (1)
+addq %r10, %r11 // (2)
+\end{lstlisting}
+    };
+    \tikzset{stageLine/.style={red,thick,densely dotted,Latex-}}
+    \tikzset{stageLineR/.style={red,thick,densely dotted,-Latex}}
+    \begin{visibleenv}<2>
+        \begin{scope}[overlay]
+            \node[red,below=1cm of imem.east] (i1Label) {\scriptsize\lstinline|addq %r8, %r9 // (1)|};
+            \draw[stageLine] ([xshift=.1cm]imem.east) -- (i1Label.north);
+
+            \node[red,below=0.4cm of pcAdd.west,font=\scriptsize] (pc1Label) {address of (2)};
+            \draw[stageLine] ([xshift=-.1cm]pcAdd.west) -- (pc1Label.north);
+        \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<3>
+        \begin{scope}[overlay]
+            \node[red,below=1cm of imem.east] (i2Label) {\scriptsize\lstinline[style=script]|addq %r10, %r11 // (2)|};
+            \draw[stageLine] ([xshift=.1cm]imem.east) -- (i2Label.north);
+
+            \node[red,font=\scriptsize] (regBox1) at ([xshift=-3cm,yshift=1cm]fdBox.east) {reg \#s 8, 9 from (1)};
+            %\draw[stageLineR] (regBox1.east) -- (fdDstE);
+            \draw[stageLineR] (regBox1.east) -- (fdSrcA.east);
+            \draw[stageLineR] (regBox1.east) -- (fdSrcB.east);
+        \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<4>
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize] (regBox2) at ([xshift=-3cm,yshift=1cm]fdBox.east) {reg \#s 10, 11 from (2)};
+            %\draw[stageLineR] (regBox2.east) -- (fdDstE);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcA.east);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcB.east);
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1) at ([xshift=.9cm,yshift=.5cm]deBox.west) {reg \# 9,\\values for (1)};
+            \draw[stageLineR] (valBox1.west) -- (deDstE);
+            \draw[stageLineR] (valBox1.west) -- (deValA);
+            \draw[stageLineR] (valBox1.west) -- (deValB);
+
+        \end{scope}
+    \end{visibleenv}
+
+    % FIXME: possibly extra stages shown
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=addqTiming]{addq processor timing}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+\vspace{-1cm}
+\lstset{
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{@2@}{@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3@}{@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4@}{@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5@}{@},
+}
+\begin{lstlisting}
+// initially %r8 = 800,
+//           %r9 = 900, etc.
+@2@addq %r8, %r9@
+@3@addq %r10, %r11@
+@4@addq %r12, %r13@
+@5@addq %r9, %r8@
+\end{lstlisting}
+\begin{tikzpicture}
+\matrix[tight matrix,nodes={text width=1cm,font=\scriptsize\tt},
+        column 8/.append style={nodes={text width=2cm}},
+        row 1/.append style={nodes={font=\scriptsize}},
+        row 2/.append style={nodes={font=\scriptsize}},
+        ] (tbl) {
+ \& |[fill=yellow!10!white,align=center]| fetch \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+cycle \& PC \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+0 \& 0x0 \\
+1 \& 0x2 \& 8  \& 9  \\ 
+2 \& 0x4 \& 10 \& 11 \& 800  \& 900 \& 9 \\
+3 \& 0x6 \& 12 \& 13 \& 1000 \& 1100 \& 11 \& 1700 \& 9 \\
+4 \&     \&9  \& 8  \& 1200 \& 1300 \& 13 \& 2100 \& 11 \\
+5 \&    \&    \&    \& 1700 \& 800  \& 8  \& 2500 \& 13 \\
+6 \&     \&    \&    \&      \&      \&    \& 2500 \& 8  \\
+};
+\begin{scope}[every node/.style={draw,inner sep=0pt},
+              every label/.style={font=\scriptsize,draw=none}]
+    \node[fit=(tbl-1-3) (tbl-1-4),fill=yellow!50!orange!10!white,label={center:fetch/decode}] {};
+    \node[fit=(tbl-1-5) (tbl-1-7),fill=orange!50!green!10!white,label={center:decode/execute}] {};
+    \node[fit=(tbl-1-8) (tbl-1-9),fill=green!50!blue!10!white,label={center:execute/writeback}] {};
+\end{scope}
+
+\foreach \x/\base in {2/3,3/4,4/5,5/6} {
+    \begin{pgfonlayer}{bg}
+    \begin{visibleenv}<\x|handout:0>
+        \pgfmathtruncatemacro{\fetchR}{\base}
+        \pgfmathtruncatemacro{\decodeR}{\base+1}
+        \pgfmathtruncatemacro{\executeR}{\base+2}
+        \pgfmathtruncatemacro{\writebackR}{\base+3}
+        \foreach \nd in {tbl-\fetchR-2,tbl-\decodeR-3,tbl-\decodeR-4,
+                         tbl-\executeR-5,tbl-\executeR-6,tbl-\executeR-7,
+                         tbl-\writebackR-8,tbl-\writebackR-9} {
+            \node[fit=(\nd),inner sep=0pt,fill=red,opacity=0.3] {};
+         }
+    \end{visibleenv}
+    \end{pgfonlayer}
+}
+\end{tikzpicture}
+\end{frame}

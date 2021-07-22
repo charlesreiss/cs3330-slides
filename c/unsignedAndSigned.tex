@@ -1,0 +1,50 @@
+\begin{frame}[fragile,label=signedAndUnsigned]{unsigned and signed types}
+\begin{tabular}{lll}
+\bf type & \bf min & \bf max \\ \hline
+\cinline|signed int| = \cinline|signed| = \cinline|int| & $-2^{31}$ & $2^{31}-1$ \\
+\cinline|unsigned int| = \cinline|unsigned| & $0$ & $2^{32}-1$ \\
+\cinline|signed long| = \cinline|long| & $-2^{63}$ & $2^{63}-1$ \\
+\cinline|unsigned long| & $0$ & $2^{64}-1$ \\
+\end{tabular}
+
+\begin{center}\Huge\vdots\end{center}
+\end{frame}
+
+\begin{frame}[fragile,label=signCompare1]{unsigned/signed comparison trap (1)}
+\begin{ccodeNL}
+int x = -1;
+unsigned int y = 0;
+printf("%d\n", x < y);
+\end{ccodeNL}
+
+\begin{itemize}
+\item<2->result is {\tt 0}
+\item<3->short solution: don't compare signed to unsigned:
+\begin{ccodeNL}
+    (long) x < (long) y
+\end{ccodeNL}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=signCompare2]{unsigned/sign comparison trap (2)}
+\begin{ccodeNL}
+int x = -1;
+unsigned int y = 0;
+printf("%d\n", x < y);
+\end{ccodeNL}
+\begin{itemize}
+\item compiler converts both to \myemph{same type} first
+\begin{itemize}
+    \item \lstinline|int| if all possible values fit
+    \vspace{1.5ex}
+    \item otherwise: first operand ({\tt x}, {\tt y}) type from this list:
+        \begin{itemize}
+        \item \lstinline|unsigned long| 
+        \item \lstinline|long| 
+        \item \lstinline|unsigned int|
+        \item \lstinline|int|
+        \end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+

@@ -1,0 +1,142 @@
+\usetikzlibrary{patterns,shapes.callouts,shapes.misc}
+
+\begin{frame}[fragile,label=MovIntro]{simple ISA: mov (all cases)}
+    \begin{itemize}
+        \item \lstinline|irmovq $constant, %rYY|
+        \item \lstinline|rrmovq %rXX, %rYY|
+        \item \lstinline|mrmovq 10(%rXX), %rYY|
+        \item \lstinline|rmmovq %rXX, 10(%rYY)|
+    \end{itemize}
+\end{frame}
+
+\input{../seq/movLib}
+
+\begin{frame}<1-3|handout:1>[fragile,label=MovCPU]{mov CPU}
+\vspace{-.5cm}
+    \begin{tikzpicture}[circuit logic]
+        \instrEncodingStyles
+        \tikzset{
+            dmemNorm/.style={},
+            dmemInputLabel/.style={},
+            dmemLabel/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            %regNorm/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+            controlPath/.style={alt=<6|handout:3>{draw=red,very thick}{}},
+            regNormLabelM/.style={visible on=<0|handout:0>},
+        }
+        \circuitState
+        \dmemInput
+        \instrEncodingStyles
+        \begin{visibleenv}<1-|handout:1->
+            \draw[a] (pc.east) -- (imemAddr);
+            \movSplitBlock
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1>
+            \splitRegSelect
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1>
+            \node[mux,inputs={nnn},info={center:\scriptsize MUX},minimum height=1.2cm,minimum width=.8cm,below left=1.7cm and 1cm of regWriteIn1,
+                  rotate=180,logicFill] (writeInMux) {};
+            \draw[a] (writeInMux.output) -- ++ (-.2cm,0cm) |- (regWriteIn2);
+            \node[logicBlock,below=1.5cm of split,font=\tiny,controlPath] (convertOp) {convert\\opcode};
+            \draw[b,controlPath] (splitSouth2) -- (convertOp.north -| splitSouth2);
+            \draw[b,controlPath] ([xshift=.3cm]convertOp.south) |- ([yshift=-.2cm]writeInMux.north) -- (writeInMux.north);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1>
+            \coordinate (regReadOffsetB) at ([xshift=.15cm]regRead2);
+            \coordinate (regReadOffset) at ([xshift=.3cm]regRead1);
+            \coordinate (regReadOffset2) at ([xshift=.6cm]regRead1);
+            \draw[a] (regRead1) -- (regReadOffset) |- (writeInMux.input 3);
+            \draw[a,overlay] (split.north) -- ++(0cm,2.0cm) node[above right,font=\scriptsize] (immediateLabel) {immediate} -| (regReadOffset2) |- (writeInMux.input 2);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1>
+            \draw[a,overlay] (split.north) -- ++(0cm,2cm) node[above right,font=\scriptsize] {immediate} -| (regReadOffset2) |- (writeInMux.input 2);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:0>]
+            \node[logicBlock,font=\scriptsize,left=.3cm of dmemInLow](plusAddr){+};
+            \coordinate (plusHigh) at ([yshift=.1cm]plusAddr.west);
+            \coordinate (plusLow) at ([yshift=-.1cm]plusAddr.west);
+            \draw[thick] (regRead2) -- (regReadOffsetB) |- ([xshift=-1.2pt]plusHigh -| regReadOffset);
+            \draw[thick] ([xshift=1.2pt]plusHigh -| regReadOffset) -- ([xshift=-1.2pt]plusHigh -| regReadOffset2);
+            \draw[a] ([xshift=1.2pt]plusHigh -| regReadOffset2) -- (plusHigh);
+            \draw[a] (plusLow -| regReadOffset2) -- (plusLow);
+            \draw[a] (plusAddr.east) -- (dmemInLow);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \draw[a] (dmemDataOut) -- ++(.2cm,0cm) |- (writeInMux.input 1);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \movPcLogic
+        \end{visibleenv}
+        
+        \begin{visibleenv}<1-|handout:1->
+            \splitRegSelectMuxA
+        \end{visibleenv}
+        \begin{visibleenv}<2-|handout:1->
+            \splitRegSelectMuxF
+        \end{visibleenv}
+        \begin{visibleenv}<2|handout:0>
+            \node[hiOver,fit=(noneInput)]{};
+        \end{visibleenv}
+        % FIXME: addition of F as destination option
+        \begin{visibleenv}<3-|handout:1->
+            \draw[thick] (regReadOffset |- dmemInHigh) -- ([xshift=-1.2pt]regReadOffset2 |- dmemInHigh);
+            \draw[a] ([xshift=1.2pt]regReadOffset2 |- dmemInHigh) -- (dmemInHigh);
+            \coordinate (dmemWE) at ([xshift=-.5cm]dmem.south);
+            \draw[controlPath,b,latex-] (dmemWE) -- ++(0cm,-.5cm) node[inner sep=0pt,outer sep=1pt,below,font=\scriptsize,blue!70,
+                      align=center] {write enable \\ \tiny from convert opcode};
+            \node[hiOver,visible on=<3|handout:0>,fit=(dmemWE)] {};
+        \end{visibleenv}
+
+        \instrEncodingSubTable{below right=2cm and -1cm of pc}{encodings}{
+            \rrmovq \rA, \rB \& |[opcode]| 2 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \irmovq \V, \rB \& |[opcode]| 3 \& |[literal]| 0 \& |[literal]| F \& |[register]| \rB 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \mrmovq \D(\rB), \rA \& |[opcode]| 5 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \rmmovq \rA, \D(\rB) \& |[opcode]| 4 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+        };
+        \node[fake,outer sep=0pt,fit=(encodings-1-6) (encodings-1-21)] (rrEmpty) {};
+        \node[immediateLabel=\V,inner sep=0pt,outer sep=0pt,fit=(encodings-2-6) (encodings-2-21)] (irV) {};
+        \node[immediateLabel=\D,inner sep=0pt,outer sep=0pt,fit=(encodings-3-6) (encodings-3-21)] (mrD) {};
+        \node[immediateLabel=\D,inner sep=0pt,outer sep=0pt,fit=(encodings-4-6) (encodings-4-21)] (rmD) {};
+        \node[hiOver,fit=(encodings-4-1),visible on=<1-|handout:0>] {};
+
+        \begin{scope}[visible on=<4|handout:2>,overlay]
+            \node[bookLabel,above left=1cm and .5cm of pcSelectMux,xshift=.3cm] {valP};
+            \node[draw,cross out,fit=(immediateLabel),inner sep=0pt, outer sep=0pt] {};
+            \node[bookLabel,right=1pt of immediateLabel] {valC};
+            \node[bookLabel,above right=.5cm and .75cm of regRead2] (valBLabel) {valB};
+            \draw[color=red!60!black,thick,dashed,-latex] (valBLabel) -- (regRead2);
+            \node[bookLabel,above right=.5cm and .75cm of regRead1] (valALabel) {valA};
+            \draw[color=red!60!black,thick,dashed,-latex] (valALabel) -- (regRead1);
+            \node[bookLabel,above=.2cm of plusAddr.east] (valELabel) {valE};
+            \draw[color=red!60!black,thick,dashed] (valELabel) -- ([xshift=5pt]plusAddr.east);
+            \node[bookLabel,right=1cm of writeInMux.input 1] {valM};
+        \end{scope}
+    \end{tikzpicture}
+\end{frame}
+
+

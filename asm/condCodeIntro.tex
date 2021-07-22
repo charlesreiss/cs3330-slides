@@ -1,0 +1,46 @@
+\begin{frame}[fragile,label=x86IfExample]{conditionals in x86 assembly}
+\begin{lstlisting}[language=C++]
+    if (rax != 0)
+        foo();
+\end{lstlisting}
+\hrule
+\begin{lstlisting}[language=myasm]
+    cmpq $0, %rax
+    // ***
+    je skip_call_foo
+    call foo
+skip_call_foo:
+\end{lstlisting}
+\hrule
+\begin{itemize}
+\item how does \texttt{je} know the result of the comparison?
+\item what happens if we add extra instructions at the \texttt{***}?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{condition codes}
+\begin{itemize}
+\item x86 has \myemph{condition codes}
+\item special registers set by (almost) all arithmetic instructions
+    \begin{itemize}
+    \item addq, subq, imulq, etc.
+    \end{itemize}
+\item store info about \myemph{last arithmetic result}
+    \begin{itemize}
+    \item was it zero? was it negative? etc.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{condition codes and jumps}
+\begin{itemize}
+\item {\keywordstyle jg}, {\keywordstyle jle}, etc. read condition codes
+\item named based on interpreting \myemph{result of subtraction}
+    \begin{itemize}
+    \item alternate view: comparing result to 0
+    \end{itemize}
+\item 0: equal; negative: less than; positive: greater than
+\end{itemize}
+\end{frame}
+
+

@@ -1,0 +1,48 @@
+\usetikzlibrary{arrows.meta}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw},
+    >=Latex,
+}
+
+\begin{frame}{circuits: wires}
+\begin{tikzpicture}
+\foreach \x/\v in {0/0,0.4/1,0.8/0,1.2/1,1.6/1} {
+    \draw[simple wire] (0, \x) node[left,binLabel] (\x-\v-num) {\v} -- (10, \x) node[right,binLabel]{\v};
+};
+\onslide<2->{
+    \node[hiBox,inner sep=1mm,fit=(0-0-num),label={south east:binary value --- actually voltage}] {};
+};
+\onslide<3->{
+    \draw[ultra thick,blue,dashed] (1, 0) -- (9, 0) 
+        node[midway,below] {value propagates to rest of wire (small delay)};
+}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits: wire bundles}
+\begin{tikzpicture}
+\foreach \x/\v in {0/0,0.4/1,0.8/0,1.2/1,1.6/1} {
+    \draw[simple wire] (0, \x) node[left] (\x-\v-num) {\tt\v} -- (10, \x) node[right]{\tt\v};
+};
+\node[anchor=center] at (5,-.5) {{\tt 11010} = 26};
+\begin{visibleenv}<2->
+    \node[anchor=center] at (3, 2) {same as};
+    \foreach \x in {0,0.1,0.2,0.3,0.4} {
+        \draw[simple wire] ($(0, \x) + (0, 3)$) -- ($(10, \x) + (0, 3)$);
+    };
+    \node[anchor=east] at (0, 3.2) {26};
+    \node[anchor=west] at (10, 3.2) {26};
+\end{visibleenv}
+\begin{visibleenv}<3->
+    \node[anchor=center] at (3, 4) {same as};
+    \draw[wire] (0, 5) node[left] {26} -- (10, 5) node[right] {26};
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+

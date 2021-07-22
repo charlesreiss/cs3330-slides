@@ -1,0 +1,15 @@
+\begin{frame}{replacement policy}
+    \begin{itemize}
+    \item since disks are so slow, replacement policy really matters
+    \item will be implemented in software
+        \vspace{.5cm}
+    \item like with caches: something like least-recently-used usually good
+        \begin{itemize}
+        \item but exceptions: some access patterns won't work well
+        \end{itemize}
+    \item hardware help: can help OS know if pages were used
+        \begin{itemize}
+        \item typical solution: accessed bit (similar to dirty bit) in page table entries
+        \end{itemize}
+    \end{itemize}
+\end{frame}

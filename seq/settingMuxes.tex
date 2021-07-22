@@ -1,0 +1,142 @@
+\begin{frame}<1-3|handout:1>[fragile,label=SettingMuxes]{circuit: setting MUXes}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        isStatReg/.style={draw=none},
+        isStat/.style={draw=none},
+        ccsNorm/.style={visible on=<0|handout:0>},
+        hiBox/.style={fill=green,opacity=0.3},
+        overText/.style={red,fill=white,fill opacity=0.7},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \begin{visibleenv}<2-4>
+    \begin{scope}[overlay]
+        \node[overText,right=3pt of vrALabel,inner sep=0pt, outer sep=0pt, font=\tiny]{\tt 8}; 
+        \node[overText,right=3pt of vrBLabel,inner sep=0pt, outer sep=0pt,font=\tiny]{\tt 9};
+        \node[overText,below left=1cm and -.5cm of muxPc,font=\scriptsize,fill=white] {PC+2};
+        \node[overText,above left=0.7cm and -1cm of muxPc,font=\scriptsize] {M[PC+1]};
+        \node[overText,left=1pt of muxDstM.input 1,inner sep=0pt, outer sep=0pt,font=\tiny,yshift=.4ex]{rA=\tt 8};
+        \node[overText,left=1pt of muxDstE.input 1,inner sep=0pt, outer sep=0pt,font=\tiny,yshift=.4ex]{rB=\tt 9};
+        \node[overText,above right=0pt of regRead1,inner sep=0pt, outer sep=0pt,font=\tiny]{\tt R[8]};
+        \node[overText,left=0.0cm of muxAluB.input 1,inner sep=0pt, outer sep=0pt,font=\tiny,yshift=.3ex]{\tt R[9]};
+        \coordinate (eLabelPt) at ([yshift=-.25cm,xshift=1.25cm]regs.south east);
+        \node[overText,inner sep=0pt, outer sep=0pt,font=\tiny,yshift=.4ex] at (eLabelPt) {\tt aluA + aluB};
+        \coordinate (cLabel) at ([xshift=-2.5mm,yshift=2.15cm]muxAluA.input 1);
+        \node[overText,inner sep=0pt, outer sep=0pt, font=\tiny,anchor=east] at (cLabel) {M[PC+2]};
+        \draw (alu.south) -- ++(0,-2.5mm) node[below,inner sep=3pt,align=center,font=\scriptsize,fill=white,line width=2pt, draw=red,rectangle] (aluOverride) {add};
+    \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<1-4|handout:1>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select when running \lstinline|addq %r8, %r9|?
+        };
+    \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<3|handout:1>
+        \draw[red,b] (muxSrcB.input 1) -- (muxSrcB.output);
+        \draw[red,b] (muxDstM.input 2) -- (muxDstM.output);
+        \draw[red,b] (muxDstE.input 1) -- (muxDstE.output);
+        \draw[red,aa] (muxPc.input 3) -- (muxPc.output);
+        \draw[red,aa] (muxAluA.input 2) -- (muxAluA.output);
+        \draw[red,aa] (muxAluB.input 1) -- (muxAluB.output);
+    \end{visibleenv}
+
+    \begin{visibleenv}<5-6|handout:2>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for \rmmovq?
+        };
+    \end{scope}
+    \end{visibleenv}
+    \begin{visibleenv}<6|handout:2>
+        \draw[red,b] (muxSrcB.input 1) -- (muxSrcB.output);
+        \draw[red,b] (muxDstM.input 2) -- (muxDstM.output);
+        \draw[red,b] (muxDstE.input 2) -- (muxDstE.output);
+        \draw[red,aa] (muxPc.input 3) -- (muxPc.output);
+        \draw[red,aa] (muxAluA.input 1) -- (muxAluA.output);
+        \draw[red,aa] (muxAluB.input 1) -- (muxAluB.output);
+    \end{visibleenv}
+    \begin{visibleenv}<7|handout:3>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle irmovq}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<8|handout:4>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle mrmovq}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<9|handout:5>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle jle}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<10|handout:6>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle cmovle}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<11|handout:7>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle ret}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<12|handout:8>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle popq}?
+        };
+    \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<13|handout:9>
+    \begin{scope}[overlay]
+        \node[draw,rectangle,line width=2pt,below right=1.8cm and -1.45cm of pc,text width=12cm,font=\small] {
+            MUXes --- PC, dstM, dstE, aluA, aluB, dmemIn, dmemAddr, \ldots \\
+            Exercise: what do they select for {\keywordstyle call}?
+        };
+    \end{scope}
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\againframe<5-6|handout:2>{SettingMuxes}
+
+\againframe<7|handout:3>{SettingMuxes}
+
+\againframe<8|handout:4>{SettingMuxes}
+
+\againframe<9|handout:5>{SettingMuxes}
+
+\againframe<10|handout:6>{SettingMuxes}
+
+\againframe<11|handout:7>{SettingMuxes}
+
+\againframe<12|handout:8>{SettingMuxes}
+
+\againframe<13|handout:8>{SettingMuxes}

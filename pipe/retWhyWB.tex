@@ -1,0 +1,51 @@
+\begin{frame}{why not memory to PC}
+\begin{tikzpicture}[remember picture]
+    \tikzset{
+        pcStyle/.style={fill=yellow},
+        pipe/.style={draw,hhReg},
+        wbPCLine/.style={opacity=0.0},
+    }
+
+    \circuitState
+    \circuitConnect
+    \node[right=.1cm of pc,logicBlock,font=\scriptsize] (postPcLogic) {l\\o\\g\\i\\c};
+    \node[right=.3cm of imem,fill=yellow!50!orange,pipe=fetch/decode] (fd) {};
+    \node[right=.2cm of regs,fill=orange!50!green,pipe=decode/execute] {};
+    \node[left=.2cm of dmem,fill=green!50!blue,pipe=execute/memory] (em) {};
+    \node[right=.125cm of dmem,fill=blue!50!violet,pipe=memory/writeback] {};
+
+    \draw[a,red,dashed] (dmem.east) -- +(.1cm,0cm) |- ([yshift=2.5cm]dmem.north) -| ([xshift=.25cm,yshift=.25cm]postPcLogic.north) -| (postPcLogic.north);
+
+    \begin{visibleenv}<2-3>
+        \draw[line width=2pt,-Latex,red] (em.center) -- (dmem.east)  +(.1cm,0cm) |- ([yshift=2.5cm]dmem.north) -|  ([xshift=.25cm,yshift=.25cm]postPcLogic.north) -| (postPcLogic.north) |- (fd.center);
+    \end{visibleenv}
+
+    \begin{visibleenv}<3>
+        \node[hiBox,fit=(imem)] {};
+        \node[hiBox,fit=(dmem)] {};
+        \node[overlay,anchor=center,black,fill=white,draw,line width=2pt] at ([yshift=-2cm]current page.center)
+            { large cycle time --- memories are slow };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{ret wiring}
+\begin{tikzpicture}
+    \tikzset{
+        pcStyle/.style={fill=yellow},
+        pipe/.style={draw,hhReg},
+        wbPCLine/.style={opacity=0.0},
+    }
+
+    \circuitState
+    \circuitConnect
+    \node[right=.1cm of pc,logicBlock,font=\scriptsize] (postPcLogic) {l\\o\\g\\i\\c};
+    \node[right=.3cm of imem,fill=yellow!50!orange,pipe=fetch/decode] (fd) {};
+    \node[right=.2cm of regs,fill=orange!50!green,pipe=decode/execute] {};
+    \node[left=.2cm of dmem,fill=green!50!blue,pipe=execute/memory] (em) {};
+    \node[right=.125cm of dmem,fill=blue!50!violet,pipe=memory/writeback] (mw) {};
+
+    \draw[a,red,dashed] (mw.east) -- +(.1cm,0cm) |- ([yshift=2.5cm]dmem.north) -|
+    ([xshift=.25cm,yshift=.25cm]postPcLogic.north) -| (postPcLogic.north);
+\end{tikzpicture}
+\end{frame}

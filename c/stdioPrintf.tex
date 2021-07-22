@@ -1,0 +1,123 @@
+\begin{frame}[fragile]{stdio.h}
+\begin{itemize}
+\item C does not have \lstinline|<iostream>|
+\item instead \lstinline|<stdio.h>|
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{stdio}
+\scriptsize
+\begin{verbatim}
+cr4bd@power1
+: /if22/cr4bd ; man stdio
+\end{verbatim}
+\ldots
+\begin{Verbatim}
+STDIO(3)               Linux Programmer's Manual               STDIO(3)
+
+NAME
+       stdio - standard input/output library functions
+
+SYNOPSIS
+       #include <stdio.h>
+
+       FILE *stdin;
+       FILE *stdout;
+       FILE *stderr;
+
+DESCRIPTION
+       The  standard  I/O  library  provides  a  simple  and  efficient
+       buffered stream I/O interface.  Input and output is mapped  into
+       logical  data  streams  and the physical I/O characteristics are
+       concealed.  The functions and  macros  are  listed  below;  more
+       information is available from the individual man pages.
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{stdio}
+\scriptsize
+\begin{verbatim}
+STDIO(3)               Linux Programmer's Manual               STDIO(3)
+
+NAME
+       stdio - standard input/output library functions
+\end{verbatim}
+\ldots
+\begin{verbatim}
+   List of functions
+       Function      Description
+       ---------------------------------------------------------------
+       clearerr      check and reset stream status
+       fclose        close a stream 
+\end{verbatim}
+\ldots
+\begin{verbatim}
+       printf        formatted output conversion
+\end{verbatim}
+\ldots
+\end{frame}
+
+\begin{frame}[fragile,label=printf]{printf}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2>]{@2*}{*@},
+    moredelim=**[is][\btHL<3>]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+    escapechar=$,
+}
+\highBoxX<2>{startD}{endD}{fill=blue!30}
+\highBoxX<2>{startCN}{endCN}{fill=blue!30}
+\highBoxX<2>{startCN2}{endCN2}{fill=blue!30}
+\highBoxX<2>{startS}{endS}{fill=orange!30}
+\highBoxX<2>{startN}{endN}{fill=orange!30}
+\highBoxX<2>{startN2}{endN2}{fill=orange!30}
+\newcommand{\metastring}[1]{%
+    \PYG{l+S}{\PYGZdq{}}\PYG{l+s}{#1}\PYG{l+s}{\PYGZdq{}}
+}
+\newcommand{\escaped}[1]{%
+    \PYG{l+s+se}{\PYGZbs{}#1}
+}
+\begin{ccode*}{texcomments=false}
+int custNo = 1000;
+const char *name = "Jane Smith"
+    printf(@\metastring{Customer \#\tikzmark{startD}\%d\tikzmark{endD}: \tikzmark{startS}\%s\tikzmark{endS}\escaped{n}}@,
+       @\tikzmark{startCN}@custNo@\tikzmark{endCN}@, @\tikzmark{startN}@name@\tikzmark{endN}@);
+// "Customer #1000: Jane Smith"
+// same as:
+cout << "Customer #" @\tikzmark{startCN2}@<< custNo@\tikzmark{endCN2}@
+     << ": " @\tikzmark{startN2}@<< name@\tikzmark{endN2}@ << endl;
+\end{ccode*}
+\begin{itemize}
+\item<3-> format string must \myemph{match types} of argument
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{printf formats quick reference}
+\begin{tabular}{lll}
+\bf Specifier & \bf Argument Type & \bf Example(s) \\
+\verb|%s| & char * & \verb|Hello, World!| \\
+\verb|%p| & any pointer & \verb|0x4005d4| \\
+\verb|%d| & int/short/char & \verb|42| \\
+\verb|%u| & unsigned int/short/char & \verb|42| \\
+\verb|%x| & unsigned int/short/char & \verb|2a| \\
+\verb|%ld| & long & \verb|42| \\
+\verb|%f| & double/float & \verb|42.000000|\\
+~ &~ &\verb|0.000000|\\
+\verb|%e| & double/float & \verb|4.200000e+01|\\
+~&~&\verb|4.200000e-19|\\
+\verb|%g| & double/float & \verb|42|, \verb|4.2e-19| \\
+\verb|%%| & (no argument) & \verb|%| \\
+\end{tabular}
+\begin{tikzpicture}[remember picture,overlay]
+\onslide<2|handout:0>{
+    \node[rectangle,draw=blue!60!black,line width=3pt,fill=white,anchor=center] at (current page.center) {
+        \Large detailed docs: \texttt{man 3 printf}
+    };
+}
+\end{tikzpicture}
+\end{frame}
+

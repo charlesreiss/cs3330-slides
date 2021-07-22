@@ -1,0 +1,22 @@
+\begin{frame}[fragile,label=HCLRSSigs]{HCLRS signals}
+\begin{Verbatim}[fontsize=\small]
+register aB { 
+    ...
+}
+\end{Verbatim}
+\begin{itemize}
+\item HCLRS: every register bank has these MUXes built-in
+\vspace{.5cm}
+\item {\tt stall\_B}: keep \myemph{old value} for all registers
+    \begin{itemize}
+        \item register input $\leftarrow$ register output
+        \item pipeline: keep same instruction in this stage next cycle
+    \end{itemize}
+\item {\tt bubble\_B}: use \myemph{default value} for all registers
+    \begin{itemize}
+        \item register input $\leftarrow$ default value
+        \item pipeline: put no-operation in this stage next cycle
+    \end{itemize}
+\end{itemize}
+\end{frame}
+

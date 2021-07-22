@@ -1,0 +1,35 @@
+\begin{frame}[label=ccodesUsing,fragile]{Y86-64: using condition codes}
+\newcommand{\xvalue}{\text{value}}
+{\small \lstinline|subq SECOND, FIRST| (value = FIRST - SECOND)}
+\begin{tabular}{p{2cm}|l|l}
+{\tt j{\it \_\_}} or {\tt cmov{\it \_\_}} & condition code bit test & value test \\ \hline
+\tt le & $\text{SF} = 1$ or $\text{ZF} = 1$ & $\xvalue \le 0$ \\
+\tt l &  $\text{SF} = 1$ & $\xvalue < 0$ \\
+\tt e & $\text{ZF} = 1$ & $\xvalue = 0$ \\
+\tt ne & $\text{ZF} = 0$ & $\xvalue \not= 0$ \\
+\tt ge & $\text{SF} = 0$ & $\xvalue \ge 0$ \\
+\tt g & $\text{SF} = 0$ and $\text{ZF} = 0$ & $\xvalue > 0$ \\
+\end{tabular}
+\begin{itemize}
+\item missing {\tt OF} (overflow flag); {\tt CF} (carry flag)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=Y86conds1]{Y86-64: conditionals (1)}
+\begin{itemize}
+\item ~{\tt \xcancel{cmp}}, {\tt \xcancel{test}}
+\item<2-> instead: use side effect of normal arithmetic
+\item<3-> instead of
+\begin{lstlisting}
+  cmpq %r11, %r12
+  jle somewhere
+\end{lstlisting}
+maybe:
+\begin{lstlisting}
+  subq %r11, %r12
+  jle
+\end{lstlisting}
+(but changes {\tt \%r12})
+\end{itemize}
+\end{frame}
+

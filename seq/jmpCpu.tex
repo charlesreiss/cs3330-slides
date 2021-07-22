@@ -1,0 +1,52 @@
+% FIXME: jmp CPU
+\begin{frame}[fragile,label=JmpIntro]{Simple ISA 2: jmp}
+    \begin{itemize}
+        \item \lstinline|jmp label|
+        \item encoding: {\it 8-byte little-endian address}
+            \begin{itemize}
+            \item 8 byte instructions, no opcode
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=JmpCPU]{jmp CPU}
+    \begin{tikzpicture}
+        \tikzset{
+            dmemNorm/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            instrRegs/.style={visible on=<0|handout:0>},
+            regNorm/.style={visible on=<0|handout:0>},
+            regNormLabel/.style={visible on=<0|handout:0>},
+            imemPcPre/.style={visible on=<1|handout:1>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            regPre/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            regNormLabel/.style={visible on=<0|handout:0>},
+        }
+        \circuitState
+        \circuitStatePre
+        \begin{scope}[visible on=<2->]
+            \draw[a] (pc.east) -- (imemAddr);
+            \draw[a] (imemData) -- ++(0.5cm, 0cm) -- ++(0cm, 2cm) -- ++(-5cm, 0cm) |- (pc.west);
+        \end{scope}
+        \node[right=2cm of imem,yshift=2.5cm,font=\small,align=left,visible on=<3->] (trace) {
+\begin{lstlisting}
+/* 0x00: */ jmp 0x10
+/* 0x08: */ jmp 0x00
+/* 0x10: */ jmp 0x08
+\end{lstlisting}
+\\
+\vspace{.5cm}
+\begin{tabular}{l@{\hspace{.1cm}}l}
+initially: & PC = 0x00 \\
+after cycle 1: & PC = 0x10 \\
+after cycle 2: & PC = 0x08 \\
+after cycle 3: & PC = 0x00 \\
+\end{tabular}
+        };
+    \end{tikzpicture}
+\end{frame}

@@ -1,0 +1,58 @@
+\begin{frame}[fragile,label=Y86addOne1]{Y86-64 encoding (1)}
+\begin{tikzpicture}
+\node (c code) {
+\begin{lstlisting}[language=C]
+long addOne(long x) {
+    return x + 1;
+}
+\end{lstlisting}
+};
+\node[anchor=north west,align=left] (x86-64) at ([xshift=1cm]c code.north east) {
+x86-64: \\
+\begin{lstlisting}
+movq %rdi, %rax
+addq $1, %rax
+ret
+\end{lstlisting}
+};
+\draw[very thick] (x86-64.north west) -- (x86-64.south west);
+\end{tikzpicture}
+
+Y86-64 translation?
+
+\begin{tikzpicture}
+\tikzset{
+    code box/.style={font=\fontsize{10}{11}\selectfont,draw,label={[draw,circle,label distance=-2mm,font=\small,fill=white]north west:#1}}
+}
+\node[code box=A] (A) {
+\begin{lstlisting}
+rrmovq %rdi, %rax
+addq $1, %rax
+ret
+\end{lstlisting}
+};
+\node[code box=B,anchor=north west] (B) at ([xshift=1cm]A.north east) {
+\begin{lstlisting}
+rrmovq %rdi, %rax
+irmovq $1, %rax
+addq %rax, %rdi
+ret
+\end{lstlisting}
+};
+\node[code box=C,anchor=north west] (C) at ([yshift=-1cm]A.south west) {
+\begin{lstlisting}
+irmovq $1, %rax
+addq %rdi, %rax
+ret
+\end{lstlisting}
+};
+\node[code box=D,anchor=north west] (D) at ([yshift=-1cm]B.south west) {
+\begin{lstlisting}
+rrmovq %rdi, %rax
+irmovq $1, %rdi
+addq %rdi, %rax
+ret
+\end{lstlisting}
+};
+\end{tikzpicture}
+\end{frame}

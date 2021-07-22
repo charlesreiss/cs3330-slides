@@ -1,0 +1,13 @@
+
+
+\begin{frame}{fetch/decode logic --- bubble or not}
+    \begin{tikzpicture}[circuit logic]
+        \node[hReg=rA,fill=yellow!50!orange] (rA) {};
+        \node[draw,left=1cm of pc,mux,inputs={nn},info={center:MUX},minimum height=3cm,minimum width=2cm,] (rAMux) {};
+        \draw[a] (rAMux) -- (rA);
+        \draw[aR] (rAMux.input 1) -- +(-1cm,0cm) node[left] { no-op value --- \tt 0xF };
+        \draw[a] ([xshift=-1cm]rAMux.input 2) -- (rAMux.input 2);
+        \draw[bR,red] (rAMux.south) -- +(0cm,-2cm) node[below,align=center] { should we send \\ no-op value (``bubble'')? };
+    \end{tikzpicture}
+\end{frame}
+

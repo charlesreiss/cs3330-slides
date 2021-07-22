@@ -1,0 +1,19 @@
+\begin{frame}{Y86-64 state}
+    \begin{itemize}
+    \item {\tt \%r{\it XX}} --- 15 registers
+        \begin{itemize}
+        \item \sout{\tt \%r15} missing
+        \item smaller parts of registers missing
+        \end{itemize}
+    \item {\tt ZF} (zero), {\tt SF} (sign), \sout{{\tt OF} (overflow)}
+        \begin{itemize}
+        \item \myemph<2>{book has {\tt OF}, we'll not use it}
+        \item \myemph<3>{no \texttt{cmp}, use \texttt{sub}, etc. instead}
+        \item \sout{\tt CF} (carry) missing
+        \end{itemize}
+    \item {\tt Stat} --- processor status --- halted?
+    \item {\tt PC} --- program counter (AKA instruction pointer)
+    \item main memory
+    \end{itemize}
+\end{frame}
+

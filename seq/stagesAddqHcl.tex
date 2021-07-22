@@ -1,0 +1,20 @@
+\begin{frame}[fragile,label=addqWithStages]{addq with stages}
+\begin{Verbatim}[fontsize=\fontsize{11}{12}\selectfont,commandchars=\\XY]
+\textbfXwireY rA : 4, rB : 4, icode : 4, ifunc: 4, valP : 64, valE : 64;
+\textbfXregisterY pP { thePC : 64 = 0; }
+\textitX/* Fetch: */Y
+pc = P_thePC; \vemphAXvalPY = P_thePC + 2;
+icode = i10bytes[4..8]; ifunc = i10bytes[0..4];
+rA = i10bytes[12..16]; rB = i10bytes[8..12];
+\textitX/* Decode: */Y
+reg_srcA = rA;
+reg_srcB = rB;
+\textitX/* Execute: */Y
+\vemphAXvalEY = reg_outputA + reg_outputB;
+\textitX/* Writeback: */Y
+reg_inputE = \vemphAXvalEY; reg_dstE = rB;
+\textitX/* PC update: */Y
+p_thePC = \vemphAXvalPY;
+...
+\end{Verbatim}
+\end{frame}

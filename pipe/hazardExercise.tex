@@ -1,0 +1,94 @@
+\begin{frame}[fragile,label=hazardExercise]{data hazard exericse}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+\vspace{-1cm}
+\lstset{
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{@2@}{@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3@}{@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4@}{@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5@}{@},
+}
+\begin{lstlisting}
+addq %r8, %r9 
+addq %r10, %r11
+addq %r9, %r8
+addq %r11, %r10
+\end{lstlisting}
+    \vspace{2cm}
+    \begin{itemize}
+    \item to resolve data hazards with stalling, how many stalls are needed?
+    \item hint: complete timeline
+    \end{itemize}
+\begin{tabular}{l|rrrrrrrr}
+instr & cycle: 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+addq R8, R9 & F & D & E & W \\
+addq R10, R11 & ~ & F \\
+addq R9, R8 \\
+addq R11, R10 \\
+\end{tabular}
+\end{frame}
+
+\iftoggle{heldback}{
+\includecomment{forheldback}
+\excludecomment{isheldback}
+}{
+\excludecomment{forheldback}
+\includecomment{isheldback}
+}
+
+\begin{forheldback}
+\begin{frame}[fragile,label=hazardExerciseNoSln]{data hazard exericse solution}
+    (not on this version of the slides)
+\end{frame}
+\end{forheldback}
+\begin{isheldback}
+\begin{frame}[fragile,label=hazardExerciseSln]{data hazard exericse solution}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+\lstset{
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{@2@}{@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3@}{@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4@}{@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5@}{@},
+}
+\vspace{3cm}
+~
+
+\begin{tikzpicture}
+    \tikzset{fetch/.style={fill=yellow!15},decode/.style={fill=orange!15},execute/.style={fill=green!15},writeback/.style={fill=blue!15}}
+\matrix[tight matrix no line,
+        nodes={text width=.6cm,font=\tt,minimum height=.7cm,align=center},
+        column 1/.style={nodes={text width=5cm,align=left}}] (tbl) {
+|[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
+                            \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \\
+    \lstinline|addq %r8, %r9|   \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[writeback]| W \& ~ \& ~ \& ~ \& ~ \& ~ \\
+    \lstinline|addq %r10, %r11|  \& ~ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[writeback]| W \& ~ \& ~ \\
+    \lstinline|addq %r9, %r8|   \& ~ \& ~ \& ~ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[writeback]| W \\
+    \lstinline|addq %r11, %r10| \& ~ \& ~ \& ~ \& ~ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[writeback]| W \& ~\\
+};
+\newcommand{\fwd}[4]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLine,hiForwardOn=#4] ([xshift=-.05cm]tbl-#2-\idx.west) -- ([xshift=+.05cm]tbl-#3-\idx.west);
+}
+\tikzset{
+    forwardLine/.style={red!90!black,thick,-Latex},
+    hiForwardOn/.style={alt=#1{blue}{}},
+    forwardLineB/.style={red,dashed,thick,-Latex},
+    sepLine/.style={densely dotted,thick},
+};
+
+\foreach \x in {1,...,10} {
+    \draw[sepLine] (tbl-1-\x.north east) -- (tbl-5-\x.south east);
+}
+\fwd{4}{2}{4}{<0|handout:0>}
+\fwd{5}{3}{5}{<0|handout:0>}
+    \node[draw,red,cross out,very thick] at (tbl-4-4) {~};
+\end{tikzpicture}
+\end{frame}
+\end{isheldback}

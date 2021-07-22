@@ -1,0 +1,13 @@
+
+
+\begin{frame}<1>[fragile,label=ccEx4]{condition codes examples (4)}
+\begin{lstlisting}[language=myasm]
+movq $20, %rbx
+addq $-20, %rbx // result is 0
+movq $1, %rax   // irrelevant to cond. codes
+je   foo        // taken, result is 0
+\end{lstlisting}
+\onslide<2>{20 + -20 = 0 --- SF = 0 (not negative), ZF = \myemph<1>{1} (zero)}
+\end{frame}
+
+

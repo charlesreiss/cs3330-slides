@@ -1,0 +1,108 @@
+\begin{frame}[fragile,label=exSquashStall]{exercise: squash + stall (1)}
+    \begin{tikzpicture}
+    \matrix[tight matrix,matrix stages,
+        row sep=.5cm,
+        nodes={text width=2cm,minimum height=0.5cm,text depth=.1ex,font=\small},
+        column 1/.append style={nodes={text width=.8cm}},
+        column 2/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 3/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 4/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 5/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 6/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        ] (timeline) {
+        time \& \normalfont fetch \& \normalfont decode \& \normalfont execute \& \normalfont memory \& 
+                \normalfont writeback \\
+        1    \& E \& D \& C \& B \& A  \\
+        2    \& E \& nop \& C \& nop \& B \\
+    };
+    \tikzset{
+        stall/.style={thick,blue!80!black,-Latex,font=\small,inner sep=0.1mm},
+        bubble/.style={thick,green!80!black,-Latex,font=\small,inner sep=0.1mm},
+        normal/.style={thick,black!80,-Latex,font=\small,inner sep=0.1mm},
+        noncommit/.style={thick,black!90,-Latex,dashed,font=\small\tt\bfseries,inner sep=0.2mm},
+    }
+    \node[align=left,below=0cm of timeline,anchor=north west] at (timeline.south west) {
+        \color{blue!80!black}{stall (S) = keep old value};
+        \color{black!80}{normal (N) = use new value}  \\
+        \color{green!80!black}{bubble (B) = use default (no-op)};  
+    };
+    \begin{visibleenv}<1>
+    \draw[noncommit] (timeline-2-2.south) -- (timeline-3-2.north) node[above left] {*};
+    \draw[noncommit] (timeline-2-2.south) -- (timeline-3-3.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-3.south) -- (timeline-3-4.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-4.south) -- (timeline-3-5.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-5.south) -- (timeline-3-6.north) node[above right] {?};
+    \end{visibleenv}
+    \iftoggle{heldback}{}{
+    \begin{visibleenv}<2|handout:0>
+    \draw[stall] (timeline-2-2.south) -- (timeline-3-2.north) node[above left] {*};
+    \draw[bubble] (timeline-2-2.south) -- (timeline-3-3.north) node[above right] {B};
+    \draw[stall] (timeline-2-3.south) -- (timeline-3-4.north) node[above right] {S};
+    \draw[bubble] (timeline-2-4.south) -- (timeline-3-5.north) node[above right] {B};
+    \draw[normal] (timeline-2-5.south) -- (timeline-3-6.north) node[above right] {N};
+    \end{visibleenv}
+    }
+    \tikzset{every label/.style={opacity=1.0,black}}
+    \begin{visibleenv}<1>
+        \node[anchor=center,draw=red,very thick,fill=white,align=left] at ([yshift=-3cm]timeline.south) {
+            exercise: what are the {\tt ?}s \\
+            write down your answers, \\ then compare with your neighbors
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=exSquashStallB]{exercise: squash + stall (2)}
+    \begin{tikzpicture}[remember picture]
+    \matrix[tight matrix,matrix stages,
+        row sep=.5cm,
+        nodes={text width=2cm,minimum height=0.5cm,text depth=.1ex,font=\small},
+        column 1/.append style={nodes={text width=.8cm}},
+        column 2/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 3/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 4/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 5/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        column 6/.append style={nodes={text width=2.0cm,font=\tt\small}},
+        ] (timeline) {
+        time \& \normalfont fetch \& \normalfont decode \& \normalfont execute \& \normalfont memory \& 
+                \normalfont writeback \\
+        1    \& E \& |[alt=<1>{red,very thick}{}]| D \& C \& B \& A \\
+        2    \& F \& E \& |[alt=<1>{red,very thick}{}]| C \& nop \& B \\
+    };
+    \tikzset{
+        stall/.style={thick,blue!80!black,-Latex,font=\small,inner sep=0.1mm},
+        bubble/.style={thick,green!80!black,-Latex,font=\small,inner sep=0.1mm},
+        normal/.style={thick,black!80,-Latex,font=\small,inner sep=0.1mm},
+        noncommit/.style={thick,black!90,-Latex,dashed,font=\small\tt\bfseries,inner sep=0.2mm},
+    }
+    \node[align=left,below=0cm of timeline,anchor=north west] at (timeline.south west) {
+        \color{blue!80!black}{stall (S) = keep old value};
+        \color{black!80}{normal (N) = use new value}  \\
+        \color{green!80!black}{bubble (B) = use default (no-op)};  
+    };
+    \begin{visibleenv}<1-2>
+    \draw[noncommit] (timeline-2-2.south) -- (timeline-3-2.north) node[above left] {?};
+    \draw[noncommit] (timeline-2-2.south) -- (timeline-3-3.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-3.south) -- (timeline-3-4.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-4.south) -- (timeline-3-5.north) node[above right] {?};
+    \draw[noncommit] (timeline-2-5.south) -- (timeline-3-6.north) node[above right] {?};
+    \end{visibleenv}
+    \iftoggle{heldback}{}{
+    \begin{visibleenv}<3|handout:0>
+    \draw[normal] (timeline-2-2.south) -- (timeline-3-2.north) node[above left] {N};
+    \draw[bubble] (timeline-2-2.south) -- (timeline-3-3.north) node[above right] {N};
+    \draw[stall] (timeline-2-3.south) -- (timeline-3-4.north) node[above right] {S};
+    \draw[bubble] (timeline-2-4.south) -- (timeline-3-5.north) node[above right] {B};
+    \draw[normal] (timeline-2-5.south) -- (timeline-3-6.north) node[above right] {N};
+    \end{visibleenv}
+    }
+    \tikzset{every label/.style={opacity=1.0,black}}
+    \begin{visibleenv}<2>
+        \node[anchor=center,draw=red,very thick,fill=white,align=left] at ([yshift=-3cm]timeline.south) {
+            exercise: what are the {\tt ?}s \\
+            write down your answers, \\ then compare with your neighbors
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+

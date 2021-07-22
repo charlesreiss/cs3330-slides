@@ -1,0 +1,14 @@
+\begin{frame}{which requires kernel mode?}
+\begin{itemize}
+\item which operations are likely to fail (trigger an exception to run the OS instead)
+if attempted in user mode?
+\vspace{.5cm}
+% FIXME: exercise on what needs kernel mode
+    % changing a program's address space to allocate it more memory
+    % returning from a function
+\item A. reading data on disk by running special instructions that communicate with the hard disk device
+\item B. changing a program's address space to allocate it more memory
+\item C. returning from a standard library function
+\item D. incrementing the stack pointer
+\end{itemize}
+\end{frame}

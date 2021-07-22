@@ -1,0 +1,39 @@
+\begin{frame}{HCLRS pipelining debugging: intro}
+    \begin{itemize}
+    \item \myemph{debugging pipelines} is consistently 
+          one of the biggest sources of difficulty in this class
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=pipeDebugOne]{HCL2D pipeline debugging (1)}
+    \begin{itemize}
+    \item draw a picture of the state of the instructions
+    \item get {\tt -d} output
+        \begin{itemize}
+            \item redirect to a file
+            \item \verb|./hclrs file.hcl -d input.yo >output.txt|
+        \end{itemize}
+    \item check \myemph{each stage} of the broken instruction
+    \item expect forwarding/hazard-handling problems
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{HCL2D pipeline debugging (2)}
+    \begin{itemize}
+    \item \myemph{write assembly} --- not just supplied test cases
+        \begin{itemize}
+        \item write {\tt file.ys} --- {\tt make file.yo} to assemble
+        \item remove anything not involved in the error
+        \item find a \textbf{minimal} test case
+        \item don't spend time looking at irrelevant instructions
+        \end{itemize}
+    \item \myemph{draw the pipeline stages}
+        \begin{itemize}
+        \item what instructions are in fetch/decode/etc. when?
+        \item what values should be in pipelien registers when?
+        \item what forwarding should happen?
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+

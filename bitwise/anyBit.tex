@@ -1,0 +1,253 @@
+\usetikzlibrary{arrows.meta,calc,circuits.logic.US,fit,matrix,positioning}
+
+\subsubsection{problem setup}
+
+
+\begin{frame}[fragile,label=anyBit]{problem: any-bit}
+    \begin{itemize}
+        \item is any bit of {\tt x} set?
+    \item goal: turn 0 into 0, not zero into 1
+    \item easy C solution: \lstinline|!(!(x))|
+        \begin{itemize}
+        \item another solution if you have \lstinline|-| or \lstinline|+| (\texttt{bang} in lab)
+        \end{itemize}
+    \item what if we don't have \lstinline|!| or \lstinline|-| or \lstinline|+|
+    \vspace{.5cm}
+    \item<2-> how do we solve is {\tt x} is, say, four bits?
+    \item<3-> {\small\lstinline+((x & 1) | ((x >> 1) & 1) | ((x >> 2) & 1) | ((x >> 3) & 1))+}
+    \end{itemize}
+\end{frame}
+
+\subsubsection{wasted work with naive 4 bit soln}
+
+\begin{frame}[fragile,label=wastedAnyBitAnd]{wasted work (1)}
+    \begin{itemize}
+    \item {\small\lstinline+((x & 1) | ((x >> 1) & 1) | ((x >> 2) & 1) | ((x >> 3) & 1))+}
+    \item in general: \lstinline+(x & 1) | (y & 1) == (x | y) & 1+
+        \begin{itemize}
+        \item distributive property
+        \end{itemize}
+        \vspace{.5cm}
+    \item<2-> {\small\lstinline+(x | (x >> 1) | (x >> 2) | (x >> 3)) & 1+}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=wastedAnyBitOrs]{wasted work (2)}
+    \lstset{
+        language=C,
+        moredelim=**[is][\btHL<1>]{@1}{1@}
+    }
+    \begin{itemize}
+    \item 4-bit any set: {\small\lstinline+(@1x | (x >> 1)1@ | (x >> 2) | (x >> 3)) & 1+}
+    \item performing 3 bitwise ors
+    \item \ldots each bitwise or does 4 OR operations
+    \item<2> but only result of one of the 4!
+    \end{itemize}
+\begin{tikzpicture}[circuit logic US]
+\coordinate (num1Intersect) at (0, 0);
+\coordinate (num2Intersect) at (0, -0.5);
+    \matrix(ors) at (0, -1)[
+    xshift=-.36cm,
+    anchor=north west,
+    matrix of nodes,
+    column sep=.5cm,
+    nodes={
+        draw,
+        fill=black!5,
+        or gate,
+        point down,
+        logic gate inputs=nn
+    }] {
+    ~ \& ~ \& ~ \& ~  \\
+};
+\foreach \x in {1,2,3,4} {
+    \draw[thin] ($(num1Intersect)-(0.4pt,0)+(0.\x pt,0)$) -- ($(num1Intersect) + (0mm,-2mm) + 3*(0.\x mm,0.\x mm)$) -| (ors-1-\x.input 2);
+    \draw[thin] ($(num2Intersect)-(0.4pt,0)+(0.\x pt,0)$) -- ($(num2Intersect) + (0mm,-2mm) + 3*(-0.\x mm,0.\x mm)$) -| (ors-1-\x.input 1);
+}
+    \node [left=0cm of num1Intersect] { \lstinline|(x)| };
+    \node [left=0cm of num2Intersect] { \lstinline|(x >> 1)| };
+    \node[draw,red,very thick,fit=(ors-1-4)] {};
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=divideAndCongMotiv]{any-bit: looking at wasted work}
+\begin{tikzpicture}
+\tikzset{
+    >=Latex,
+    hidden zero/.style={black!70},
+    hidden wrong col/.style={black!40},
+    hilite used/.style={fill=red!20},
+}
+\matrix[
+    tight matrix,
+    nodes={draw=none,text width=2.5cm,align=center},
+    anchor=north east,
+    alt=<1>{row 3/.style={nodes={invisible}}}
+] (fan in)  {
+    $x_3$ \& $x_2$ \& $x_1$ \& $x_0$ \\[.5cm]
+    |[hidden zero]| $0$   \& $x_3$ \& $x_2$ \& $x_1$ \\[1.5cm]
+    $(0|x_3)$ \& |[hilite used]| $(x_3|x_2)$ \& $(x_2|x_1)$ \& |[hilite used]| $(x_1|x_0)$ \\[.5cm]
+};
+    \foreach \r/\s in {1/x,2/x>>1,3/y=(x|x>>1)} {
+        \node[anchor=west] at ([xshift=0.25cm]fan in-\r-4.east) {\tt \s};
+    }
+    \foreach \tFrom/\tTo in {1/2,2/3,3/4} {
+        \draw[very thick,->] (fan in-1-\tFrom) -- (fan in-2-\tTo);
+    }
+    \begin{visibleenv}<3>
+        \node[draw=red,very thick,anchor=north,align=left] at (fan in.south) {
+            final value wanted: $x_3|x_2|x_1|x_0$  \\
+            previously: \\
+            \hspace{2cm} compute {\tt x|(x>>1)} for $x_1|x_0$; \\
+            \hspace{2cm} {\tt (x>>2)|(x>>3)} for $x_3|x_2$ \\
+            observation: got both parts with just {\tt x|(x>>1)}
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\subsubsection{a divide and conquer solution}
+
+\begin{frame}[fragile,label=divideAndConq2]{any-bit: divide and conquer}
+\begin{tikzpicture}
+\tikzset{
+    >=Latex,
+    hidden zero/.style={black!70},
+    hidden wrong col/.style={black!40},
+}
+\matrix[
+    tight matrix,
+    nodes={draw=none,text width=2.5cm,align=center},
+    anchor=north east,
+] (fan in)  {
+    $x_3$ \& $x_2$ \& $x_1$ \& $x_0$ \\[.5cm]
+    |[hidden zero]| $0$   \& $x_3$ \& $x_2$ \& $x_1$ \\[1.5cm]
+    |[hidden wrong col]| $(0|x_3)$ \& $(x_3|x_2)$ \& |[hidden wrong col]| $(x_2|x_1)$ \& $(x_1|x_0)$ \\[.5cm]
+    |[hidden wrong col]| $0$ \& |[hidden zero]| $0$ \& |[hidden wrong col]| $(0|x_3)$ \& $(x_3|x_2)$ \\[1.5cm]
+    |[hidden wrong col]| $x_3$ \& |[hidden wrong col]| $(x_3|x_2)$\& |[hidden wrong col]| $(x_3|x_2|x_1)$ \& $(x_3|x_2|x_1|x_0)$ \\
+};
+    \foreach \r/\s in {1/x,2/x>>1,3/y=(x>>1)|x,4/y>>2,5/y|(y>>2)} {
+        \node[anchor=west] at ([xshift=0.25cm]fan in-\r-4.east) {\tt \s};
+    }
+    \foreach \tFrom/\tTo in {1/2,3/4} {
+        \draw[very thick,->] (fan in-1-\tFrom) -- (fan in-2-\tTo);
+    }
+    \foreach \tFrom/\tTo in {2/2,4/4} {
+        \draw[very thick,->] (fan in-2-\tFrom) -- (fan in-3-\tTo);
+    }
+    \foreach \tFrom/\tTo in {2/4} {
+        \draw[very thick,->] (fan in-3-\tFrom) -- (fan in-4-\tTo);
+    }
+    \foreach \tFrom/\tTo in {4/4} {
+        \draw[very thick,->] (fan in-4-\tFrom) -- (fan in-5-\tTo);
+    }
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=divideConquery]{any-bit: divide and conquer}
+    \begin{itemize}
+    \item ~
+    \item ~
+    \item four-bit input $x=x_3x_2x_1x_0$
+    \item \lstinline+x | (x >> 1)+ = $(x_3|0)\myemph{(x_2|x_3)}(x_1|x_2)\myemph{(x_0|x_1)}=y_1\myemph{y_2}y_3\myemph{y_4}$
+    \item<2-> \lstinline+y | (y >> 2)+ = $(y_1|0)(y_2|0)(y_3|y_1)\myemph{(y_4|y_2)}=z_1z_2z_3z_4$
+    \item<2-> $z_4=(y_4|y_2)=((x_2|x_3)|(x_0|x_1))=x_0|x_1|x_2|x_3$ ``is any bit set?''
+\begin{visibleenv}<3->
+    \vspace{.5cm}
+\begin{ccodeNL}
+unsigned int any_of_four(unsigned int x) {
+    int part_bits = (x >> 1) | x;
+    return ((part_bits >> 2) | part_bits) & 1;
+}
+\end{ccodeNL}
+\end{visibleenv}
+    \end{itemize}
+\begin{tikzpicture}[overlay,remember picture]
+\tikzset{>=Latex}
+\coordinate (fan top left) at ([xshift=-2cm,yshift=-1cm]current page.north east);
+\matrix[
+    tight matrix,
+    nodes={draw=none,text width=1.5cm,align=center},
+    anchor=north east,
+    row sep=5mm,
+] (fan in) at (fan top left) {
+    $x_3$ \& $x_2$ \& $x_1$ \& $x_0$ \\
+    ~\& $(x_3|x_2)$ \& ~ \& $(x_1|x_0)$ \\\
+    ~\& ~\&~ \& $(x_3|x_2|x_1|x_0)$\\
+};
+    \foreach \tFrom/\tTo in {1/2,2/2,3/4,4/4} {
+        \draw[very thick,->] (fan in-1-\tFrom.south) -- (fan in-2-\tTo.north);
+    }
+    \foreach \tFrom/\tTo in {2/4,4/4} {
+        \draw[very thick,->] (fan in-2-\tFrom.south) -- (fan in-3-\tTo.north);
+    }
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=divideAndConq8bit]{any-bit: divide and conquer}
+\begin{tikzpicture}
+\tikzset{
+    >=Latex,
+    hidden zero/.style={black!70},
+    hidden wrong col/.style={black!40},
+}
+\matrix[
+    tight matrix,
+    nodes={draw=none,text width=1.5cm,font=\small,align=center},
+    row 6/.style={nodes={font=\everymath{\scriptstyle}}},
+    row 7/.style={nodes={font=\everymath{\scriptstyle}}},
+    row 5/.style={nodes={font=\everymath{\scriptstyle}}},
+    anchor=north east,
+] (fan in)  {
+    $x_7$ \& $x_6$ \& $x_5$ \& $x_4$ \& $x_3$ \& $x_2$ \& $x_1$ \& $x_0$ \\[.5cm]
+    |[hidden zero]| $0$  \& $x_7$ \& $x_6$ \& $x_5$ \& $x_4$ \& $x_3$ \& $x_2$ \& $x_1$ \\[1.5cm]
+    |[hidden wrong col]| $(0|x_7)$ \& $(x_7|x_6)$ \& |[hidden wrong col]| $(x_6|x_5)$ \& $(x_5|x_4)$ \& |[hidden wrong col]|  $(x_4|x_3)$ \& $(x_3|x_2)$ \& |[hidden wrong col]| $(x_2|x_1)$ \& $(x_1|x_0)$ \\[.5cm]
+    |[hidden wrong col]| $0$ \& |[hidden wrong col]| $0$ \& 
+    |[hidden wrong col]| $(0|x_7)$ \& $(x_7|x_6)$ \& 
+    |[hidden wrong col]| $(x_6|x_5)$ \& 
+    |[hidden wrong col]| $(x_5|x_4)$ \& |[hidden wrong col]| $(x_4|x_3)$ \& $(x_3|x_2)$ \\[1.5cm]
+    |[hidden wrong col]| $(0|0|0|x_7)$ \& ~ \&
+    |[hidden wrong col]| $(0|x_7|x_6|x_5)$ \& ~ \&
+    |[hidden wrong col]| $(x_6|x_5|x_4|x_3)$ \& ~ \&
+    |[hidden wrong col]| $(x_4|x_3|x_2|x_1)$ \& ~ \\[-0cm]
+    ~ \& |[hidden wrong col]| $(0|0|x_7|x_6)$ \& 
+    ~ \& $(x_7|x_6|x_5|x_4)$ \& 
+    ~ \& |[hidden wrong col]| $(x_5|x_4|x_3|x_2)$ \&
+    ~ \& $(x_3|x_2|x_1|x_0)$ \\[.5cm]
+};
+    \foreach \r/\s in {1/x,2/x>>1,3/y=(x>>1)|x,4/y>>2,5/z=y|(y>>2)} {
+        \node[anchor=west,font=\small] at ([xshift=0.25cm]fan in-\r-8.east) {\tt \s};
+    }
+    \foreach \tFrom/\tTo in {1/2,3/4,5/6,7/8} {
+        \draw[very thick,->] (fan in-1-\tFrom) -- (fan in-2-\tTo);
+    }
+    \foreach \tFrom/\tTo in {2/2,4/4,6/6,8/8} {
+        \draw[very thick,->] (fan in-2-\tFrom) -- (fan in-3-\tTo);
+    }
+    \foreach \tFrom/\tTo in {1/1,3/3,5/5,7/7} {
+        \draw[thick,->,hidden wrong col,dotted] (fan in-2-\tFrom) -- (fan in-3-\tTo);
+    }
+    \foreach \tFrom/\tTo in {2/4,6/8} {
+        \draw[very thick,->] (fan in-3-\tFrom) -- (fan in-4-\tTo);
+    }
+    \foreach \tFrom/\tTo in {4/4,8/8} {
+        \draw[very thick,->] (fan in-4-\tFrom) -- (fan in-5-\tTo);
+    }
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=anyBitSolution]{any-bit-set: 32 bits}
+\begin{ccodeNL}
+unsigned int any(unsigned int x) {
+    x = (x >> 1) | x;
+    x = (x >> 2) | x;
+    x = (x >> 4) | x;
+    x = (x >> 8) | x;
+    x = (x >> 16) | x;
+    return x & 1;
+}
+\end{ccodeNL}
+\end{frame}
+

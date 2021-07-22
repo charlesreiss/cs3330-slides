@@ -1,0 +1,52 @@
+\begin{frame}{replacement policy}
+    \begin{itemize}
+    \item since disks are so slow, replacement policy really matters
+    \item will be implemented in software
+        \vspace{.5cm}
+    \item like with caches: something like least-recently-used usually good
+        \begin{itemize}
+        \item but exceptions: some access patterns won't work well
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{LRU replacement?}
+\begin{itemize}
+\item problem: need to identify when pages are used
+    \begin{itemize}
+    \item ideally \myemph{every single time}
+    \end{itemize}
+\item not practical to do this exactly
+    \begin{itemize}
+    \item HW would need to keep a list of when each page was accessed, or
+    \item SW would need to force every access to trigger a fault
+    \end{itemize}
+\item trick: any page which hasn't been used in a while is probably fine 
+    \begin{itemize}
+    \item not likely to make a difference whether it was last used 120 seconds ago or 300 seconds ago
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{LRU approximation intuition}
+\begin{itemize}
+\item one idea: detect accesses by marking page table entry invalid temporarily
+    \begin{itemize}
+    \item e.g. every $N$ seconds
+    \end{itemize}
+\item on page fault:
+    \begin{itemize}
+    \item if marked as invalid: make valid again
+    \end{itemize}
+\item choose page which has stayed invalid for a long time
+\end{itemize}
+\end{frame}
+
+\begin{frame}{hardware support for access tracking}
+\begin{itemize}
+    \item often hardware implements \textit{accessed} bit in page table entries
+    \item set to 1 when page table entry is used by program
+    \item avoids requiring page fault
+\end{itemize}
+\end{frame}
+

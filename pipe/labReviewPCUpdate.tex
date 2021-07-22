@@ -1,0 +1,31 @@
+\begin{frame}{PC update from lab}
+\begin{tikzpicture}[circuit logic]
+    \node[hReg=PC,minimum height=3cm,fill=yellow] (pc) {};
+    \node[below=2.5cm of pc,mux,inputs={nnn},
+          info={center:\scriptsize MUX},minimum height=2cm,
+          rotate=180,logicFill] (pcSelectMux) {};
+    \node[logicBlock] (convertOp) at ([xshift=3cm,yshift=-2cm]pcSelectMux) {convert icode};
+    \draw[bR] (convertOp.east) -- ++(1cm,0cm) node[right] {icode \scriptsize(from instr. mem)};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 3] (pcAddTwo) {+2};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 2] (pcAddTen) {+10};
+    \draw[a] (pcAddTwo) -- (pcSelectMux.input 3);
+    \draw[a] (pcAddTen) -- (pcSelectMux.input 2);
+    \draw[aR] (pcSelectMux.input 1) -- ++(.5cm,0cm) node[right] {\ldots};
+    \draw[b] (convertOp.west) -| (pcSelectMux.north);
+    \draw[a] (pc.east) -| ([xshift=-2pt]pcAddTwo.north east);
+    \draw[a] (pc.east) -| ([xshift=-2pt]pcAddTen.north east);
+    \draw[a,overlay] (pcSelectMux.output) -- ++(-.3cm,0cm) |- (pc.west);
+    \draw[a] (pc.east) -- +(2cm, 0cm) node[right] { to instr. mem };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=simplePcUpdate]{PC update from lab}
+\begin{lstlisting}[language=C]
+icode = i10bytes[4..8];
+p_pc = [
+    icode == ADD || ...: P_pc + 2;
+    icode == IRMOVQ || ...: P_pc + 10;
+    ...
+];
+\end{lstlisting}
+\end{frame}

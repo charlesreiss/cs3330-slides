@@ -1,0 +1,18 @@
+\begin{frame}<1>[label=layers,fragile]{layers of abstraction}
+
+    \begin{tikzpicture}
+        \tikzset{
+            layerBox/.style={draw, rectangle, minimum width=5cm},
+            hiOn/.style={alt=#1{draw=red,very thick,fill=red!10}{}},
+        }
+        \node[layerBox,hiOn=<2|handout:0>] (hll) {``Higher-level'' language: C};
+            \node[left=1cm of hll] {\small \lstinline[language=C]!x += y!};
+        \node[layerBox,below=3mm of hll,hiOn=<3|handout:0>] (asm) {Assembly: X86-64};
+            \node[left=1cm of asm] {\small \lstinline[language=myasm]!add %rbx, %rax!};
+        \node[layerBox,below=3mm of asm,hiOn=<4|7|handout:0>] (machineCode) {Machine code: Y86};
+            \node[left=1cm of machineCode] {\small \texttt 60 03\textsubscript{SIXTEEN}};
+        \node[layerBox,below=3mm of machineCode,hiOn=<5|6|handout:0>] (hw) {???};
+        \node[layerBox,below=3mm of hw,hiOn=<8|handout:0>] (gates) {Gates / Transistors  / Wires / Registers};
+    \end{tikzpicture}
+
+\end{frame}

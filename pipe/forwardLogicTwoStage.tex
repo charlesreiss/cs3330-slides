@@ -1,0 +1,177 @@
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+
+\newsavebox{\pipeAddQBoxForwardWDA}
+\savebox{\pipeAddQBoxForwardWDA}{%A
+    \begin{tikzpicture}
+    \tikzset{pipeline regs/.style={}}
+    \pipeAddQNarrow
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!orange,fill=yellow!50!orange,
+            fill opacity=0.1,
+            fit=(fdSrcA) (fdSrcB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            orange!50!green,fill=orange!50!green,
+            fill opacity=0.1,
+            fit=(deDstE) (deValA) (deValB)] {};
+
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            green!50!blue,fill=green!50!blue,
+            fill opacity=0.1,
+            fit=(ewDstE) (ewValE)] {};
+        \node[
+            draw,rectangle,
+            rounded corners,line width=2pt,
+            yellow!50!yellow,fill=yellow!50!yellow,
+            fill opacity=0.1,
+            fit=(pc)] {};
+    \draw[blue,fill=blue!10, ultra thick] ([xshift=-.5cm]ewValE.west) circle (.2cm);
+    \draw[red,fill=red!10, ultra thick] ([xshift=-.5cm]deValA.west) circle (.2cm);
+    \end{tikzpicture}%
+}
+
+\begin{frame}[fragile,label=forwardMoreP]{forwarding more?}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east,label={[label distance=0mm]north:location of values during cycle 3:}] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBoxForwardWDA}}};
+\end{tikzpicture}
+\vspace{0.5cm}
+\lstset{
+    style=small,
+    moredelim=**[is][\btHL<2|handout:0>]{@2@}{@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3@}{@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4@}{@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5@}{@},
+}
+\begin{lstlisting}
+// initially %rax = 0,
+//           %r8 = 800,
+//           %r9 = 900, etc.
+addq %r8, %r9 
+addq %rax, %rax
+addq %r9, %r10
+\end{lstlisting}
+\begin{tikzpicture}
+\matrix[tight matrix,nodes={text width=1cm,font=\scriptsize\tt},
+        column 8/.append style={nodes={text width=2cm}},
+        row 1/.append style={nodes={font=\scriptsize}},
+        row 2/.append style={nodes={font=\scriptsize}},
+        ] (tbl) {
+ \& |[fill=yellow!10!white,align=center]| fetch \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+cycle \& PC \& rA \& rB \& R[srcA] \& R[srcB] \& dstE \& next R[dstE] \& dstE \\
+0 \& 0x0 \\
+1 \& 0x2 \& 8  \& 9    \\ 
+2 \& 0x4 \& 0  \& 0   \& 800  \& 900 \& 9 \\
+3 \&     \& 9  \& 10  \& 0    \&  0  \& 0  \& 1700 \& 9 \\
+4 \&     \&    \&     \& 900  \& 1000\& 10 \& 0 \& 0  \\
+5 \&     \&    \&     \&      \&     \&    \& 1900 \& 10  \\
+};
+\begin{scope}[every node/.style={draw,inner sep=0pt},
+              every label/.style={font=\scriptsize,draw=none}]
+    \node[fit=(tbl-1-3) (tbl-1-4),fill=yellow!50!orange!10!white,label={center:fetch/decode}] {};
+    \node[fit=(tbl-1-5) (tbl-1-7),fill=orange!50!green!10!white,label={center:decode/execute}] {};
+    \node[fit=(tbl-1-8) (tbl-1-9),fill=green!50!blue!10!white,label={center:execute/writeback}] {};
+\end{scope}
+
+\node[inner sep=.5mm,red,draw,thick,label={[red]-90:should be 1700},fit=(tbl-7-5),fill=red,fill opacity=0.15] {};
+\node[inner sep=.5mm,blue,fill=blue,fill opacity=0.15,draw,thick,fit=(tbl-6-8)] {};
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=forwardMoreLogic]{forwarding two stages?}
+\begin{tikzpicture}[circuit logic US]
+    \tikzset{
+           label distance=1pt,
+        pipeline regs/.style={thin},
+        rAPreConnect/.style={alt=<4->{opacity=0}{}},
+        rBPreConnect/.style={alt=<6->{opacity=0}{}},
+        deValAIn/.style={visible on=<0>},
+        deValBIn/.style={visible on=<0>},
+    }
+    \pipeAddQWide % FIXME: was late regs?
+    \pipeAddQRegBoxes
+
+    \node[above=3cm of fetchBox,xshift=5cm,inner sep=.1mm] (l1) {
+\begin{lstlisting}[style=smaller,
+    moredelim={**[is][\btHL<1|handout:0>]{@1@}{@}},
+    moredelim={**[is][\btHL<3|handout:0>]{@3@}{@}},
+    moredelim={**[is][\btHL<4-5|handout:0>]{@4@}{@}},
+    moredelim={**[is][\btHL<5|handout:0>]{@5@}{@}},
+]
+addq %r8, @1@%r9@   // (1) R9 <- R8 (800) + R9 (900)
+\end{lstlisting}
+    };
+
+    \node[inner sep=.1mm,anchor=north west] (l2) at (l1.south west) {
+\begin{lstlisting}[style=smaller,
+]
+addq %rax, %rax // (2) 
+\end{lstlisting}
+    };
+    \node[inner sep=.1mm,anchor=north west] (l3) at (l2.south west) {
+\begin{lstlisting}[style=smaller,
+    moredelim={**[is][\btHL<1|handout:0>]{@1@}{@}},
+    moredelim={**[is][\btHL<3|handout:0>]{@3@}{@}},
+    moredelim={**[is][\btHL<4-5|handout:0>]{@4@}{@}},
+    moredelim={**[is][\btHL<5|handout:0>]{@5@}{@}},
+]
+addq @1@%r9@, %r10  // (3) R10 <- R9 (1700) + R10 (1000)
+\end{lstlisting}
+        };
+
+    \tikzset{stageLine/.style={red,thick,densely dotted,Latex-}}
+    \tikzset{stageLineR/.style={red,thick,densely dotted,-Latex}}
+
+        \begin{scope}[overlay]
+            \node[red,font=\scriptsize] (regBox2) at ([xshift=-3cm,yshift=.5cm]fdBox.east) {reg \#s 9, 10 from (3)};
+            %\draw[stageLineR] (regBox2.east) -- (fdDstE);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcA.east);
+            \draw[stageLineR] (regBox2.east) -- (fdSrcB.east);
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox1) at ([xshift=.9cm,yshift=.5cm]deBox.west) {reg \# 9,\\R9=\textbf{1700};\\ R10=1000 (3)};
+            \draw[stageLineR] (valBox1.west) -- (deDstE.west);
+            \draw[stageLineR] (valBox1.west) -- (deValA.west);
+            \draw[stageLineR] (valBox1.west) -- (deValB.west);
+            \node[blue,font=\scriptsize,align=left,anchor=west] (valBox2) at ([xshift=.9cm,yshift=-.5cm]ewBox.west) {RAX values from (2)};
+            \draw[stageLineR,blue] (valBox2.west) -- (ewDstE.east);
+            \draw[stageLineR,blue] (valBox2.west) -- (ewValE.east);
+
+            \node[red,font=\scriptsize,align=left,anchor=west] (valBox3) at ([xshift=-4cm,yshift=-.5cm]ewBox.west) {reg \#9, R9=1700 from (1)};
+            \draw[stageLineR] (valBox3.east) -- (ewDstE.west);
+            \draw[stageLineR] (valBox3.east) -- (ewValE.west);
+
+            \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nnn,thick,fill=white,anchor=input 1,yshift=.8cm]
+                 (postValAMux) at ([xshift=-.7cm]deValA.west) {MUX};
+            \node[draw,mux,global scale=0.20,minimum height=3cm,inputs=nnn,thick,fill=white,anchor=input 1,yshift=-.4cm]
+                 (postValBMux) at ([xshift=-.7cm]deValB.west) {MUX};
+            \draw[a] (regRead1) -- ++(.1cm,0cm) |- (postValAMux.input 1);
+            \draw[a] (postValAMux.output) -- (deValA);
+
+            \draw[aN] (ewValE) -- ++(.45cm,0cm) -- ++(0cm,.3cm) -|
+                ([xshift=-.5cm,yshift=-.15cm]postValBMux.input 1);
+            \draw[a]
+                ([xshift=-.5cm,yshift=.1cm]postValBMux.input 1) --
+                ([xshift=-.5cm]postValAMux.input 2) -- (postValAMux.input 2);
+            \draw[a] (regRead2) -- ++(.1cm,0cm) |- (postValBMux.input 1);
+            \draw[a] (postValBMux.output) -- (deValB);
+            \draw[a] (ewValE) -- ++(.45cm,0cm) -- ++(0cm,.3cm) -|
+                ([xshift=-.5cm]postValBMux.input 2) -- (postValBMux.input 2);
+
+            \draw[a] (ewValE.west) -- ++ (-.45cm,0cm) -- ++ (0cm,.6cm) -|
+                ([xshift=-.8cm]postValBMux.input 3) -- ([xshift=-.6cm]postValBMux.input 3)
+                ++(.2cm,0cm) -- (postValBMux.input 3);
+            \draw[a] (ewValE.west) -- ++ (-.45cm,0cm) -- ++ (0cm,.6cm) -|
+                ([xshift=-.8cm]postValAMux.input 3) -- ([xshift=-.6cm]postValAMux.input 3)
+                ++(.2cm,0cm) -- (postValAMux.input 3);
+            
+        \draw[dotted,red,line width=1mm,opacity=0.5] ([xshift=-.45cm]ewValE.west) -- ++ (0cm, .6cm) -| ([xshift=-.8cm]postValAMux.input 3) -- (postValAMux.input 3) -- (postValAMux.output) -- (deValA);
+        \end{scope}
+\end{tikzpicture}
+\end{frame}

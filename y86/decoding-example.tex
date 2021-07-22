@@ -1,0 +1,101 @@
+\begin{frame}<0>[fragile,label=Y86decode1]{Y86-64 decoding}
+\small
+\begin{tabular}{l}
+\tt \textbf<3>{\myemph<2->{2}0 10} \textbf<4>{\myemph<2->{6}0 20 \myemph<2->{6}1 37} \textbf<5>{\myemph<2->{7}2 84 00 00 00 00 00 00 00}\\
+\tt \myemph<2->{2}0 12 \myemph<2->{2}0 01 \myemph<2->{7}0 68 00 00 00 00 00 00 00
+\end{tabular}
+\vspace{.25cm}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+\vspace{0cm}
+\lstset{belowskip=0pt,aboveskip=0pt}
+\setbeamerfont*{itemize/enumerate subbody}{size=\fontsize{13}{15}}%
+\setbeamertemplate{itemize subitem}[default]%
+\begin{visibleenv}<3->
+\begin{lstlisting}
+rrmovq %rcx, %rax
+\end{lstlisting}
+\end{visibleenv}
+    \begin{onlyenv}<3> 
+    \begin{itemize}\item\itemflush\begin{itemize}
+    \item $0$ as cc: always
+    \item $1$ as reg: {\tt \%rcx}
+    \item $0$ as reg: {\tt \%rax}
+    \end{itemize}\end{itemize}
+    \end{onlyenv}
+\begin{visibleenv}<4->
+\begin{lstlisting}
+addq   %rdx, %rax
+subq   %rbx, %rdi
+\end{lstlisting}
+\end{visibleenv}
+    \begin{onlyenv}<4>
+        \begin{itemize}\item\itemflush\begin{itemize}
+            \item $0$ as fn: {\tt add}
+            \item $1$ as fn: {\tt sub}
+        \end{itemize}\end{itemize}
+    \end{onlyenv}
+\begin{visibleenv}<5->
+\begin{lstlisting}
+jl     0x84
+\end{lstlisting}
+\end{visibleenv}
+    \begin{onlyenv}<5>
+        \begin{itemize}\item\itemflush\begin{itemize}
+            \item $2$ as cc: {\tt l} (less than)
+            \item hex $\mathtt{84\,00}$\ldots{} as little endian \Dest: 0x84
+        \end{itemize}\end{itemize}
+    \end{onlyenv}
+\begin{visibleenv}<6->
+\begin{lstlisting}
+rrmovq %rcx, %rdx
+rrmovq %rax, %rcx
+jmp    0x68
+\end{lstlisting}
+\end{visibleenv}
+\vspace{0cm}
+\end{column}
+\begin{column}{0.5\textwidth}
+\vspace{0cm}
+\begin{adjustbox}{max size={\textwidth}{\textheight}}
+\begin{tikzpicture}
+\tikzset{extra box shorter width/.style={text width=.025cm}}
+\instrEncodingTable
+\draw[red!60,dashed,thick] (table-1-19.north east) -- (table-10-19.south east);
+\draw[red!60,dashed,thick] (table-1-21.north east) -- (table-7-21.south east);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{0cm}
+\end{column}
+\end{columns}
+\end{frame}
+
+\againframe<1>{Y86decode1}
+
+\begin{frame}<1>[fragile,label=Y86decodeEx]{Y86-64 decoding}
+\small
+\begin{tabular}{l}
+\tt \textbf<3>{\myemph<2->{2}0 10} \textbf<4>{\myemph<2->{6}0 20 \myemph<2->{6}1 37} \textbf<5>{\myemph<2->{7}2 84 00 00 00 00 00 00 00}\\
+\tt \myemph<2->{2}0 12 \myemph<2->{2}0 01 \myemph<2->{7}0 68 00 00 00 00 00 00 00
+\end{tabular}
+\vspace{.25cm}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+exercise: types of first three instructions?
+\end{column}
+\begin{column}{0.5\textwidth}
+\vspace{0cm}
+\begin{adjustbox}{max size={\textwidth}{\textheight}}
+\begin{tikzpicture}
+\tikzset{extra box shorter width/.style={text width=.025cm}}
+\instrEncodingTable
+\draw[red!60,dashed,thick] (table-1-19.north east) -- (table-10-19.south east);
+\draw[red!60,dashed,thick] (table-1-21.north east) -- (table-7-21.south east);
+\end{tikzpicture}
+\end{adjustbox}
+\vspace{0cm}
+\end{column}
+\end{columns}
+\end{frame}
+
+\againframe<2-6>{Y86decode1}

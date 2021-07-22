@@ -1,0 +1,53 @@
+
+\begin{frame}[fragile,label=stallBubbleEx]{exercise}
+\begin{Verbatim}[fontsize=\small]
+register aB {
+    value : 8 = 0xFF;
+}
+...
+\end{Verbatim}
+\begin{tikzpicture}
+\matrix[tight matrix,nodes={font=\small,text width=2cm,minimum height=.43cm}] (tl) {
+time \& a\_value \& B\_value \& stall\_B \& bubble\_B \\
+0 \& \tt 0x01 \& \tt 0xFF \& \tt 0 \& \tt 0 \\
+1 \& \tt 0x02 \& \tt ???\& \tt 1 \& \tt 0 \\
+2 \& \tt 0x03 \& \tt ???\& \tt 0 \& \tt 0 \\
+3 \& \tt 0x04 \& \tt ???\& \tt 0 \& \tt 1 \\
+4 \& \tt 0x05 \& \tt ???\& \tt 0 \& \tt 0 \\
+5 \& \tt 0x06 \& \tt ???\& \tt 0 \& \tt 0 \\
+6 \& \tt 0x07 \& \tt ???\& \tt 1 \& \tt 0 \\
+7 \& \tt 0x08 \& \tt ???\& \tt 1 \& \tt 0 \\
+8 \&          \& \tt ???\\
+};
+\begin{scope}[overlay]
+    \node[draw,thick,anchor=south west,align=left] at ([yshift=.1cm,xshift=-2cm]tl-1-4.north east) {
+        stall: keep old value \\
+        bubble: store default value 
+    };
+\end{scope}
+\end{tikzpicture}
+\end{frame}
+% FIXME: in-class demo?
+
+\begin{frame}[fragile,label=stallBubbleExRes]{exercise result}
+\begin{Verbatim}[fontsize=\small]
+register aB {
+    value : 8 = 0xFF;
+}
+...
+\end{Verbatim}
+\begin{tikzpicture}
+\matrix[tight matrix,nodes={font=\small,text width=2cm,minimum height=.43cm}] {
+time \& a\_value \& B\_value \& stall\_B \& bubble\_B \\
+0 \& \tt 0x01 \& \tt 0xFF \& \tt 0 \& \tt 0 \\
+1 \& \tt 0x02 \& \tt 0x01 \& \tt 1 \& \tt 0 \\
+2 \& \tt 0x03 \& \tt 0x01 \& \tt 0 \& \tt 0 \\
+3 \& \tt 0x04 \& \tt 0x03 \& \tt 0 \& \tt 1 \\
+4 \& \tt 0x05 \& \tt 0xFF \& \tt 0 \& \tt 0 \\
+5 \& \tt 0x06 \& \tt 0x05 \& \tt 0 \& \tt 0 \\
+6 \& \tt 0x07 \& \tt 0x06 \& \tt 1 \& \tt 0 \\
+7 \& \tt 0x08 \& \tt 0x06 \& \tt 1 \& \tt 0 \\
+8 \&          \& \tt 0x06 \&       \&        \\
+};
+\end{tikzpicture}
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}[fragile,label=CnotCpp]{example: C that is not C++}
+\begin{itemize}
+\item valid C and invalid C++:
+\begin{minted}{c}
+char *str = malloc(100);
+\end{minted}
+\item valid C and valid C++:
+\begin{minted}{c}
+char *str = (char *) malloc(100);
+\end{minted}
+\item valid C and invalid C++:
+\begin{minted}{c}
+int class = 1;
+\end{minted}
+\end{itemize}
+\end{frame}

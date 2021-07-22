@@ -1,0 +1,78 @@
+\begin{frame}[fragile,label=intrSum]{vector intrinsics: add example}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    moredelim=**[is][\btHL<all:3>]{~3~}{~end~},
+    moredelim=**[is][\btHL<all:4>]{~4~}{~end~},
+    morekeywords={\_\_m256i},
+}
+\begin{lstlisting}
+int A[512], B[512];
+
+for (int i = 0; i < 512; i += 8) {
+  // "si256" --> 256 bit integer
+  // a_values = {A[i], A[i+1], ..., A[i+7]} (8 x 32 bits)
+  ~2~__m256i~end~ a_values = ~3~_mm256_loadu_si256~end~((~2~__m256i~end~*) &A[i]);
+  // b_values = {B[i], B[i+1] ..., A[i+7]} (8 x 32 bits)
+  ~2~__m256i~end~ b_values = ~3~_mm256_loadu_si256~end~((~2~__m256i~end~*) &B[i]);
+ 
+  // add eight 32-bit integers
+  // sums = {A[i] + B[i], A[i+1] + B[i+1], ...., A[i+7] + B[i+7]}
+  ~2~__m256i~end~ sums = ~4~_mm256_add_epi32~end~(a_values, b_values);
+ 
+  // {A[i], A[i+1], A[i+2], A[i+3], ..., A[i+7]} = sums
+  ~3~_mm256_storeu_si256~end~((~2~__m256i~end~*) &A[i], sums);
+}
+\end{lstlisting}
+\begin{tikzpicture}[overlay,remember picture]
+\coordinate (infoBox) at ([yshift=-1cm]current page.north);
+\begin{visibleenv}<all:2>
+    \node[draw=red,ultra thick,anchor=north,fill=white,align=left] at (infoBox) {
+        special type {\tt \_\_m256i} --- ``256 bits of integers'' \\
+        other types: {\tt \_\_m256} (floats), {\tt \_\_m128d} (doubles)
+    };
+\end{visibleenv}
+
+\begin{visibleenv}<all:3>
+    \node[draw=red,ultra thick,anchor=north,align=left,fill=white] at (infoBox) {
+        functions to store/load \\
+        {\tt si256} means ``256-bit integer value'' \\
+        {\tt u} for ``unaligned'' (otherwise, pointer address must be multiple of 32) 
+    };
+\end{visibleenv}
+
+\begin{visibleenv}<4>
+    \node[draw=red,ultra thick,anchor=north,align=left,fill=white] at ([yshift=-2cm]infoBox) {
+        function to add \\
+        {\tt epi32} means ``8 32-bit integers''
+    };
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=intrSizes]{vector intrinsics: different size}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    moredelim=**[is][\btHL<all:3>]{~3~}{~end~},
+    moredelim=**[is][\btHL<all:4>]{~4~}{~end~},
+    morekeywords={\_\_m128i},
+}
+\begin{lstlisting}
+~2~long~end~ A[512], B[512]; /* instead of int */
+...
+for (int i = 0; i < 512; i += ~2~4~end~) {
+  // a_values = {A[i], A[i+1], A[i+2], A[i+3]} (4 x 64 bits)
+   __m256i a_values = _mm256_loadu_si256((__m256i*) &A[i]);
+  // b_values = {B[i], B[i+1], B[i+2], B[i+3]} (4 x 64 bits)
+   __m256i b_values = _mm256_loadu_si256((__m256i*) &B[i]);
+   // add four 64-bit integers: vpaddq %ymm0, %ymm1
+   // sums = {A[i] + B[i], A[i+1] + B[i+1], ...}
+   __m256i sums = _mm256_add_~2~epi64~end~(a_values, b_values);
+   // {A[i], A[i+1], A[i+2], A[i+3]} = sums
+   _mm256_storeu_si256((__m256i*) &A[i], sums);
+}
+\end{lstlisting}
+\end{frame}

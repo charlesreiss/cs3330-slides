@@ -1,0 +1,40 @@
+\begin{frame}[fragile,label=loop3]{while-to-assembly (1)}
+\begin{ccodeS}
+while (x >= 0) {
+    foo()
+    x--;
+} 
+\end{ccodeS}
+\hrule
+\begin{visibleenv}<2->
+\begin{ccodeS}
+start_loop:
+    if (x < 0) goto end_loop;
+    foo()
+    x--;
+    goto start_loop:
+end_loop:
+\end{ccodeS}
+\end{visibleenv}
+\end{frame}
+
+\begin{frame}[fragile,label=loop4]{while-to-assembly (2)}
+\begin{ccodeS}
+start_loop:
+    if (x < 0) goto end_loop;
+    foo()
+    x--;
+    goto start_loop:
+end_loop:
+\end{ccodeS}
+\hrule
+\begin{lstlisting}[language=myasm,style=small]
+start_loop:
+    cmpq $0, %r12 
+    jl end_loop // jump if r12 - 0 < 0
+    call foo
+    subq $1, %r12
+    jmp start_loop 
+\end{lstlisting}
+\end{frame}
+

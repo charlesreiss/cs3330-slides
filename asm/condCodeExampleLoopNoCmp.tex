@@ -1,0 +1,21 @@
+
+\begin{frame}[fragile,label=omitCmp]{omitting the cmp}
+\begin{lstlisting}[language=myasm,style=small]
+    movq $99, %r12          // x (r12) <- 99
+start_loop:
+    call foo                // foo()
+    subq $1, %r12           // x (r12) <- x - 1
+    cmpq $0, %r12  
+    // compute x (r12) - 0 + set cond. codes 
+    jge  start_loop         // r12 >= 0?
+                            // or result >= 0?
+\end{lstlisting}
+\hrule
+\begin{lstlisting}[language=myasm,style=small]
+    movq $99, %r12          // x (r12) <- 99
+start_loop:
+    call foo                // foo()
+    subq $1, %r12           // x (r12) <- x - 1
+    jge  start_loop         // new r12 >= 0?
+\end{lstlisting}
+\end{frame}

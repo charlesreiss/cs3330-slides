@@ -1,0 +1,57 @@
+\usetikzlibrary{arrows.meta,calc,fit}
+
+\begin{frame}{vector add picture (A[x] = A[x] + B[x])}
+\begin{tikzpicture}
+\tikzset{>=Latex}
+\newcommand{\myfactor}{.73}
+\draw[fill=blue!20,thick] (1, 0) rectangle (14, 1);
+\draw[fill=green!20,thick] (1, 3) rectangle (14, 4);
+\foreach \y in {3,4,5,6,7,...,16,17} {
+    \pgfmathsetmacro\x{\y * \myfactor}
+    \draw (\x, 0) -- (\x, 1);
+    \node[font=\fontsize{8.5}{9.5}\selectfont] at ($(\x, 0.5) + (.4, 0)$) {A[\y]};
+    \draw (\x, 3) -- (\x, 4);
+    \node[font=\fontsize{8.5}{9.5}\selectfont] at ($(\x, 3.5) + (.4, 0)$) {B[\y]};
+}
+    \draw (18 * \myfactor,0) --++ (0, 1);
+    \draw (18 * \myfactor,3) --++ (0, 1);
+    \node[font=\small] at (19 *\myfactor, .5) {\ldots};
+    \node[font=\small] at (19 *\myfactor, 3.5) {\ldots};
+    \node[font=\small] at (1.5, .5) {\ldots};
+    \node[font=\small] at (1.5, 3.5) {\ldots};
+
+\draw[ultra thick] (8 * \myfactor, 0) rectangle (16 * \myfactor, 1);
+\draw[ultra thick] (8 * \myfactor, 3) rectangle (16 * \myfactor, 4);
+\draw[->,very thick] (7, 0) |- ++(2.5cm, -.5cm) node[left,fill=white] {v\textbf{mov}dqu}
+                            -- ++(.5cm, 0cm) node[right] (xmm0) {\%ymm0};        
+
+\draw[->,very thick] (7, 3) |- ++(2.5cm, -.5cm) node[left,fill=white] (load example) {v\textbf{mov}dqu}
+                            -- ++(.5cm, 0cm) node[right] (xmm1) {\%ymm1};        
+
+\draw[->,very thick] (xmm0.east) -- ++(2cm,0cm) node[right,fill=white] (paddd){vp\textbf{add}d};
+\draw[->,very thick] (xmm1.east) -| (paddd.north);
+
+\draw[->,very thick] (paddd.south) |- ++(-2cm, -2cm) node[left] (ymm0Final) {\%ymm0};
+
+\begin{scope}[shift={(ymm0Final.west)}]
+\draw[fill=yellow!20,very thick] (0,-1) rectangle (-\myfactor * 8, 1.0);
+\foreach \x/\y in {8,9,10,11,12,13,14,15} {
+    \pgfmathsetmacro\x{-(15-\y+8-7)*\myfactor}
+    \draw (\x, -1) -- (\x, 1);
+    \node[font=\fontsize{9}{10}\selectfont,align=center] (final\y) at ($(\x, 0) + (.4, 0)$) {A[\y]\\+\\B[\y]};
+}
+\end{scope}
+\begin{visibleenv}<2>
+\node[inner sep=0mm,fit=(load example),draw=red,very thick,label={[font=\small,red]south:assembly for load 256-bits}] {};
+\end{visibleenv}
+\begin{visibleenv}<3>
+\node[inner sep=0mm,fit=(paddd),draw=red,very thick,label={[font=\small,red]south west:SIMD add 256-bits of ints}] {};
+\end{visibleenv}
+\begin{visibleenv}<4->
+\draw[dotted,very thick,->] ([xshift=-1mm]final8.west) -- ++(-1cm,0cm) |- (6, -0.9) node[midway,fill=white] (store example) {v\textbf{mov}ups} -- (6, 0);
+\end{visibleenv}
+\begin{visibleenv}<4>
+\node[inner sep=0mm,fit=(store example),draw=red,very thick,label={[font=\small,red]north:store 256-bits of ints}] {};
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}

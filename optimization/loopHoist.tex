@@ -1,0 +1,73 @@
+\begin{frame}[fragile,label=redundCalc1]{remove redundant operations (1)}
+    \lstset{language=C,style=small}
+\begin{lstlisting}
+int number_of_As(const char *str) {
+    int count = 0;
+    for (int i = 0; i < strlen(str); ++i) {
+        if (str[i] == 'a')
+            count++;
+    }
+    return count;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=redundCalc1Fix]{remove redundant operations (1, fix)}
+    \lstset{language=C,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+int number_of_As(const char *str) {
+    int count = 0;
+    int length = ~2~strlen(str)~end~;
+    for (int i = 0; i < length; ++i) {
+        if (str[i] == 'a')
+            count++;
+    }
+    return count;
+}
+\end{lstlisting}
+    \begin{itemize}
+        \item call strlen once, not once per character!
+        \item Big-Oh improvement!
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=removeRedundant2]{remove redundant operations (2)}
+    \lstset{language=C,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+int shiftArray(int *source, int *dest, int N, int amount) {
+    for (int i = 0; i < N; ++i) {
+        if (i + amount < N)
+            dest[i] = source[i + amount];
+        else
+            dest[i] = source[N - 1];
+    }
+}
+\end{lstlisting}
+    \begin{itemize}
+    \item compare i + amount to N many times
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=removeRedundant2Fix]{remove redundant operations (2, fix)}
+    \lstset{language=C,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+int shiftArray(int *source, int *dest, int N, int amount) {
+    int i;
+    for (i = 0; i + amount < N; ++i) {
+        dest[i] = source[i + amount];
+    }
+    for (; i < N; ++i) {
+        dest[i] = source[N - 1];
+    }
+}
+\end{lstlisting}
+    \begin{itemize}
+    \item eliminate comparisons
+    \end{itemize}
+\end{frame}

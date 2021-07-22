@@ -1,0 +1,127 @@
+% vectorizing matmul
+
+\begin{frame}[fragile,label=mmSerial]{matrix multiply}
+\lstset{language=C,style=small}
+\begin{lstlisting}
+void matmul(unsigned int *A, unsigned int *B, unsigned int *C) {
+    for (int k = 0; k < N; ++k)
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                C[i * N + j] += A[i * N + k] * B[k * N + j];
+}
+\end{lstlisting}
+(simple version, no cache blocking, no avoiding aliasing beteeen C, B, A,\ldots)
+\end{frame}
+
+\begin{frame}[fragile,label=sqSerialUnrolled]{matmul unrolled}
+\lstset{language=C,style=smaller}
+\begin{lstlisting}
+void matmul(unsigned int *A, unsigned int *B, unsigned int *C) {
+  for (int k = 0; k < N; ++k) {
+    for (int i = 0; i < N; ++i)
+      for (int j = 0; j < N; j += 8) {
+        /* goal: vectorize this */
+        C[i * N + j + 0] += A[i * N + k] * B[k * N + j + 0];
+        C[i * N + j + 1] += A[i * N + k] * B[k * N + j + 1];
+        C[i * N + j + 2] += A[i * N + k] * B[k * N + j + 2];
+        C[i * N + j + 3] += A[i * N + k] * B[k * N + j + 3];
+        C[i * N + j + 4] += A[i * N + k] * B[k * N + j + 4];
+        C[i * N + j + 5] += A[i * N + k] * B[k * N + j + 5];
+        C[i * N + j + 6] += A[i * N + k] * B[k * N + j + 6];
+        C[i * N + j + 7] += A[i * N + k] * B[k * N + j + 7];
+      }
+}
+\end{lstlisting}
+(NB: would probably also want to do cache blocking\ldots)
+\end{frame}
+
+\begin{frame}[fragile,label=sqVectInstr]{handy intrinsic functions for matmul}
+    \begin{itemize}
+        \item {\tt \_mm256\_set1\_epi32} --- load eight copies of a 32-bit value into a 128-bit value
+            \begin{itemize}
+            \item instructions generated vary; one example: {\tt vmovd} + {\tt vpbroadcastd}
+            \end{itemize}
+        \item {\tt \_mm256\_mullo\_epi32} --- multiply eight pairs of 32-bit values, give lowest 32-bits of results
+            \begin{itemize}
+            \item generates {\tt vpmulld}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sqSerialUnrolledExpand]{vectorizing matmul}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    moredelim=**[is][\btHL<all:3>]{~3~}{~end~},
+    moredelim=**[is][\btHL<all:4>]{~4~}{~end~},
+    moredelim=**[is][\btHL<all:5>]{~5~}{~end~},
+}
+\begin{lstlisting}
+/* goal: vectorize this */
+~2~C[i * N + j + 0]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~B[k * N + j + 0]~end~;
+~2~C[i * N + j + 1]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~B[k * N + j + 1]~end~;
+...
+~2~C[i * N + j + 6]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~B[k * N + j + 6]~end~;
+~2~C[i * N + j + 7]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~B[k * N + j + 7]~end~;
+\end{lstlisting}
+\hrulefill
+\begin{onlyenv}<all:2>
+\begin{lstlisting}
+// load eight elements from C
+Cij = _mm256_loadu_si256((__m256i*) &C[i * N + j + 0]);
+... // manipulate vector here
+// store eight elements into C
+_mm_storeu_si256((__m256i*) &C[i * N + j + 0], Cij);
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:3>
+\begin{lstlisting}
+// load eight elements from B
+Bkj = _mm256_loadu_si256((__m256i*) &B[k * N + j + 0]);
+... // multiply each by B[i * N + k] here
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:4>
+\begin{lstlisting}
+// load eight elements starting with B[k * n + j]
+Bkj = _mm256_loadu_si128((__m256i*) &B[k * N + j + 0]);
+// load four copies of A[i * N + k]
+Aik = _mm256_set1_epi32(A[i * N + k]);
+// multiply each pair
+multiply_results = _mm256_mullo_epi32(Aik, Bkj);
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:5>
+\begin{lstlisting}
+Cij = _mm256_add_epi32(Cij, multiply_results);
+// store back results
+_mm256_storeu_si256(..., Cij);
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
+
+
+
+\begin{frame}[fragile,label=sqVectCode]{matmul vectorized}
+\lstset{language=C,style=smaller,morekeywords={\_\_m256i},mathescape=true}
+\begin{lstlisting}
+__m256i Cij, Bkj, Aik, Aik_times_Bkj;
+
+// Cij = {$C_{i,j}$, $C_{i,j+1}$, $C_{i,j+2}$, ..., $C_{i,j+7}$}
+Cij = _mm256_loadu_si256((__m256i*) &C[i * N + j]);
+// Bkj = {$B_{k,j}$, $B_{k,j+1}$, $B_{k,j+2}$, ..., $B_{k,j+7}$}
+Bkj = _mm256_loadu_si256((__m256i*) &B[k * N + j]);
+
+// Aik = {$A_{i,k}$, $A_{i,k}$, ..., $A_{i,k}$}
+Aik = _mm256_set1_epi32(A[i * N + k]);
+
+// Aik_times_Bkj = {$A_{i,k}\times B_{k,j}$, $A_{i,k}\times B_{k,j+1}$, $A_{i,k}\times B_{k,j+2}$, ..., $A_{i,k}\times B_{k,j+7}$}
+Aik_times_Bkj = _mm256_mullo_epi32(Aij, Bkj);
+
+// Cij= {$C_{i,j} + A_{i,k}\times B_{k,j}$, $C_{i,j+1} + A_{i,k}\times B_{k,j+1}$, ...}
+Cij = _mm256_add_epi32(Cij, Aik_times_Bkj);
+
+// store Cij into C
+_mm256_storeu_si256((__m256i*) &C[i * N + j], Cij);
+\end{lstlisting}
+\end{frame}
+

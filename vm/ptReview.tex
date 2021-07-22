@@ -1,0 +1,14 @@
+\begin{frame}{page tables}
+    \begin{itemize}
+    \item program memory = virtual; real memory = physical
+    \item each memory divided into fixed-sizes \myemph{pages}
+    \item each virtual page has a \myemph{page table entry}:
+        \begin{itemize}
+        \item has location of physical page (if any)
+        \item has valid bit
+        \item has permission bits
+        \end{itemize}
+    \item all page table entries stored in page table
+    \item permission or validity error triggers \myemph{exception}
+    \end{itemize}
+\end{frame}

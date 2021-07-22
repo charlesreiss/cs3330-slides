@@ -1,0 +1,23 @@
+\begin{frame}{last time}
+    \begin{itemize}
+    \item adding pipelining:
+        \begin{itemize}
+        \item divide into \textit{stages}
+        \item values that cross stages go into pipeline registers
+        \item each stage: read from previous, write to next
+        \end{itemize}
+    \item pipeline execution:
+        \begin{itemize}
+        \item instruction 1 in writeback
+        \item instruction 2 in memory
+        \item \ldots
+        \item instruction 5 in fetch
+        \end{itemize}
+    \item hazards --- pipeline can't work ``naturally''
+        \begin{itemize}
+        \item data: wrong value
+        \item control: wrong instruction to fetch
+        \item generic solution: \myemph{stalling}
+        \end{itemize}
+    \end{itemize}
+\end{frame}

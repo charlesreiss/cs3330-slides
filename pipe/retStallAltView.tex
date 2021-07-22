@@ -1,0 +1,35 @@
+\begin{frame}[fragile,label=altTimelineRet]{alternative view}
+\lstset{
+    language=myasm,
+    morekeywords={mrmovq,irmovq,rmmovq,rrmovq},
+    moredelim=**[is][\btHL<2-3|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<2-4|handout:0>]{~23~}{~end~},
+    moredelim=**[is][\btHL<4|handout:0>]{~3~}{~end~},
+    moredelim=**[is][\btHL<5|handout:0>]{~4~}{~end~},
+    moredelim=**[is][\btHL<5-6|handout:0>]{~45~}{~end~},
+    moredelim=**[is][\btHL<6|handout:0>]{~5~}{~end~},
+    moredelim=**[is][\btHL<7|handout:0>]{~6~}{~end~},
+}
+\begin{tikzpicture}
+\matrix[tight matrix no line,
+        nodes={text width=.6cm,font=\tt,minimum height=.7cm,align=center},
+        column 1/.style={nodes={text width=3cm,align=left}}] (tbl) {
+|[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
+                                    \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \\
+\lstinline|call|   \& F \& D \& E \& M \& W \& ~ \& ~ \& ~ \& ~ \\
+\lstinline|ret|    \& ~ \& F \& D \& E \& M \& W \\
+\lstinline|addq|   \& ~ \& ~ \& F \& F \& F \& F \& D \& E \& M \& W\\
+};
+\tikzset{
+    forwardLine/.style={blue!60!black,thick,-Latex},
+    hiForwardOn/.style={alt=#1{blue}{}},
+    forwardLineB/.style={red,dashed,thick,-Latex},
+    sepLine/.style={densely dotted,thick},
+};
+
+\foreach \x in {1,...,10} {
+    \draw[sepLine] (tbl-1-\x.north east) -- (tbl-4-\x.south east);
+}
+\end{tikzpicture}
+\end{frame}
+

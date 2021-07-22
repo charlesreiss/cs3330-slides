@@ -1,0 +1,74 @@
+\usetikzlibrary{patterns}
+
+\begin{frame}[fragile,label=mem]{two memories}
+    \begin{tikzpicture}
+        \node[mem] (imem) {Instr. \\ Mem.};
+        \coordinate (imemData) at (imem.east);
+        \coordinate (imemAddr) at (imem.west);
+        \draw[thick,-latex] (imemData) -- +(.5cm,0cm) node [font=\small,right] (i10bytes label) { data };
+        \draw[thick,latex-] (imemAddr) -- +(-.3cm,0cm) node [font=\small,left] (pc label) { address };
+        \onslide<2->{
+            \node[mem,right=6cm of imem] (dmem) {Data \\ Mem.};
+            \coordinate (dmemInHigh) at ($(dmem.west) + (0cm,-.5cm)$);
+            \coordinate (dmemInLow) at ($(dmem.west) + (0cm,.5cm)$);
+            \coordinate (dmemDataOut) at (dmem.east);
+            \coordinate (dmemWE) at ([xshift=-.2cm]dmem.south);
+            \coordinate (dmemRE) at ([xshift=.2cm]dmem.south);
+            \draw[thick,-latex] (dmemDataOut) -- +(.3cm,0cm) node[right,font=\small] (mem out label) {data output};
+            \draw[thick,latex-] (dmemInHigh) -- +(-.3cm,0cm) node[left,font=\small] (mem addr label) { address };
+            \draw[thick,latex-] (dmemInLow) -- +(-.3cm,0cm) node[left,font=\small,align=right] (mem input label) { input \\ to write };
+
+            \draw[thin,latex-] (dmemWE) |- +(-1cm,-1.5cm) node[left,inner sep=.05mm,font=\small] (write enable label) { write enable? };
+            \draw[thin,latex-] (dmemRE) |- +(1cm,-1.5cm) node[right,inner sep=.05mm,font=\small] (read enable label) { read enable? };
+        }
+        \begin{scope}[shift={($(imem.south east) + (-1, -4)$)}] 
+            \node[anchor=east,font=\small] at (0,-.25) {address input};
+            \fill[color=red!80!black] (0.1, 0) rectangle (2.0, -.5);
+            \fill[pattern=north west lines] (0.0, -.6) rectangle (0.9, -1.1);
+            \fill[color=blue!80!black] (0.9, -.6) rectangle (2.0, -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {data output};
+            \draw[thin,-latex] (0.0, -1.3) -- (1.5, -1.3) node[right,font=\scriptsize] {time};
+        \end{scope}
+
+        \onslide<3->{
+        \begin{scope}[shift={($(dmem.south east) + (-1, -3.9)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (2.3, 0);
+            \draw[very thick,opacity=0.2] (2.3,0) -- (3,0) -- (3,1) --  (4,1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+        \end{scope}
+        \begin{scope}[shift={($(dmem.south east) + (-1, -4)$)}] 
+            \node[anchor=east,font=\small] at (0,-.25) {address input};
+            \fill[color=orange!70!black] (0.1, 0) rectangle (1.03, -.5);
+            \node[anchor=east,font=\small] at (0,-.85) {input to write};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[color=green!60!white] (0.2, -.6) rectangle (1.02, -1.1);
+            \node[anchor=east,font=\small] at (0,-1.45) {value in memory};
+            \fill[color=blue!80!black] (0, -1.2) rectangle (0.99, -1.7);
+            \fill[color=green!60!white] (1.0, -1.2) rectangle (2.3, -1.7);
+        \end{scope}
+        }
+
+        \begin{visibleenv}<4>
+            \tikzset{
+                hcl name/.style={orange!50!black,font=\small\tt},
+            }
+            \node[hcl name,anchor=north] at (pc label.south) {pc};
+            \node[hcl name,anchor=north] at (i10bytes label.south) {i10bytes};
+            \node[hcl name,anchor=south west] at ([yshift=-2mm]mem out label.north west) {mem\_output};
+            \node[hcl name,anchor=north east] at ([yshift=2mm]mem addr label.south east) {mem\_addr};
+            \node[hcl name,anchor=south east] at ([yshift=-2mm]mem input label.north east) {mem\_input};
+            \node[hcl name,anchor=north east] at ([yshift=-2mm]write enable label.north east) {mem\_writebit};
+            \node[hcl name,anchor=north west] at ([yshift=-2mm]read enable label.north west) {mem\_readbit};
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{really two memories??}
+    \begin{itemize}
+    \item in Y86-64 {\small (and many real CPUs)}: \\
+          writing to address $X$ in data memory: \\ changes address $X$ in instruction memory
+    \vspace{.5cm}
+    \item<2-> so really just one memory??
+    \item<2-> we'll explain when we talk about \textit{caches}
+    \end{itemize}
+\end{frame}

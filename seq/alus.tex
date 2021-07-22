@@ -1,0 +1,46 @@
+\begin{frame}[fragile,label=ALUs]{ALUs}
+    \tikzset{alu/.style={trapezium,
+            trapezium angle=30,
+            shape border rotate=270,
+            minimum width=4cm,
+            minimum height=3cm,
+            trapezium stretches=true,
+            append after command={%
+                    \pgfextra
+                        \draw (\tikzlastnode.top left corner) --
+                           (\tikzlastnode.top right corner) -- 
+                           (\tikzlastnode.bottom right corner) -- 
+                           ($(\tikzlastnode.bottom right corner)!.666!(\tikzlastnode.bottom side)$)--
+                           ([xshift=8mm]\tikzlastnode.bottom side)--
+                           ($(\tikzlastnode.bottom side)!.334!(\tikzlastnode.bottom left corner)$)--
+                           (\tikzlastnode.bottom left corner)--
+                           (\tikzlastnode.top left corner);
+                    \endpgfextra}}}
+    \begin{tikzpicture}
+        \node[alu] (alu) {ALU};
+        \draw[a] (alu.east) -- ++(0:5mm) node[right] (outLabel) {{\color{blue}A} {\it OP} {\color{green}B}};
+        \draw[a,latex-] (alu.130) -- ++(180:5mm) node[left] {\color{blue} A};
+        \draw[a,latex-] (alu.230) -- ++(180:5mm) node[left] {\color{green} B};
+        \draw[b,latex-] (alu.south) -- ++(-90:2cm) node[below] {operation select};
+        \node[draw, rectangle,below right=1cm and .2cm of outLabel, align=left] {
+            Operations needed: \\
+            add --- \addq, addresses \\
+            sub --- \subq \\
+            xor --- \xorq \\
+            and --- \andq \\
+            more?
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{ALUs not for PC increment}
+    \begin{itemize}
+    \item our processor will have one ALU
+    \vspace{.5cm}
+    \item not used for PC increment (computing next instruction address)
+        \begin{itemize}
+        \item need to do other computation in same cycle
+        \item don't need a general circuit for it
+        \end{itemize}
+    \end{itemize}
+\end{frame}

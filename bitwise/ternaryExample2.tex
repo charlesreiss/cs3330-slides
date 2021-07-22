@@ -1,0 +1,41 @@
+\begin{frame}<1-2>[fragile,label=exTernaryMultiProblem]{multibit ternary}
+    \begin{itemize}
+        \item constraint: \lstinline|x| \textit{is 0 or 1}
+        \item old solution \lstinline+((x & y) | (~x) & z) + only gets least sig. bit
+        \item \lstinline|(x ? y : z)|
+        \item<2-> {\color{green!70!black}\lstinline+(x ? y : 0)+}\lstinline+ | +{\color{blue!70!black}\lstinline+(x ? 0 : z)+}
+        \item<3-> {\color{green!70!black}\lstinline+((-x) & y)+}\lstinline+ | +{\color{blue!70!black}\lstinline+((-(x ^ 1)) & z)+}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}<1-2>[fragile,label=exTernaryMulti1]{constructing masks}
+    \begin{itemize}
+        \item constraint: \lstinline|x| \textit{is 0 or 1}
+        \item \lstinline|(x ? y : 0)|
+        \item turn into \lstinline|y & MASK|, where MASK = ???
+            \begin{itemize}
+            \item ``keep certain bits''
+            \end{itemize}
+        \item<2-> if x = 1: want {\tt 1111111111\ldots1} (keep {\tt y})
+        \item<2-> if x = 0: want {\tt 0000000000\ldots0} (want {\tt 0})
+            \vspace{.5cm}
+        \item<3-> a trick: \lstinline|-x| ({\tt -1} is {\tt 1111\ldots1})
+        \item<4-> \lstinline[basicstyle=\color{red}\tt]|((-x) & y)|
+    \end{itemize}
+\end{frame}
+
+\againframe<3>{exTernaryMulti1}
+
+% FIXME: example with numbers?
+
+\begin{frame}[fragile,label=exTernaryMulti2]{constructing other masks}
+    \begin{itemize}
+        \item constraint: \lstinline|x| \textit{is 0 or 1}
+        \item \lstinline|(x ? 0 : z)|
+        \item if x = \xcancel{1} 0: want {\tt 1111111111\ldots1}
+        \item if x = \xcancel{0} 1: want {\tt 0000000000\ldots0}
+        \item mask: \xcancel{\tt -x} \begin{visibleenv}<2-> \lstinline|-(x^1)|\end{visibleenv}
+    \end{itemize}
+\end{frame}
+
+\againframe<3>{exTernaryMultiProblem}

@@ -1,0 +1,25 @@
+\begin{frame}{exercise: pipelining improvement (1)}
+    \begin{itemize}
+    \item 1\% of instructions executed need to stall 4 cycles for hazard
+    \item 2\% stall exactly 3
+    \item 10\% stall exactly 2
+    \item 15\% stall exactly 1
+    \vspace{.5cm}
+    \item how many cycles per instruction? (compute the mean)
+    \item<2-> \iftoggle{heldback}{~}{$1 + .15 \times 1 + .10 \times 2 + .02 \times 3 + .01 \times 4 = 1.45$}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{exercise: pipelining improvement (2)}
+    \begin{itemize}
+    \item 1\% of instructions executed need to stall 4 cycles for hazard
+    \item 2\% stall exactly 3
+    \item 10\% stall exactly 2
+    \item 15\% stall exactly 1
+    \item how many cycles per instruction? \iftoggle{heldback}{}{$1.45$}
+    \item original cycle time: 1200 ps; new cycle time: 300 ps
+    \vspace{.5cm}
+    \item how much better throughput? 
+    \item<2-> \iftoggle{heldback}{~}{1 every ($1.45 \times 300 = 435$ ps) versus 1 every 1200 --- $2.76$ faster}
+    \end{itemize}
+\end{frame}

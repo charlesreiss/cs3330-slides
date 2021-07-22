@@ -1,0 +1,32 @@
+
+\begin{frame}[fragile]{goto}
+\highBox{startA}{endA}
+\highBox{startB}{endB}
+\begin{ccodeNL}
+    for (...) {
+      for (...) {
+        if (thingAt(i, j)) {
+            @\tikzmark{startA}@goto found;@\tikzmark{endA}@
+        }
+      }
+    }
+    printf("not found!\n");
+    return;
+@\tikzmark{startB}@found:@\tikzmark{endB}@
+    printf("found!\n");
+\end{ccodeNL}
+\begin{tikzpicture}[overlay,remember picture]
+\begin{scope}[every node/.style={draw,rectangle,fill=black!10!white,align=left}] 
+\onslide<2->{
+\node[xshift=3cm,yshift=.8cm,anchor=center] at (current page.center) {
+    assembly: \\
+    \texttt{jmp found}
+};
+\node[xshift=3cm,yshift=-2.8cm,anchor=center] at (current page.center) {
+    assembly: \\
+    \texttt{found:}
+};
+}
+\end{scope}
+\end{tikzpicture}
+\end{frame}

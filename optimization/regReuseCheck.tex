@@ -1,0 +1,23 @@
+\begin{frame}[fragile,label=registerReuseAuto2]{automatic register reuse}
+\begin{itemize}
+\item Compiler would need to generate overlap check:
+\end{itemize}
+\lstset{style=smaller,language=C}
+\begin{lstlisting}
+if (result > matrix + N * N || result < matrix) {
+    for (int row = 0; row < N; ++row) {
+        int sum = 0; /* kept in register */
+        for (int col = 0; col < N; ++col)
+            sum += matrix[row * N + col];
+        result[row] = sum;
+    }
+} else {
+    for (int row = 0; row < N; ++row) {
+        result[row] = 0;
+        for (int col = 0; col < N; ++col)
+            result[row] += matrix[row * N + col];
+        }
+    }
+}
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,12 @@
+\begin{frame}[label=abstraction,fragile]{layers of abstraction}
+    \begin{tikzpicture}
+        \node[draw,rectangle,minimum width=5cm] (hll) {``Higher-level'' language: C};
+            \node[left=1cm of hll] {\small \lstinline[language=C]!x += y!};
+        \node[draw,rectangle,minimum width=5cm,below=3mm of hll] (asm) {Assembly: X86-64};
+            \node[left=1cm of asm] {\small \lstinline[language=myasm]!add %rbx, %rax!};
+        \node[draw,rectangle,minimum width=5cm,below=3mm of asm] (machineCode) {Machine code: Y86};
+            \node[left=1cm of machineCode] {\small \texttt 60 03};
+        \node[draw,rectangle,minimum width=5cm,below=3mm of machineCode] (hw) {(we'll talk later)};
+        \node[draw,rectangle,minimum width=5cm,below=3mm of hw] (gates) {Logic and Registers};
+    \end{tikzpicture}
+\end{frame}

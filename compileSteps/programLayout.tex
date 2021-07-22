@@ -1,0 +1,49 @@
+\usetikzlibrary{calc,decorations.pathreplacing,fit,matrix,patterns,positioning}
+
+\begin{frame}{program memory (x86-64 Linux)}
+\begin{tikzpicture}
+\programMemoryImage
+\begin{visibleenv}<2-3>
+\programMemoryHighlight{fit=(stack)}
+    \foreach \x in {-1cm,0cm,1cm} {
+        \draw[-latex,line width=1mm,red!80!black,xshift=\x] (stack.south) ++ (\x,0cm) -- +(0cm, -.5cm);
+    };
+\end{visibleenv}
+\begin{visibleenv}<2|handout:1>
+    \node[below right=1mm of stack.south east,align=left,fill=blue!10!white] {stack \myemph{grows down} \\ ``top'' has smallest address};
+\end{visibleenv}
+\begin{pgfonlayer}{fg}
+\begin{visibleenv}<3|handout:2>
+    \matrix (stackFrame) [matrix of nodes,
+        row sep=0mm,
+        inner sep=0mm,
+        font=\small,
+        nodes={draw,rectangle,minimum width=4cm,minimum height=4mm,fill=white,align=center},
+        right=15mm of stack.south east,
+        fill=white,opacity=0.9,
+        outer sep=4mm
+    ] {
+        \ldots \\
+        argument 6 \\
+        argument 7 \\
+        \ldots \\
+        return address \\
+        |[minimum height=1cm]| callee saved registers \\
+        |[minimum height=.5cm]| local variables \\
+        |[]| {\textit{(next thing on stack)}} \\
+    };
+\end{visibleenv}
+\end{pgfonlayer}
+\begin{visibleenv}<4|handout:0>
+    \programMemoryHighlight{fit=(stack.south west) (heap.north east)}
+    \programMemoryHighlight{fit=(kernel.north west) (stack.north east)}
+    \programMemoryHighlight{fit=(sdata.south west) (memBottom)}
+\end{visibleenv}
+\begin{visibleenv}<5|handout:0>
+    \draw[ultra thick,decorate,decoration=brace] ([xshift=1mm]data.north east) -- ([xshift=1mm]sdata.south east) node[midway,right] {
+        loaded from executable file
+    };
+    \programMemoryHighlight{fit=(sdata.south west) (data.north east)}
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}

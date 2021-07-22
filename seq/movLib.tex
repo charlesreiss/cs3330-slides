@@ -1,0 +1,52 @@
+\tikzset{controlPath/.style={}}
+
+\providecommand{\movSplitBlock}{
+    \node[logicBlock,right=.5cm of imemData,minimum height=1cm] (split) {split};
+    \coordinate (splitEast1) at ([yshift=.4cm]split.east);
+    \coordinate (splitEast2) at ([yshift=.2cm]split.east);
+    \coordinate (splitEast3) at ([yshift=0cm]split.east);
+    \coordinate (splitEast4) at ([yshift=.2cm]split.east);
+    \coordinate (splitEast5) at ([yshift=.4cm]split.east);
+    \coordinate (splitSouth1) at ([xshift=-.3cm]split.south);
+    \coordinate (splitSouth2) at ([xshift=-.1cm]split.south);
+    \coordinate (splitSouth3) at ([xshift=.1cm]split.south);
+    \coordinate (splitSouth4) at ([xshift=.3cm]split.south);
+    \draw[a] (imemData) -- (split);
+}
+\providecommand{\splitRegSelect}{
+    \draw[b] (splitEast1) -- ++ (0.2cm,0cm) |- (regSelect1);
+    \draw[b] (splitEast2) -- ++ (0.4cm,0cm) |- (regSelect2);
+}
+\providecommand{\splitRegSelectDest}{
+    \draw[b] (splitEast2) -- ++ (0.4cm,0cm) |- (regSelect4);
+}
+\providecommand{\splitRegSelectMuxA}{
+    \coordinate (regSelect4PreA) at ([xshift=-.4cm]regSelect4);
+    \begin{scope}[circuit logic]
+        \node[mux,inputs={nnn},minimum height=.75cm,logicFill] 
+            (regSelect4MuxA) at (regSelect4PreA){};
+    \end{scope}
+    \draw[bN] (splitEast1) -- ++ (0.375cm,0cm);
+    \draw[b] ([xshift=0.425cm]splitEast1) -- ++ (0.3cm, 0cm) |- (regSelect4MuxA.input 1);
+    \draw[b] (splitEast2) -- ++ (0.4cm,0cm) |- (regSelect4MuxA.input 2);
+    \draw[b] (regSelect4MuxA.output) -- (regSelect4);
+    \draw[controlPath,b] (convertOp.east) -- ++(0.5cm, 0cm) |- ([yshift=-.5cm]regSelect4MuxA.south) -|
+        (regSelect4MuxA.south);
+}
+
+\providecommand{\splitRegSelectMuxF}{
+    \draw[bR] (regSelect4MuxA.input 3) -- ++(-.25cm, 0cm) node[left,font=\tt\tiny,inner sep=.1mm,outer sep=0mm] (noneInput) {0xF};
+}
+\providecommand{\movPcLogic}{
+    \node[below right=2cm and -.2cm of pc,mux,inputs={nn},
+          minimum height=1.2cm,
+          rotate=180,logicFill] (pcSelectMux) {};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 2] (pcAddTwo) {+2};
+    \node[logicBlock,font=\scriptsize,right=.3cm of pcSelectMux.input 1] (pcAddTen) {+10};
+    \draw[a] (pcAddTwo) -- (pcSelectMux.input 2);
+    \draw[a] (pcAddTen) -- (pcSelectMux.input 1);
+    \draw[b,controlPath] ([xshift=.1cm]convertOp.south west) -- ++ (0cm,-.6cm) -| (pcSelectMux.north);
+    \draw[a] (pc.east) -| ([xshift=-2pt]pcAddTwo.north east);
+    \draw[a] (pc.east) -| ([xshift=-2pt]pcAddTen.north east);
+    \draw[a,overlay] (pcSelectMux.output) -- ++(-.3cm,0cm) |- (pc.west);
+}

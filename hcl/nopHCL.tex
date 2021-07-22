@@ -1,0 +1,72 @@
+\tikzset{
+    pinOn/.style={
+        pin edge={-,thick,visible on=#1},
+        visible on=#1,
+    },
+}
+
+\begin{frame}<1-7>[fragile,label=nopCPU]{nop CPU}
+\begin{tikzpicture}
+        \tikzset{
+            hiOn/.style={alt=#1{draw=red,ultra thick}{}},
+        }
+        \node[hRegSmall=thePc,pcStyle] (pc) {};
+        \node[mem,right=1.5cm of pc,font=\scriptsize] (imem) {Instr. \\ Mem.};
+        \node[draw,fill=blue!20,hiOn=<4>] (add1) at ([yshift=-2cm,xshift=-.25cm]pc.north) { add 1 };
+
+        \begin{visibleenv}<3>
+            \fill[blue!80!black] ([xshift=-1mm]pc.west) circle (1.5mm);
+            \fill[green!60!black] ([xshift=1mm]pc.east) circle (1.5mm);
+        \end{visibleenv}
+
+        \draw[a,hiOn=<5>] (pc.east) -- (imem.west) node[near end,pin={[pinOn=<5->]north:``{\tt pc}''}] {};
+        \draw[a,hiOn=<5>] (imem.east) -- ++(1cm,0cm) node[pin={[pinOn=<5->]north:``{\tt i10bytes}''}] {} -- ++(1cm,0cm);
+        \draw[a,hiOn=<4>] (pc.east) -- ++(.75cm,0cm) |- (add1.east);
+        \draw[a,hiOn=<4>] (add1.west) -| ([xshift=-1cm]pc.west) -- (pc.west);
+        \coordinate (textLoc)  at ([yshift=-.1cm,xshift=-1cm]add1.south west);
+        
+        \begin{visibleenv}<6->
+        \node[hRegSmall=Stat,anchor=north] (Stat) at ([xshift=5cm,yshift=.5cm]add1) {};
+        \draw[aR] (Stat) -- ++ (-1cm,0cm) node[left,font=\tt\small] {STAT\_AOK};
+        \end{visibleenv}
+
+\begin{scope}[every node/.style={font=\small\tt,align=left,anchor=north west,inner sep=.25mm}]
+\begin{visibleenv}<2->
+\node[at={(textLoc)}] (registerDecl) {
+{\bfseries register} \textcolor{blue!80!black}{p}\textcolor{green!60!black}{F} \{ \\
+\hspace{.5cm} thePc : 64 = 0; \\
+\}
+};
+\end{visibleenv}
+\begin{visibleenv}<4->
+\node[at={(registerDecl.south west)}] (assignStatementA) {
+p\_thePc = \myemph<4>{F\_thePc + 1};
+};
+\end{visibleenv}
+
+\begin{visibleenv}<5->
+\node[at={(assignStatementA.south west)}] (assignStatementB) {
+pc = F\_thePc;
+};
+\end{visibleenv}
+\begin{visibleenv}<5>
+\node[my callout2=imem.south east,anchor=north west,font=\normalfont] at ([xshift=.5cm,yshift=-.5cm]imem.south east) {
+    built-in component \\
+    use is \myemph{mandatory}
+};
+\end{visibleenv}
+\begin{visibleenv}<6->
+\node[at={(assignStatementB.south west)}] (boilerplate) {
+Stat = STAT\_AOK;
+};
+\end{visibleenv}
+\begin{visibleenv}<6|8>
+\node[my callout2=Stat.north east,anchor=south west,font=\normalfont] at ([xshift=.5cm,yshift=.5cm]Stat.north east) {
+    built-in component: \\
+    AOK: continue \\
+    HLT: stop 
+};
+\end{visibleenv}
+\end{scope}
+\end{tikzpicture}
+\end{frame}

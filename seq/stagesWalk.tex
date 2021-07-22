@@ -1,0 +1,558 @@
+\usetikzlibrary{shapes.misc,shapes.callouts}
+
+\begin{frame}[fragile,label=SEQIFetch]{SEQ: instruction fetch}
+\begin{itemize}
+\item read instruction memory at PC
+\item split into seperate wires:
+\begin{itemize}
+    \item \myemph{icode:ifun} --- opcode
+    \item \myemph{rA}, \myemph{rB} --- register numbers
+    \item \myemph{valC} --- call target or mov displacement % FIXME: MUX based on instruction mark
+\end{itemize}
+\item compute next instruction address:
+\begin{itemize}
+    \item \myemph{valP} --- PC + (instr length)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=ifetchCPU]{instruction fetch}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<0|handout:0>},
+        logicDmem/.style={visible on=<0|handout:0>},
+        dmemPC/.style={visible on=<1|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+        instrRegs/.style={visible on=<0|handout:1>},
+        instrRegsSplitOut/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<0|handout:0>},
+        instrRegsMux/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQIDecode]{SEQ: instruction ``decode''}
+\begin{itemize}
+\item read registers
+\begin{itemize}
+    \item \myemph{valA}, \myemph{valB} --- register values
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\tikzset{overlayQuestion/.style={overlay,anchor=south,at={([yshift=.5cm]current page.south)},align=left,fill=white}}
+
+\begin{frame}[fragile,label=idecodeCPUBroken]{instruction decode (1)}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<0|handout:0>},
+        logicDmem/.style={visible on=<0|handout:0>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        instrRegsSplitOut/.style={visible on=<1|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<0|handout:0>},
+        instrRegsNoMuxRS2/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+\end{tikzpicture}
+\begin{tikzpicture}[remember picture]
+    \begin{visibleenv}<2>
+        \node[overlayQuestion] {
+            exercise: for which instructions would there be a problem ? \\
+            {\tt nop}, {\tt addq}, {\tt mrmovq}, {\tt rmmovq}, {\tt jmp}, {\tt pushq} \iftoggle{heldback}{}{\only<3->{\color{red} of these: only pushq} }
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQIDecodeSrc]{SEQ: srcA, srcB}
+\begin{itemize}
+\item always read rA, rB?
+\item Problems: 
+\begin{itemize}
+    \item push rA
+    \item pop
+    \item call
+    \item ret
+\end{itemize}
+\item book: extra signals: srcA, srcB --- computed input register
+\item MUX controlled by icode
+\end{itemize}
+\end{frame}
+
+\newcommand{\pushq}{{\keywordstyle pushq}}
+\newcommand{\popq}{{\keywordstyle popq}}
+
+
+\begin{frame}[fragile,label=SEQIDecodeSrcRegs]{SEQ: possible registers to read}
+\small
+\begin{tabular}{l|ll}
+instruction & srcA & srcB \\ \hline
+\halt, \nop, {\keywordstyle j{\it CC}}, \irmovq & none & none \\
+{\keywordstyle cmovCC}, {\keywordstyle rrmovq} & rA & none \\
+\mrmovq & none & rB \\
+\rmmovq, {\keywordstyle {\it OP}q} & rA & rB \\
+{\keywordstyle call}, {\keywordstyle ret} & none? & \myemph<2>{\tt \%rsp} \\
+\pushq, \popq & rA & \myemph<2>{\tt \%rsp} \\
+\end{tabular}
+\begin{tikzpicture}[circuit logic]
+    \instrEncodingStyles
+    \node[draw,mux,inputs={nnn},info={center:MUX},minimum height=3cm,minimum width=1.5cm] (rBMux) {};
+    \draw[thick,-latex] (rBMux.output) -- +(0:5mm) node[right,font=\small] {srcB};
+    \draw[thick,latex-] (rBMux.input 1) -- +(180:5mm) node[left] {\rnify{rB}};
+    \draw[thick,latex-] (rBMux.input 2) -- +(180:5mm) node[left] {\rnifyWide{\%rsp}};
+    \draw[thick,latex-] (rBMux.input 3) -- +(180:5mm) node[left] (noneLabel) {(none) \literalify{F}};
+    \node[logicBlock,below=.5cm of rBMux.select] (logic) {logic function};
+    \draw[b] (logic) -- (rBMux.select);
+    \draw[b,latex-] (logic.west) -- +(180:5mm) node[left] {\icode};
+    \onslide<2->{
+        \node[draw,red,cross out,fit=(noneLabel)] {};
+    }
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=idecodeCPUWorking]{instruction decode (2)}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<0|handout:0>},
+        logicDmem/.style={visible on=<0|handout:0>},
+        dmemPC/.style={visible on=<1|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+        instrRegs/.style={visible on=<1|handout:1>},
+        instrRegsRS1/.style={visible on=<1|handout:1>},
+        instrRegsMux/.style={visible on=<1|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQExecute]{SEQ: execute}
+\begin{itemize}
+\item perform ALU operation (add, sub, xor, and)
+\begin{itemize}
+    \item \myemph{valE} --- ALU output
+\end{itemize}
+\item read prior condition codes
+\begin{itemize}
+    \item \myemph{Cnd} --- condition codes based on ifun (instruction type for jCC/cmovCC)
+\end{itemize}
+\item write new condition codes
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=UsingCCodes]{using condition codes: cmov\*}
+\begin{tikzpicture}[circuit logic US]
+\instrEncodingStyles
+\node[draw,mux,inputs={nnnnnnn},minimum height=5cm] (condMux) {};
+\begin{scope}[thick,latex-]
+\draw (condMux.input 1) -- ++(-.5cm, 0cm) node[left,font=\small] {(\textit{always}) {\tt 1}};
+\draw (condMux.input 2) -- ++(-.5cm, 0cm) node[left,font=\small] {(\textit{le}) {\tt SF | ZF}};
+\draw (condMux.input 3) -- ++(-.5cm, 0cm) node[left,font=\small] {(\textit{l}) {\tt SF}};
+\draw (condMux.input 4) -- ++(-.5cm, 0cm);
+\draw (condMux.input 5) -- ++(-.5cm, 0cm);
+\draw (condMux.input 6) -- ++(-.5cm, 0cm);
+\draw (condMux.input 7) -- ++(-.5cm, 0cm);
+\end{scope}
+\node[below=.5cm of condMux.select,font=\small,align=center] (cc) {\ccify{cc}~\\(from instr)};
+\draw[thick,-latex] (cc) -- (condMux.select);
+\node[draw,mux,minimum height=2cm,inputs={nnn},right=5cm of condMux] (dstMuxE) {};
+\begin{scope}[thick,latex-]
+\draw (dstMuxE.input 1) -- ++(-.5cm, 0cm) node[left,font=\small] {\vrB};
+\draw (dstMuxE.input 2) -- ++(-.5cm, 0cm) node[left,font=\small] {\tt 0xF};
+\end{scope}
+\begin{scope}[thick,-latex]
+\draw (dstMuxE.output) -- ++(.5cm, 0cm) node[right,font=\small] {dstE};
+\end{scope}
+\node [not gate,minimum width=1.2cm] (notGate) at ([xshift=1cm]condMux.output) {\scriptsize NOT};
+\draw[dashed,thick,-latex] (condMux.output) -- (notGate.input);
+\draw[dashed,thick,-latex] (notGate.output) -- ++(.25cm, 0cm) |- ([xshift=-.25cm,yshift=-.25cm]dstMuxE.south west)
+        -| (dstMuxE.select);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=executeCPUBroken]{execute (1)}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicNoMux/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        logicDmem/.style={visible on=<0|handout:0>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+\end{tikzpicture}
+\begin{tikzpicture}[remember picture]
+    \begin{visibleenv}<2>
+        \begin{scope}[overlay]
+            \node[overlayQuestion] {
+                exercise: which of these instructions would there be a problem ? \\
+                {\tt nop}, {\tt addq}, {\tt mrmovq}, {\tt popq}, {\tt call}, 
+            };
+        \end{scope}
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQExecuteALU]{SEQ: ALU operations?}
+\begin{itemize}
+% FIXME: ALU picture
+\item ALU inputs always \myemph{valA}, \myemph{valB} (register values)?
+\item no, inputs from instruction: (Displacement + rB)
+\begin{tikzpicture}[overlay,circuit logic,global scale=0.5,yshift=-1.2cm]
+    \node[draw,mux,inputs={nn},info={center:MUX},minimum height=2cm,minimum width=1cm] (BMux) {};
+    \draw[thick,-latex] (BMux.output) -- +(0:5mm) node[right,font=\small] {aluA};
+    \draw[thick,latex-] (BMux.input 1) -- +(180:5mm) node[left] {valA};
+    \draw[thick,latex-] (BMux.input 2) -- +(180:5mm) node[left] {valC};
+\end{tikzpicture}
+\begin{itemize}
+    \item \mrmovq
+    \item \rmmovq
+\end{itemize}
+\item no, constants: (rsp +/- 8)
+\begin{itemize}
+    \item \pushq
+    \item \popq
+    \item {\keywordstyle call}
+    \item {\keywordstyle ret}
+\end{itemize}
+\item extra signals: \myemph{aluA}, \myemph{aluB}
+\begin{itemize}
+    \item computed ALU input values
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=executeCPUWorkingNoBMux]{execute (2)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicNoMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<0|handout:0>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+
+% FIXME: computing ALU input values
+
+\begin{frame}[fragile,label=SEQMemory]{SEQ: Memory}
+\begin{itemize}
+\item read or write data memory
+\begin{itemize}
+    \item \myemph{valM} --- value read from memory (if any)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=memoryNoMux]{memory (1)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        logicDmemMux/.style={visible on=<0|handout:0>},
+        logicDmemNoMux/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+\end{tikzpicture}
+\begin{tikzpicture}[remember picture]
+    \begin{visibleenv}<2>
+        \node[overlayQuestion] {
+            exercise: which of these instructions would there be a problem ? \\
+            {\tt nop}, {\tt rmmovq}, {\tt mrmovq}, {\tt popq}, {\tt call}, 
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQMemoryControl]{SEQ: control signals for memory}
+\begin{itemize}
+\item read/write --- \myemph{read enable}? \myemph{write enable}?
+\item \myemph{Addr} --- address 
+    \begin{itemize}
+        \item mostly ALU output
+        \item special cases (need extra MUX): \popq, {\keywordstyle ret}
+    \end{itemize}
+\item \myemph{Data} --- value to write
+    \begin{itemize}
+        \item mostly valA
+        \item special cases (need extra MUX): {\keywordstyle call}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% FIXME: Addr == ALUOutput?
+% FIXME: Data == valA?
+
+\begin{frame}[fragile,label=memoryMux]{memory (2)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=SEQWriteBack]{SEQ: write back}
+\begin{itemize}
+\item write registers
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=writeBackNoMux]{write back (1)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<1-|handout:1->},
+        dmemOutToPC/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+        instrRegsNoMuxRS3/.style={visible on=<1-|handout:1>},
+        instrRegsNoMuxRS4/.style={visible on=<1-|handout:1>},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+        regsLogicNoMuxB/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \begin{visibleenv}<2>
+        \node[overlay,my callout2=regSelect3,align=left,anchor=south east,font=\small] at ([yshift=1cm,xshift=4cm]regSelect3) {
+            textbook convention: \\
+            E used for storing ALU results (e.g. add) \\
+            M used for storing memory results (e.g. rmmovq) \\
+            (you don't have to do this\ldots)
+        };
+    \end{visibleenv}
+    \end{tikzpicture}
+    \begin{tikzpicture}[remember picture]
+    \begin{visibleenv}<3>
+            \node[overlayQuestion] {
+                exercise: which of these instructions would there be a problem ? \\
+                {\tt nop}, {\tt irmovq}, {\tt mrmovq}, {\tt rmmovq}, {\tt addq}, {\tt popq}
+            };
+    \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=SEQWriteBackControl]{SEQ: control signals for WB}
+\begin{itemize}
+\item \myemph{two} write inputs --- two needed by \lstinline|popq|
+\begin{itemize}
+\item valM (memory output), valE (ALU output)
+\end{itemize}
+\item \myemph{two} register numbers
+\begin{itemize}
+\item dstM, dstE
+\end{itemize}
+\item write disable --- use dummy register number {\tt 0xF}
+\end{itemize}
+\begin{tikzpicture}[circuit logic]
+    \instrEncodingStyles
+    \node[draw,mux,inputs={nnn},info={center:MUX},minimum height=2cm,minimum width=1.2cm] (Mux) {};
+    \draw[thick,-latex] (Mux.output) -- +(0:5mm) node[right,font=\small] {dstE};
+    \draw[thick,latex-] (Mux.input 1) -- +(180:5mm) node[left] {\rnify{rB}};
+    \draw[thick,latex-] (Mux.input 2) -- +(180:5mm) node[left] {\literalify{F}};
+    \draw[thick,latex-] (Mux.input 3) -- +(180:5mm) node[left] {\rnifyWide{\%rsp}};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=writeBackMuxA]{write back (2a)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicNoMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<1-|handout:1->},
+        dmemWBvalEMux/.style={visible on=<1-|handout:1->,red},
+        dmemWBvalENoMux/.style={visible on=<0|handout:0>},
+        dmemOutToPC/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=writeBackMuxB]{write back (2b)}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<1-|handout:1>},
+        regsLogicMuxB/.style={red},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemPCMux/.style={visible on=<0|handout:0>},
+        dmemPCNoMux/.style={visible on=<0|handout:0>},
+        dmemWB/.style={visible on=<1-|handout:1->},
+        dmemOutToPC/.style={visible on=<0|handout:0>},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=SEQUpdatePC]{SEQ: Update PC}
+\begin{itemize}
+\item choose value for PC next cycle (input to PC register)
+\begin{itemize}
+\item usually valP (following instruction)
+\item exceptions: {\keywordstyle call}, {\keywordstyle j{\it CC}}, {\keywordstyle ret}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=pcUpdateCircuit]{PC update}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemWB/.style={visible on=<1-|handout:1->},
+        dmemOutToPC/.style={visible on=<1-|handout:1->},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+

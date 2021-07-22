@@ -1,0 +1,296 @@
+\begin{frame}<1>[label=hcl2Dthings]{things in HCLRS}
+    \begin{itemize}
+    \item \myemph<2>{register banks}
+    \item \myemph<3>{wires}
+    \item things for our processor:
+        \begin{itemize}
+        \item \myemph<4>{{\tt Stat} register}
+        \item \myemph<5>{instruction memory}
+        \item \myemph<6>{the register file}
+        \item \myemph<7>{data memory}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\againframe<2>{hcl2Dthings}
+
+\begin{frame}[fragile,label=regBanks]{register banks}
+\newcommand{\inColor}{\color{green!60!black}}
+\newcommand{\outColor}{\color{blue!80!black}}
+
+{\tt\small
+\textbf{register} {\inColor x}{\outColor Y} \{ \\
+\hspace{.5cm} foo : \myemph<2>{\textit{width1}} = \myemph<3>{\textit{defaultValue1}}; \\
+\hspace{.5cm} bar : \myemph<2>{\textit{width2}} = \myemph<3>{\textit{defaultValue2}}; \\ 
+\}
+}
+    \begin{itemize}
+    \item two letters: input ({\inColor X}) / Output ({\outColor Y})
+        \begin{itemize}
+        \item input signals: {\tt\inColor x\_foo}, {\tt\inColor x\_bar}
+        \item output signals: {\tt\outColor Y\_foo}, {\tt\outColor Y\_bar}
+        \end{itemize}
+    \item each value has \myemph<2>{width in bits}
+    \item each value has \myemph<3>{initial value} --- \textit{mandatory}
+    \item some other signals --- {\tt stall}, {\tt bubble}
+        \begin{itemize}
+        \item later in semester
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\againframe<3>{hcl2Dthings}
+
+\begin{frame}{wires}
+
+{\tt\small
+\textbf{wire} wireName : wireWidth; \\
+wireName = ...; \\
+... = wireName; \\
+... = wireName;
+}
+    \begin{itemize}
+    \item things that can accept/produce a signal
+        \begin{itemize}
+        \item some created implicitly -- e.g. by creating register
+        \item some builtin --- supplied components (like instruction memory)
+        \end{itemize}
+    \item assignment --- connecting wires
+    \end{itemize}
+\end{frame}
+% FIXME: wire widths and agreeing?
+
+\begin{frame}{wires and order}
+
+\begin{tikzpicture}
+\node[font=\tt\fontsize{10}{11}\selectfont,align=left] (v1) {
+{\bfseries wire} icode : 4; \\
+{\bfseries wire} valP : 64; \\
+{\bfseries register} \textcolor{blue!80!black}{p}\textcolor{green!60!black}{P} \{ \\
+\hspace{.5cm} thePc : 64 = 0; \\
+\} \\
+\myemph<2>{valP} = P\_thePC + 1; \\
+p\_thePc = \myemph<2>{valP}; \\
+pc = P\_thePc; \\
+icode = i10bytes[4..8]; \\
+Stat = [ \\
+\hspace{.5cm} icode == NOP : STAT\_AOK; \\
+\hspace{.5cm} icode == HALT : STAT\_HLT; \\
+\hspace{.5cm} 1 : STAT\_INS; \\
+];
+};
+\node[font=\tt\fontsize{10}{11}\selectfont,left=0cm of v1,align=left] (v2) {
+{\bfseries wire} icode : 4; \\
+{\bfseries wire} valP : 64; \\
+{\bfseries register} \textcolor{blue!80!black}{p}\textcolor{green!60!black}{P} \{ \\
+\hspace{.5cm} thePc : 64 = 0; \\
+\} \\
+p\_thePc = \myemph<2>{valP}; \\
+pc = P\_thePc; \\
+Stat = [ \\
+\hspace{.5cm} icode == NOP : STAT\_AOK; \\
+\hspace{.5cm} icode == HALT : STAT\_HLT; \\
+\hspace{.5cm} 1 : STAT\_INS; \\
+]; \\
+\myemph<2>{valP} = P\_thePC + 1; \\
+icode = i10bytes[4..8]; \\
+};
+\begin{visibleenv}<3>
+\node[draw=red,anchor=north,align=center,very thick] at ([yshift=-3cm]$(v1)!.5!(v2)$) {
+    \myemph{order doesn't matter} \\
+    wire is connected or not connected 
+};
+\end{visibleenv} 
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{wires and width}
+\begin{tikzpicture}
+\node[font=\tt\fontsize{10}{11}\selectfont,align=left] (v1) {
+{\bfseries wire} bigValueOne: 64; \\
+{\bfseries wire} bigValueTwo: 64; \\
+{\bfseries wire} smallValue: 32; \\
+{\color{red!90!black}bigValueOne = smallValue; /* ERROR */} \\
+{\color{red!90!black}smallValue = bigValueTwo; /* ERROR */} \\
+\ldots
+};
+\node[font=\tt\fontsize{10}{11}\selectfont,anchor=north west,align=left] (v2) at (v1.south west) {
+{\bfseries wire} bigValueOne: 64; \\
+{\bfseries wire} bigValueTwo: 64; \\
+{\bfseries wire} smallValue: 32; \\
+~ \\
+{\color{green!60!black}smallValue = bigValueTwo[0..32]; /* OKAY */} \\
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{constants and width}
+\begin{itemize}
+\item {\tt 10}, {\tt 0x8F3} --- no width
+\begin{itemize} \item (convert to any width) \end{itemize}
+\item {\tt 0b1010} --- 4 bits (binary {\tt 1010} = 10)
+    \vspace{.5cm}
+\item most built-in constants {\tt STAT\_AOK}, {\tt NOP}, etc. have widths
+\end{itemize}
+\end{frame}
+
+\againframe<4>{hcl2Dthings}
+
+\begin{frame}{Stat register}
+    \begin{itemize}
+    \item how do we stop the machine?
+    \item hard-wired mechanism --- {\tt Stat} register
+    \item possible values:
+        \begin{itemize}
+        \item {\tt STAT\_AOK} --- keep going
+        \item {\tt STAT\_HLT} --- stop, normal shtdown
+        \item {\tt STAT\_INS} --- invalid instruction
+        \item \ldots (and more errors)
+        \end{itemize}
+    \item \myemph{must be set}
+    \item determines if \myemph{simulator} keeps going
+    \end{itemize}
+\end{frame}
+
+\againframe<5>{hcl2Dthings}
+
+\begin{frame}{program memory}
+    % FIXME: picture
+    \begin{itemize}
+    \item input wire: {\tt pc} 
+    \item output wire: {\tt i10bytes} 
+        \begin{itemize}
+        \item 80-bits wide (10 bytes)
+        \item bit 0 --- least significant bit of first byte
+        \item (width of largest instruction)
+        \end{itemize}
+    \vspace{.5cm}
+    \item<2> what about less than 10 byte instructions?
+        \begin{itemize}
+        \item just don't use the extra bits
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\againframe<6>{hcl2Dthings}
+
+\begin{frame}{register file}
+    \begin{itemize}
+    \item four \myemph{register number} inputs (4-bit): 
+        \begin{itemize}
+        \item sources: {\tt reg\_srcA}, {\tt reg\_srcB}
+        \item destinations: {\tt reg\_dstE}, {\tt reg\_dstM}
+        \end{itemize}
+    \item no write or no read? register number {\tt 0xF} ({\tt REG\_NONE})
+    \item two \myemph{register value} inputs (64-bit):
+        \begin{itemize}
+        \item {\tt reg\_inputE}, {\tt reg\_inputM}
+        \end{itemize}
+    \item two \myemph{register output} values (64-bit):
+        \begin{itemize}
+        \item {\tt reg\_outputA}, {\tt reg\_outputB}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=regFileExample]{example using register file: add CPU}
+\begin{Verbatim}[fontsize=\fontsize{11}{12}\selectfont,commandchars=\\XY]
+\textbfXwireY rA : 4, rB : 4, icode : 4, ifunc: 4;
+\textbfXregisterY pP {
+    thePC : 64 = 0;
+}
+\textitX/* Fetch + PC update: */Y
+pc = P_thePC; p_thePC = P_thePC + 2;
+icode = i10bytes[4..8]; ifunc = i10bytes[0..4];
+rA = i10bytes[12..16]; rB = i10bytes[8..12];
+\textitX/* Decode: */Y
+\vemphAXreg_srcAY = rA;
+\vemphAXreg_srcBY = rB;
+\textitX/* Execute + Writeback: */Y
+\vemphBXreg_inputEY = reg_outputA + reg_outputB;
+\vemphBXreg_dstEY = rB;
+\textitX/* Status maintainence: */Y
+Stat = ...
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}{register file picture}
+\begin{tikzpicture}
+        \node[regFile,minimum width=5cm,at={(current page.center)},label={[label distance=1pt,inner sep=0pt]\small register file}] (regs) {};
+        \coordinate (regSelect1) at ($(regs.north west) - (0cm, .5cm)$);
+        \coordinate (regSelect2) at ($(regs.north west) - (0cm, 1cm)$);
+        \coordinate (regSelect3) at ($(regs.north west) - (0cm, 1.5cm)$);
+        \coordinate (regSelect4) at ($(regs.north west) - (0cm, 2cm)$);
+        \coordinate (regWriteIn) at ($(regs.north west) - (0cm, 3.0cm)$);
+        \coordinate (regWriteIn2) at ($(regs.north west) - (0cm, 3.5cm)$);
+        \coordinate (regRead1) at ($(regs.north east) - (0cm, .4cm)$);
+        \coordinate (regRead2) at ($(regs.north east) - (0cm, .8cm)$);
+        \node[smallLabel,right=0mm of regSelect1] {\tt reg\_srcA};
+        \node[smallLabel,right=0mm of regSelect2] {\tt reg\_srcB};
+        \node[smallLabel,right=0mm of regSelect3] {\tt reg\_dstM};
+        \node[smallLabel,right=0mm of regSelect4] {\tt reg\_dstE};
+        \node[smallLabel,right=0mm of regWriteIn] {next R[\dstM] = {\tt reg\_inputM}};
+        \node[smallLabel,right=0mm of regWriteIn2] {next R[\dstE] = {\tt reg\_inputE}};
+        \node[smallLabel,left=0mm of regRead1] {{\tt reg\_outputA} = R[\srcA]};
+        \node[smallLabel,left=0mm of regRead2] {{\tt reg\_outputB} = R[\srcB]};
+        \begin{visibleenv}<2->
+            \begin{scope}[every node/.style={font=\small}]
+            \draw[thick] (regSelect1) -- ++(-.5cm,0cm) node[left] {from {\tt rA}};
+            \draw[thick] (regSelect2) -- ++(-.5cm,0cm) node[left] {from {\tt rB}};
+            \draw[thick] (regSelect4) -- ++(-.5cm,0cm) node[left] {from {\tt rB}};
+            \draw[thick] (regWriteIn2) -- ++(-.5cm,0cm) node[left] {from sum};
+            \end{scope}
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \begin{scope}[every node/.style={font=\small}]
+            \draw[thick] (regSelect3) -- ++(-.5cm,0cm) node[left] {\textit{unset} (default {\tt 0xF} = none)};
+            \draw[thick] (regWriteIn) -- ++(-.5cm,0cm) node[left] {\textit{unused}};
+            \end{scope}
+        \end{visibleenv}
+
+        \begin{visibleenv}<4->
+            \begin{scope}[every node/.style={font=\small}]
+            \draw[thick] (regRead1) -- ++(.5cm,0cm);
+            \draw[thick] (regRead2) -- ++(.5cm,0cm);
+            \end{scope}
+        \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\againframe<7>{hcl2Dthings}
+
+\begin{frame}{data memory}
+    \begin{itemize}
+    \item input address: {\tt mem\_addr}
+    \item input value: {\tt mem\_input}
+    \item output value: {\tt mem\_output}
+    \item read/write enable: {\tt mem\_readbit}, {\tt mem\_writebit}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=dmemRead]{reading from data memory}
+\begin{Verbatim}[fontsize=\fontsize{13}{14}\selectfont,commandchars=\\XY]
+\vemphBXmem_addrY = 0x12345678;
+\vemphAXmem_readbitY = 1;
+\vemphAXmem_writebitY = 0;
+... = \vemphBXmem_outputY;
+\end{Verbatim}
+\begin{itemize}
+\item {\tt mem\_output} has value \myemph{in same cycle}
+\end{itemize}
+\end{frame}
+
+% FIXME: HCL2D example output
+
+\begin{frame}[fragile,label=dmemWrite]{writing to data memory}
+\begin{Verbatim}[fontsize=\fontsize{13}{14}\selectfont,commandchars=\\XY]
+\vemphBXmem_addrY = 0x12345678;
+\vemphBXmem_inputY = ...;
+\vemphAXmem_readbitY = 0;
+\vemphAXmem_writebitY = 1;
+\end{Verbatim}
+\begin{itemize}
+\item memory updated for next cycle
+\end{itemize}
+\end{frame}
+

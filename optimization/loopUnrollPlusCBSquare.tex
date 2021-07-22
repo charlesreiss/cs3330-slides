@@ -1,0 +1,52 @@
+\begin{frame}[fragile,label=loopUnrollVCacheBlocking1]{loop unrolling v cache blocking (1)}
+\lstset{
+    style=small,language=C
+}
+(assuming we started with kij loop order\ldots:) \\
+loop unrolling \textit{and} cache blocking for $k$ only:
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      B[i*N+j] += A[i*N+k+0] * A[(k+0)*N+j];
+      B[i*N+j] += A[i*N+k+1] * A[(k+1)*N+j];
+    }
+\end{lstlisting}
+\hrule
+loop unrolling
+\begin{lstlisting}
+for (int k = 0; k < N; k++)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; j += 2) {
+      B[i*N+j] += A[i*N+k+0] * A[(k+0)*N+j];
+      B[i*N+j+1] += A[i*N+k+0] * A[(k+0)*N+j+1];
+    }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollVCacheBlocking2]{loop unrolling v cache blocking (2)}
+\lstset{
+    style=smaller,language=C
+}
+(assuming we started with kij loop order\ldots:) \\
+loop unrolling \textit{and} cache blocking:
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      B[i*N+j] += A[i*N+k+0] * A[(k+0)*N+j];
+      B[i*N+j] += A[i*N+k+1] * A[(k+1)*N+j];
+    }
+\end{lstlisting}
+\hrule
+pretty useless loop unrolling
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2) {
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      B[i*N+j] += A[i*N+k+0] * A[(k+0)*N+j];
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      B[i*N+j] += A[i*N+k+1] * A[(k+1)*N+j];
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,17 @@
+\begin{frame}{instruction memory in HCL}
+\begin{itemize}
+\item \textit{built-in component}
+\item always present, with predefined wires
+\vspace{.5cm}
+\item input wire (address): {\tt pc}
+    \begin{itemize}
+    \item 64-bit value --- address to read from
+    \end{itemize}
+\item output wire (data): {\tt i10bytes}
+    \begin{itemize}
+    \item 80-bits (size of largest instruction)
+    \item little-endian number
+    \end{itemize}
+\item generally, can lookup these names on HCLRS README (course website)
+\end{itemize}
+\end{frame}

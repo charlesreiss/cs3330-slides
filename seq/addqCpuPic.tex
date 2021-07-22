@@ -1,0 +1,111 @@
+\begin{frame}[fragile,label=AddCPU]{addq CPU}
+    \instrEncodingStyles
+    \begin{tikzpicture}
+        \tikzset{
+            dmemNorm/.style={visible on=<0|handout:0>},
+            dmemPre/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            regPre/.style={visible on=<0|handout:0>},
+            regNormLabelM/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            instrRegsPre/.style={visible on=<1-2|handout:0>},
+            regPre/.style={visible on=<1-3|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+        }
+        \circuitState
+        \circuitStatePre
+        \node[hiOver,fit=(pc.east) (imem.west),visible on=<2|handout:0>] {};
+        \begin{visibleenv}<3->
+            \node[above right=2cm and 0cm of imem.east,font=\small] (instrSplit) {\rnifyWide{\%rXX}~~\rnifyWide{\%rYY}};
+            \draw[very thick,dashed,-Latex] (instrSplit) -- ([xshift=.15cm]imem.east);
+            \draw (imem.east) -- ++(0.35cm, 0cm);
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+            \draw[a] (pc.east) -- (imemAddr);
+            \node[logicBlock,right=0.5cm of imem] (split) {split};
+            \draw[a] (imem) -- (split);
+        \end{visibleenv}
+        \begin{visibleenv}<4->
+            \draw[b] ([yshift=.1cm]split.east) -- ([yshift=.1cm,xshift=.1cm]split.east) |- (regSelect1);
+            \draw[b] ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect2);
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+            \node[logicBlock,align=center,anchor=north,font=\small] (proc opcode) at ([yshift=-.5cm]split.south) {
+                convert\\opcode
+            };
+            \draw[b] (split.south) -- (proc opcode.north);
+            \draw[b] (proc opcode.south) -- ++(0cm, -.25cm) node[below,font=\fontsize{9}{10}\selectfont\tt] {Stat};
+        \end{visibleenv}
+        \begin{visibleenv}<5->
+            \coordinate (regReadMid) at ($(regRead1)!0.5!(regRead2)$);
+            \node[logicBlock,right=1.5cm of regReadMid,align=center] (add) {add};
+            \draw[a] (regRead1) -- (add);
+            \draw[a] (regRead2) -- (add);
+        \end{visibleenv}
+        \begin{visibleenv}<6->
+            \coordinate (addBelowRight) at ($(add.south east) + (.5cm,-3.5cm)$);
+            \coordinate (regWriteIn2Left)  at ($(regWriteIn2) + (-.8cm,0cm)$);
+            \coordinate (addBelowLeft) at (addBelowRight -| regWriteIn2Left);
+            \draw[a] (add.east) -| (addBelowRight) -- (addBelowLeft) -- (regWriteIn2Left) |- (regWriteIn2);
+            \draw[b] ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect4);
+        \end{visibleenv}
+        \begin{visibleenv}<7>
+            \begin{scope}[every node/.style={font=\scriptsize,anchor=south east,inner sep=0mm}]
+            \node at (regSelect1) {0 (=\%rax)};
+            \node at (regSelect2) {2 (=\%rdx)};
+            \node at (regSelect4) {2 (=\%rdx)};
+            \end{scope}
+            \draw ([xshift=4mm]regRead1) -- ++ (.5cm, .5cm)
+                node[above,font=\scriptsize,align=center,inner sep=0mm] {10 \\ (value of RAX)};
+            \draw ([xshift=4mm]regRead2) -- ++ (.5cm, -.5cm)
+                node[below,font=\scriptsize,align=center,inner sep=0mm] {30 \\ (value of RDX)};
+            \node[below right=1.5cm and -.5cm of pc,align=left,font=\small,fill=white, fill opacity=0.9] (traceBrokenPC) {
+\begin{lstlisting}
+/* 0x00: */ addq %rax, %rdx 
+/* 0x02: */ addq %rbx, %rdx
+\end{lstlisting}
+                \\
+                \begin{tabular}{l@{\hspace{.1cm}}llll}
+                initially:&PC = 0x00,& rax = 10,& rbx = 20,&rdx = 30 \\
+                after cycle 1:&PC = ????,& rax = 10,& rbx = 20,&\myemph{rdx = 40} \\
+                \end{tabular}
+            };
+        \end{visibleenv}
+        \begin{visibleenv}<8>
+            \node[below right=1.5cm and -.5cm of pc,align=left,font=\small,fill=white,fill opacity=0.9] (traceBrokenPC) {
+\begin{lstlisting}
+/* 0x00: */ addq %rax, %rdx 
+/* 0x02: */ addq %rbx, %rdx
+\end{lstlisting}
+                \\
+                \begin{tabular}{l@{\hspace{.1cm}}llll}
+                initially:&PC = 0x00,& rax = 10,& rbx = 20,&rdx = 30 \\
+                after cycle 1:&PC = ????,& rax = 10,& rbx = 20,&\myemph{rdx = 40} \\
+                after cycle 2:&PC = ????,& rax = ??,& rbx = ??,&rdx = ?? \\
+                \end{tabular}
+            };
+        \end{visibleenv}
+        \begin{visibleenv}<9->
+            \node[logicBlock,above=.5cm of pc,font=\small,xshift=-.2cm] (addOne) {+2};
+            \draw[a] (pc.east) -- +(.8cm, 0cm) |- (addOne.east);
+            \draw[a] (addOne.west) -- +(-.5cm, 0cm) |- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<10>
+            \node[below right=1.5cm and -.5cm of pc,align=left,font=\small] (traceUnbrokenPC) {
+\begin{lstlisting}
+/* 0x00: */ addq %rax, %rdx 
+/* 0x02: */ addq %rbx, %rdx
+\end{lstlisting}
+                \\
+                \begin{tabular}{l@{\hspace{.1cm}}llll}
+                initially:&PC = 0x00,& rax = 10,& rbx = 20,&rdx = 30 \\
+                after cycle 1:&PC = 0x02,&rax = 10,& rbx = 20,&\myemph{rdx = 40} \\
+                after cycle 2:&PC = 0x04,&rax = 10,& rbx = 20,&\myemph{rdx = 60} \\
+                \end{tabular}
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+

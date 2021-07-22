@@ -1,0 +1,131 @@
+\begin{frame}[fragile,label=loopUnrollVCacheBlockingIntro1]{loop unrolling on MM}
+\lstset{
+    style=smaller,language=C
+}
+original code:
+\begin{lstlisting}
+for (int k = 0; k < N; ++k) 
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      C[i*N+j] += A[i*N+k] * B[k*N+j];
+    }
+\end{lstlisting}
+\hrule
+loop unrolling in $j$ loop (not cache blocking)
+\begin{lstlisting}
+for (int k = 0; k < N; ++k) 
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; j += 2) {
+      C[i*N+j] += A[i*N+k+0] * B[(k+0)*N+j];
+      C[i*N+j+1] += A[i*N+k+1] * B[(k+1)*N+j+1];
+    }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollVCacheBlockingIntro2]{partial cache blocking in MM}
+\lstset{
+    style=smaller,language=C
+}
+original code:
+\begin{lstlisting}
+for (int k = 0; k < N; ++k) 
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      C[i*N+j] += A[i*N+k] * B[k*N+j];
+    }
+\end{lstlisting}
+\hrule
+    (incomplete) cache blocking with only $k$: \\
+    \textbf{changes locality v. original (order of A, B, C accesses)}
+\begin{lstlisting}
+for (int kk = 0; kk < N; kk += BLOCK_SIZE) 
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      for (int k = kk; k < kk + BLOCK_SIZE; ++k)
+        C[i*N+j] += A[i*N+k+0] * B[k*N+j];
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollVCacheBlocking0]{loop unrolling v cache blocking (0)}
+\lstset{
+    style=small,language=C,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+}
+cache blocking for $k$ only: {\small (with teeny 1 by 1 by 2 matrix blocks)} \\
+\textbf{changes locality v. original (order of A, B, C accesses)}
+\begin{lstlisting}
+for (int kk = 0; kk < N; kk += 2)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      ~2~for(int k = kk; k < kk + 2; ++k)~end~
+        ~2~C[i*N+j] += A[i*N+k] * B[(k)*N+j];~end~
+\end{lstlisting}
+\hrule
+with loop unrolling added afterwards: \\
+\textbf{same order of A, B, C accesses as above}
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      ~2~C[i*N+j] += A[i*N+k+0] * B[(k+0)*N+j];~end~
+      ~2~C[i*N+j] += A[i*N+k+1] * B[(k+1)*N+j];~end~
+    }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=loopUnrollVCacheBlocking3]{loop unrolling v cache blocking}
+\lstset{
+    style=smaller,language=C
+}
+cache blocking for $k$ only (1x1x2 blocks) \textit{and} then loop unrolling \\
+\textbf{same order of A, B, C accesses as original}
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j) {
+      C[i*N+j] += A[i*N+k+0] * B[(k+0)*N+j];
+      C[i*N+j] += A[i*N+k+1] * B[(k+1)*N+j];
+    }
+\end{lstlisting}
+\hrule
+versus pretty useless loop unrolling in $k$-loop \\
+\textbf{same order of A, B, C accesses as original}
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2) {
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      C[i*N+j] += A[i*N+k+0] * B[(k+0)*N+j];
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      C[i*N+j] += A[i*N+k+1] * B[(k+1)*N+j];
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=loopUnrollVCacheBlocking1]{loop unrolling v cache blocking (1)}
+\lstset{
+    style=small,language= C
+}
+cache blocking for $k$,$i$ only: {\small (1 by 2 by 2 matrix blocks)}
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; i += 2)
+    for (int j = 0; j < N; ++j)
+      for(int kk = k; kk < k + 2; ++kk)
+        for (int ii = i; ii < i + 2; ++ii)
+          C[ii*N+j] += A[ii*N+kk] * B[(kk)*N+j];
+\end{lstlisting}
+\hrule
+cache blocking for $k$,$i$ and loop unrolling for $i$:
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; i += 2)
+    for (int j = 0; j < N; ++j)
+      for(int kk = k; kk < k + 2; ++kk) {
+        C[(i+0)*N+j] += A[(i+0)*N+kk] * B[(kk)*N+j];
+        C[(i+1)*N+j] += A[(i+1)*N+kk] * B[(kk)*N+j];
+      }
+\end{lstlisting}
+\end{frame}
+

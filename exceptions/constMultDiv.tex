@@ -1,0 +1,59 @@
+\begin{frame}[fragile,label=constMultDiv1]{constant multiplies/divides (1)}
+\lstset{
+    language=C,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+unsigned int fiveEights(unsigned int x) {
+    return x * 5 / 8;
+}
+\end{lstlisting}
+\hrulefill
+\lstset{
+    language=myasm,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+fiveEights:
+        leal    (%rdi,%rdi,4), %eax
+        shrl    $3, %eax
+        ret
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=constMultDiv2]{constant multiplies/divides (2)}
+\lstset{
+    language=C,style=small,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+int oneHundredth(int x) { return x / 100; }
+\end{lstlisting}
+\hrulefill
+\lstset{
+    language=myasm,style=smaller,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    }
+\begin{lstlisting}
+oneHundredth:
+        movl    %edi, %eax
+        movl    $1374389535, %edx
+        sarl    $31, %edi
+        imull   %edx
+        sarl    $5, %edx
+        movl    %edx, %eax
+        subl    %edi, %eax
+        ret
+\end{lstlisting}
+\[
+\frac{1374389535}{2^{37}} \approx \frac{1}{100}
+\]
+\end{frame}
+
+\begin{frame}{constant multiplies/divides}
+    \begin{itemize}
+    \item compiler is very good at handling
+    \item \ldots but need to actually use constants
+    \end{itemize}
+\end{frame}
+

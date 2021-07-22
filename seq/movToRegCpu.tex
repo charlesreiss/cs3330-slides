@@ -1,0 +1,114 @@
+\usetikzlibrary{patterns}
+
+\begin{frame}[fragile,label=MovRegIntro]{simple ISA: mov-to-register}
+    \begin{itemize}
+        \item \lstinline|irmovq $constant, %rYY|
+        \item \lstinline|rrmovq %rXX, %rYY|
+        \item \lstinline|mrmovq 10(%rXX), %rYY|
+    \end{itemize}
+\end{frame}
+
+\input{../seq/movLib}
+
+\begin{frame}[fragile,label=MovRegCPU]{mov-to-register CPU}
+    \begin{tikzpicture}[circuit logic]
+        % FIXME: missing pre
+        \instrEncodingStyles
+        \tikzset{
+            dmemNorm/.style={},
+            dmemInputLabel/.style={},
+            dmemLabel/.style={visible on=<0|handout:0>},
+            dmemPre/.style={visible on=<0|handout:0>},
+            dmemPreSingle/.style={visible on=<1|handout:1>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            instrRegsPreSingle/.style={visible on=<1|handout:1>},
+            regPreSingle/.style={visible on=<1|handout:1>},
+            regPre/.style={visible on=<0|handout:0>},
+            %regNorm/.style={visible on=<0|handout:0>},
+            imemPcPre/.style={visible on=<1|handout:1>},
+            hiOver/.style={opacity=0.2,fill=green},
+            controlPath/.style={alt=<0>{}},
+            regNormLabelM/.style={visible on=<0|handout:0>},
+        }
+        \circuitState
+        \dmemInput
+        \circuitStatePre
+        \instrEncodingStyles
+        \begin{visibleenv}<2-|handout:1>
+            \draw[a] (pc.east) -- (imemAddr);
+            \movSplitBlock
+        \end{visibleenv}
+        \begin{visibleenv}<3-|handout:1>
+            \splitRegSelect
+        \end{visibleenv}
+        \begin{visibleenv}<3-6|handout:1>
+            \splitRegSelectDest
+        \end{visibleenv}
+        \coordinate (regReadOffset) at ([xshift=.3cm]regRead1);
+        \coordinate (regReadOffset2) at ([xshift=.6cm]regRead1);
+        \begin{visibleenv}<4|handout:1>
+            \draw[a] (regRead1) -- (regReadOffset) |- ([xshift=-.5cm,yshift=-.5cm]regs.south west) |- (regWriteIn2);
+        \end{visibleenv}
+        \begin{visibleenv}<5-|handout:1>
+            \node[alt=<5>{draw=red},mux,inputs={nnn},info={center:\scriptsize MUX},minimum height=1.2cm,minimum width=.8cm,below left=1.8cm and 1cm of regWriteIn1,
+                  rotate=180,logicFill] (writeInMux) {};
+            \draw[a] (writeInMux.output) -- ++ (-.2cm,0cm) |- (regWriteIn2);
+            \node[logicBlock,alt=<5>{draw=red},below=2cm of split,font=\tiny] (convertOp) {convert\\opcode};
+            \draw[b,alt=<5>{draw=red}] (splitSouth2) -- (convertOp.north -| splitSouth2);
+            \draw[b,alt=<5>{draw=red}] ([xshift=-.1cm]convertOp.south east) -- ++ (0cm,-.2cm) -| (writeInMux.north);
+            \draw[a] (regRead1) -- (regReadOffset) |- (writeInMux.input 3);
+        \end{visibleenv}
+        \begin{visibleenv}<6-|handout:1>
+            \draw[a,overlay] (split.north) -- ++(0cm,2.0cm) node[above right,font=\scriptsize] (immediateLabel) {immediate} -| (regReadOffset2) |- (writeInMux.input 2);
+        \end{visibleenv}
+        \begin{visibleenv}<7-|handout:1>
+            \splitRegSelectMuxA
+            \node[logicBlock,font=\scriptsize,left=.3cm of dmemInLow](plusAddr){+ (ALU)};
+            \coordinate (plusHigh) at ([yshift=.1cm]plusAddr.west);
+            \coordinate (plusLow) at ([yshift=-.1cm]plusAddr.west);
+            \draw[aN] (regRead2) -- ([xshift=.15cm]regRead2) |- ([xshift=-1pt]plusHigh -| regReadOffset);
+            \draw[aN] ([xshift=1pt]plusHigh -| regReadOffset) -- ([xshift=-1pt]plusHigh -| regReadOffset2);
+            \draw[a] ([xshift=1pt]plusHigh -| regReadOffset2) -- (plusHigh);
+            \draw[a] (plusLow -| regReadOffset2) -- (plusLow);
+            \draw[a] (plusAddr.east) -- (dmemInLow);
+            \draw[a] (dmemDataOut) -- ++(.2cm,0cm) |- (writeInMux.input 1);
+        \end{visibleenv}
+        \begin{visibleenv}<8-|handout:1>
+            \movPcLogic
+        \end{visibleenv}
+
+        \instrEncodingSubTable{below right=2.5cm and -1cm of pc}{encodings}{
+            \rrmovq \rA, \rB \& |[opcode]| 2 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \irmovq \V, \rB \& |[opcode]| 3 \& |[literal]| 0 \& |[literal]| F \& |[register]| \rB 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \mrmovq \D(\rB), \rA \& |[opcode]| 5 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+        };
+        \node[hiOver,fit=(encodings-1-1),visible on=<1-5|handout:0>]{};
+        \node[hiOver,fit=(writeInMux.input 3),visible on=<5|handout:0>]{};
+        \node[hiOver,fit=(encodings-2-1),visible on=<6|handout:0>]{};
+        \node[hiOver,fit=(writeInMux.input 2),visible on=<6|handout:0>]{};
+        \node[hiOver,fit=(encodings-3-1),visible on=<7|handout:0>]{};
+        \node[hiOver,fit=(writeInMux.input 1),visible on=<7|handout:0>]{};
+        \node[fake,outer sep=0pt,fit=(encodings-1-6) (encodings-1-21)] (rrEmpty) {};
+        \node[immediateLabel=\V,inner sep=0pt,outer sep=0pt,fit=(encodings-2-6) (encodings-2-21)] (irV) {};
+        \node[immediateLabel=\D,inner sep=0pt,outer sep=0pt,fit=(encodings-3-6) (encodings-3-21)] (mrD) {};
+    \end{tikzpicture}
+\end{frame}
+

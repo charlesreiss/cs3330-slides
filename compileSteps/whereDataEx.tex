@@ -1,0 +1,38 @@
+
+\begin{frame}[fragile,label=exCL]{exercise (1)}
+main.c: \\
+\begin{ccode}
+#include <stdio.h>
+void sayHello(void) {
+    puts("Hello, World!");
+}
+int main(void) {
+    sayHello();
+}
+\end{ccode}
+Which files contain the \textbf{memory address} of \texttt{sayHello}?
+\begin{tabular}{ll}
+\textit{A.} main.s (assembly) & \textit{D.} B and C \\
+\textit{B.} main.o (object) &  \textit{E.} A, B and C \\
+\textit{C.} main.exe (executable) & \textit{F.} something else \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile,label=exCL2]{exercise (2)}
+main.c: \\
+\begin{ccode}
+#include <stdio.h>
+void sayHello(void) {
+    puts("Hello, World!");
+}
+int main(void) {
+    sayHello();
+}
+\end{ccode}
+Which files contain the \textbf{literal ASCII string} of \texttt{Hello, World!}?
+\begin{tabular}{ll}
+\textit{A.} main.s (assembly) & \textit{D.} B and C \\
+\textit{B.} main.o (object) &  \textit{E.} A, B and C \\
+\textit{C.} main.exe (executable) & \textit{F.} something else \\
+\end{tabular}
+\end{frame}

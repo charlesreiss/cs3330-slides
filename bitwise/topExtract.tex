@@ -1,0 +1,33 @@
+\usetikzlibrary{calc,fit,matrix,positioning}
+
+\begin{frame}[fragile,label=exTop]{extracting hexadecimal nibble (1)}
+\begin{tikzpicture}
+\node (the code) {
+\begin{minipage}{7cm}
+\begin{ccodeNL}
+typedef unsigned char byte;
+int get_top_nibble(byte value) {
+    return ???;
+}
+\end{ccodeNL}
+\end{minipage}
+};
+\node[align=left,anchor=north east] at ([yshift=-.5cm]the code.north west) {
+problem: given \texttt{0xAB} \\
+extract \texttt{0xA} \\
+~ \\
+(hexadecimal digits \\
+ called ``nibbles'')
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=exOpcode2]{extracing hexadecimal nibbles (2)}
+\begin{ccodeNL}
+typedef unsigned char byte;
+int get_top_nibble(byte value) {
+    return value / 16;
+}
+\end{ccodeNL}
+\end{frame}
+

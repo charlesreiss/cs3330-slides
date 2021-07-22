@@ -1,0 +1,38 @@
+\begin{frame}[label=Y86memory1,fragile]{Y86-64: specifying addresses}
+\begin{itemize}
+\item Valid: \lstinline|rmmovq %r11, 10(%r12)|
+\item<2-> \myemph{Invalid}: \xcancel{\tt \rmmovq \%r11, 10(\%r12,\%r13)} 
+\item<2-> \myemph{Invalid}: \xcancel{\tt \rmmovq \%r11, 10(,\%r12,4)} 
+\item<2-> \myemph{Invalid}: \xcancel{\tt \rmmovq \%r11, 10(\%r12,\%r13,4)} 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=Y86memory2Ex,fragile]{Y86-64: accessing memory: exercise}
+\begin{itemize}
+\item r12 $\leftarrow$ memory[10 + r11] + r12
+\item \myemph{Invalid}: \xcancel{\tt \addq 10(\%r11), \%r12} 
+\item How to simulate \textit{assuming overwriting \%r11 is okay}?
+\begin{itemize}
+\item \textbf{A.} \texttt{rmmovq \%r11, 10(\%r11)} \\ \texttt{addq \%r11, \%r12}
+\item \textbf{B.} \texttt{addq \%r12, \%r11} \\ \texttt{mrmovq 10(\%r11), \%r11}
+\item \textbf{C.} \texttt{mrmovq 10(\%r11), \%r11} \\ \texttt{addq \%r11, \%r12} \\ \texttt{rmmovq \%r12, 10(\%r11)}
+\item \textbf{D.} \texttt{mrmovq 10(\%r11), \%r11} \\ \texttt{addq \%r11, \%r12}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label=Y86memory2Soln,fragile]{Y86-64: accessing memory (1)}
+\begin{itemize}
+\item r12 $\leftarrow$ memory[10 + r11] + r12
+\item \myemph{Invalid}: \xcancel{\tt \addq 10(\%r11), \%r12} \\
+\item<2-> Instead:
+\begin{lstlisting}
+  mrmovq 10(%r11), %r11
+  /* overwrites %r11 */
+
+  addq %r11, %r12
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+

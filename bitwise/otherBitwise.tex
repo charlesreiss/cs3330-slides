@@ -1,0 +1,110 @@
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing}
+
+\begin{frame}<2>[fragile,label=bitwiseOr]{bitwise OR --- {\tt |}}
+\begin{columns}[b]
+\begin{column}{0.6\textwidth}
+\lstset{
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2|handout:0>]{@2*}{*@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+    escapechar=$,
+}
+\begin{itemize}
+\item \lstinline!1 | 1 == 1!
+\item \lstinline!1 | 0 == 1!
+\item \lstinline!0 | 0 == 0!
+\item \lstinline!2 | 4 == 6!
+\item \lstinline!@2*10 | 7 ==  15*@!
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\onslide<2->{
+\tt
+\begin{tabular}{llllll}
+~  & \ldots & 1 & 0 & 1 & 0 \\
+|\hspace{.5cm} & \ldots & 0 & 1 & 1 & 1 \\\hline
+~  & \ldots & 1 & 1 & 1 & 1
+\end{tabular}
+}
+\vspace{0pt}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}<2>[fragile,label=bitwiseXor]{bitwise xor --- {\tt \^~}}
+\begin{columns}[b]
+\begin{column}{0.6\textwidth}
+\lstset{
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2|handout:0>]{@2*}{*@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+    escapechar=$,
+}
+\begin{itemize}
+\item \lstinline!1 ^ 1 == 0!
+\item \lstinline!1 ^ 0 == 1!
+\item \lstinline!0 ^ 0 == 0!
+\item \lstinline!2 ^ 4 == 6!
+\item \lstinline!@2*10 ^ 7 ==  13*@!
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\onslide<2->{
+\tt
+\begin{tabular}{llllll}
+~  & \ldots & 1 & 0 & 1 & 0 \\
+\lstinline|^|\hspace{.5cm} & \ldots & 0 & 1 & 1 & 1 \\\hline
+~  & \ldots & 1 & 1 & 0 & 1
+\end{tabular}
+}
+\vspace{0pt}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile,label=negation]{negation / not --- {\tt\textasciitilde}}
+\lstset{
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2>]{@2*}{*@},
+    moredelim=**[is][\btHL<3>]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+    moredelim=**[is][\it]{@*}{*@},
+    escapechar=$,
+}
+\lstinline|~| (`complement') is bitwise version of \lstinline|!|:
+\begin{columns}[t]
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item \lstinline|!0 == 1|
+\item \lstinline|!notZero == 0|
+\item \lstinline|~0 == (int) 0xFFFFFFFF| {\small (aka \lstinline|-1|)}
+\item<2-> \lstinline|~2 == (int) 0xFFFFFFFD| {\small (aka \lstinline|-3|)}
+\item<3-> \lstinline|~((unsigned) 2) == 0xFFFFFFFD|
+\end{itemize}
+
+\vspace{0pt}
+\end{column}
+\begin{column}{0.4\textwidth}
+\vspace{2cm}
+
+\tt
+\begin{tabular}{llllllll}
+\lstinline|~| \hspace{.5cm}& \tikzmark{s}0 & 0 & \ldots & 0 & 0 & 0 & 0\tikzmark{e} \\ \hline
+ ~ & 1 & 1 & \ldots & 1 & 1 & 1 & 1 \\
+\end{tabular}
+\vspace{0pt}
+\end{column}
+\end{columns}
+\begin{tikzpicture}[remember picture,overlay]
+    \draw[decorate,thick,decoration={brace,amplitude=10pt}] ([yshift=1.5ex]pic cs:s) -- ([yshift=1.5ex]pic cs:e) node[midway,yshift=4ex] {32 bits};
+\end{tikzpicture}
+\end{frame}
+

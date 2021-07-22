@@ -1,0 +1,14 @@
+\begin{frame}{looplab speeds on my desktop}
+    \begin{itemize}
+    \item original assembly: 2.0 cycles/element
+    \item unrolled x2: 1.0 cycles element
+    \item unrolled x4: 1.0 cycles element
+    \item unrolled x8: 1.0 cycles element
+    \item unrolled x8, 4 accumulators: 0.5 cycles element
+    \vspace{.5cm}
+    \item<2-> Clang 6 optimized code: 0.13 cycles/element
+    \item<2-> GCC optimized code: 0.14 cycles/element
+    \vspace{.5cm}
+    \item<3-> how? instructions that add \textit{16 pairs of shorts} at once!
+    \end{itemize}
+\end{frame}

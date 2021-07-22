@@ -1,0 +1,179 @@
+
+\input{../seq/movLib}
+
+\begin{frame}[fragile,label=MovCPUExamples]{mov CPU examples}
+\vspace{-.5cm}
+    \begin{tikzpicture}[circuit logic]
+        \instrEncodingStyles
+        \tikzset{
+            dmemNorm/.style={},
+            dmemInputLabel/.style={},
+            dmemLabel/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            %regNorm/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+            regNormLabelM/.style={visible on=<0|handout:0>},
+        }
+        \circuitState
+        \dmemInput
+        \instrEncodingStyles
+        \begin{visibleenv}<1-|handout:1->
+            \draw[a] (pc.east) -- (imemAddr);
+            \movSplitBlock
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \splitRegSelect
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \node[mux,inputs={nnn},info={center:\scriptsize MUX},minimum height=1.2cm,minimum width=.8cm,below left=1.7cm and 1cm of regWriteIn1,
+                  rotate=180,logicFill] (writeInMux) {};
+            \draw[a] (writeInMux.output) -- ++ (-.2cm,0cm) |- (regWriteIn2);
+            \node[logicBlock,below=1.5cm of split,font=\tiny,controlPath] (convertOp) {convert\\opcode};
+            \draw[b,controlPath] (splitSouth2) -- (convertOp.north -| splitSouth2);
+            \draw[b,controlPath] ([xshift=.3cm]convertOp.south) |- ([yshift=-.2cm]writeInMux.north) -- (writeInMux.north);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \coordinate (regReadOffsetB) at ([xshift=.15cm]regRead2);
+            \coordinate (regReadOffset) at ([xshift=.3cm]regRead1);
+            \coordinate (regReadOffset2) at ([xshift=.6cm]regRead1);
+            \draw[a] (regRead1) -- (regReadOffset) |- (writeInMux.input 3);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \draw[a,overlay] (split.north) -- ++(0cm,2cm) node[above right,font=\scriptsize,xshift=1.5cm] (immediate label) {immediate} -| (regReadOffset2) |- (writeInMux.input 2);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \node[logicBlock,font=\scriptsize,left=.3cm of dmemInLow](plusAddr){+};
+            \coordinate (plusHigh) at ([yshift=.1cm]plusAddr.west);
+            \coordinate (plusLow) at ([yshift=-.1cm]plusAddr.west);
+            \draw[thick] (regRead2) -- (regReadOffsetB) |- ([xshift=-1.2pt]plusHigh -| regReadOffset);
+            \draw[thick] ([xshift=1.2pt]plusHigh -| regReadOffset) -- ([xshift=-1.2pt]plusHigh -| regReadOffset2);
+            \draw[a] ([xshift=1.2pt]plusHigh -| regReadOffset2) -- (plusHigh);
+            \draw[a] (plusLow -| regReadOffset2) -- (plusLow);
+            \draw[a] (plusAddr.east) -- (dmemInLow);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \draw[a] (dmemDataOut) -- ++(.2cm,0cm) |- (writeInMux.input 1);
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \movPcLogic
+        \end{visibleenv}
+        
+        \begin{visibleenv}<1-|handout:1->
+            \splitRegSelectMuxA
+        \end{visibleenv}
+        \begin{visibleenv}<1-|handout:1->
+            \splitRegSelectMuxF
+        \end{visibleenv}
+        % FIXME: addition of F as destination option
+        \begin{visibleenv}<1-|handout:1->
+            \draw[thick] (regReadOffset |- dmemInHigh) -- ([xshift=-1.2pt]regReadOffset2 |- dmemInHigh);
+            \draw[a] ([xshift=1.2pt]regReadOffset2 |- dmemInHigh) -- (dmemInHigh);
+            \coordinate (dmemWE) at ([xshift=-.5cm]dmem.south);
+            \draw[controlPath,b,latex-] (dmemWE) -- ++(0cm,-.5cm) node[inner sep=0pt,outer sep=1pt,below,font=\scriptsize,blue!70,
+                      align=center] {write enable \\ \tiny from convert opcode};
+        \end{visibleenv}
+
+        \instrEncodingSubTable{below right=2cm and -1cm of pc}{encodings}{
+            \rrmovq \rA, \rB \& |[opcode]| 2 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \irmovq \V, \rB \& |[opcode]| 3 \& |[literal]| 0 \& |[literal]| F \& |[register]| \rB 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \mrmovq \D(\rB), \rA \& |[opcode]| 5 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+            \rmmovq \rA, \D(\rB) \& |[opcode]| 4 \& |[literal]| 0 \& |[register]| \rA \& |[register]| \rB
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~ 
+                \& ~ \& ~ \& ~ \& ~
+                \& ~ \& ~ \& ~ \& ~
+            \\
+        };
+        \node[fake,outer sep=0pt,fit=(encodings-1-6) (encodings-1-21)] (rrEmpty) {};
+        \node[immediateLabel=\V,inner sep=0pt,outer sep=0pt,fit=(encodings-2-6) (encodings-2-21)] (irV) {};
+        \node[immediateLabel=\D,inner sep=0pt,outer sep=0pt,fit=(encodings-3-6) (encodings-3-21)] (mrD) {};
+        \node[immediateLabel=\D,inner sep=0pt,outer sep=0pt,fit=(encodings-4-6) (encodings-4-21)] (rmD) {};
+
+            \tikzset{
+                annot/.style={text=red,font=\tt\fontsize{8}{9}\selectfont,fill=white,text opacity=1.0,fill opacity=0.8,inner sep=0mm},
+                annotB/.style={text=red,font=\fontsize{8}{9}\selectfont,fill=white,text opacity=1.0,fill opacity=0.8,inner sep=0mm},
+            }
+        \begin{visibleenv}<4>
+            \node[anchor=south west,text=red,
+                font=\fontsize{11}{12}\selectfont\tt] (rmmovq instr) at ([xshift=-1.5cm,yshift=.25cm]pc.north) {
+                rmmovq \%r8, 0x1234(\%r9)
+            };
+            \node[annot,anchor=north,annot,font=\tt\fontsize{7}{8}\selectfont] (iValue) at ([yshift=0cm]rmmovq instr.south) {40 89 34 12 00 00 00 00 00 00};
+            \node[annot,anchor=east] at ([yshift=-.3cm]immediate label.west) {0x1234};
+            \node[annotB,anchor=east] at ([xshift=-0.25cm]dmemInHigh) {value of R8};
+            \node[annotB,anchor=east] at ([xshift=-0.25cm]plusHigh) {value of R9};
+            \node[annot,anchor=east] at ([xshift=-0.25cm]plusLow) {0x1234};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect1) {0x8};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect2) {0x9};
+            \draw[red,thick,->] (regSelect4MuxA.input 3) -- (regSelect4MuxA.output);
+            \draw[red,thick,->] (pcSelectMux.input 1) -- (pcSelectMux.output);
+        \end{visibleenv}
+
+        \begin{visibleenv}<3>
+            \node[anchor=south west,text=red,
+                font=\fontsize{11}{12}\selectfont\tt] (rmmovq instr) at ([xshift=-1.5cm,yshift=.25cm]pc.north) {
+                irmovq \$0x1234, \%r8
+            };
+            \node[annot,anchor=north,annot,font=\tt\fontsize{7}{8}\selectfont] (iValue) at ([yshift=0cm]rmmovq instr.south) {30 F8 34 12 00 00 00 00 00 00};
+            \node[annot,anchor=east] at ([yshift=-.3cm]immediate label.west) {0x1234};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect1) {0xF};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect2) {0x8};
+            \node[annot,anchor=east] at ([xshift=-.25cm]regSelect4MuxA.input 2) {0x8};
+            \node[annot,anchor=west] at ([xshift=.5cm]writeInMux.input 2) {0x1234};
+            \draw[red,thick,->] (writeInMux.input 2) -- (writeInMux.output);
+            \draw[red,thick,->] (regSelect4MuxA.input 2) -- (regSelect4MuxA.output);
+            \draw[red,thick,->] (pcSelectMux.input 1) -- (pcSelectMux.output);
+        \end{visibleenv}
+
+        \begin{visibleenv}<2>
+            \node[anchor=south west,text=red,
+                font=\fontsize{11}{12}\selectfont\tt] (rmmovq instr) at ([xshift=-1.5cm,yshift=.25cm]pc.north) {
+                rrmovq \%r8, \%r9
+            };
+            \node[annot,anchor=north,annot,font=\tt\fontsize{7}{8}\selectfont] (iValue) at ([yshift=0cm]rmmovq instr.south) {20 89};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect1) {0x8};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect2) {0x9};
+            \node[annot,anchor=east] at ([xshift=-.25cm]regSelect4MuxA.input 2) {0x9};
+            \node[annot,anchor=west] at ([xshift=.5cm]writeInMux.input 3) {value of R8};
+            \draw[red,thick,->] (writeInMux.input 3) -- (writeInMux.output);
+            \draw[red,thick,->] (regSelect4MuxA.input 2) -- (regSelect4MuxA.output);
+            \draw[red,thick,->] (pcSelectMux.input 2) -- (pcSelectMux.output);
+        \end{visibleenv}
+        \begin{visibleenv}<5>
+            \node[anchor=south west,text=red,
+                font=\fontsize{11}{12}\selectfont\tt] (rmmovq instr) at ([xshift=-1.5cm,yshift=.25cm]pc.north) {
+                mrmovq 0x1234(\%r9), \%r8
+            };
+            \node[annot,anchor=north,annot,font=\tt\fontsize{7}{8}\selectfont] (iValue) at ([yshift=0cm]rmmovq instr.south) {50 98 34 12 00 00 00 00 00 00};
+            \node[annot,anchor=east] at ([yshift=-.3cm]immediate label.west) {0x1234};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect1) {0x9};
+            \node[annot,anchor=east] at ([xshift=-1cm]regSelect2) {0x8};
+            \node[annot,anchor=east] at ([xshift=-.25cm]regSelect4MuxA.input 1) {0x8};
+            \node[annotB,anchor=west] at ([xshift=.5cm]writeInMux.input 1) {value of memory at (value of R9 + 0x1234)};
+            \draw[red,thick,->] (writeInMux.input 1) -- (writeInMux.output);
+            \draw[red,thick,->] (regSelect4MuxA.input 1) -- (regSelect4MuxA.output);
+            \draw[red,thick,->] (pcSelectMux.input 1) -- (pcSelectMux.output);
+
+            \node[annotB,anchor=east] at ([xshift=-0.25cm]plusHigh) {value of R9};
+            \node[annot,anchor=east] at ([xshift=-0.25cm]plusLow) {0x1234};
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

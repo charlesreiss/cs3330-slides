@@ -1,0 +1,29 @@
+\begin{frame}{last time}
+    \begin{itemize}
+    \item processors $\leftrightarrow$ memory, I/O devices
+        \begin{itemize}
+        \item processor: send addresses (+ values, sometimes)
+        \item memory: reply with values (or store value)
+        \item some addresses correspond to I/O devices
+        \item type of value read: why did processor read it?
+        \end{itemize}
+    \item endianness: little = least address is least significant
+        \begin{itemize}
+            \item little endian: {\tt 0x12\,34}: {\tt 0x34} at address $x+0$ 
+            \item big endian: {\tt 0x12\,34}: {\tt 0x12} at address $x+0$
+        \end{itemize}
+    \item object files and linking
+        \begin{itemize}
+        \item relocations: ``fill in the blank'' with final addresses
+        \item symbol table: location of labels within file
+        \item memory addresses not decided until final executable
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{a logistics note}
+    \begin{itemize}
+        \item on the waitlist? there are labs/lectures \myemph{open}
+        \item if you can't do the 2pm lecture, we can talk\ldots
+    \end{itemize}
+\end{frame}

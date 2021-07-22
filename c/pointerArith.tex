@@ -1,0 +1,137 @@
+\usetikzlibrary{calc,fit,matrix,positioning}
+
+\begin{frame}[fragile]{strings in C}
+\begin{tikzpicture}
+    \tikzset{
+        mybox part/.style={minimum width=2cm,font=\scriptsize,align=left,fill=black!10!white},
+        mybox/.style={draw,rectangle,mybox part},
+        mycodebox/.style={draw,rectangle,mybox part,fill=white},
+        mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        myline/.style={line width=1pt,-latex},
+    }
+    \node[mycodebox] (code) {
+        \begin{minipage}{6cm}
+\begin{ccodeNL}
+int main() {
+   const char *hello = "Hello World!";
+   ...
+}
+\end{ccodeNL}
+        \end{minipage}
+    };
+    \node[left=2cm of code,mylabel={\texttt{hello} (on stack/register)}{<1->},mybox] (ptr) {0x4005C0};
+    \matrix[matrix of nodes,
+        mylabel={read-only data}{<1->},below=1.5cm of ptr,mybox,
+        nodes={draw,rectangle,minimum width=0mm,minimum height=.5cm, inner sep=0mm,anchor=south,
+               font=\tt\scriptsize\addfontfeatures{Mapping=}},
+        xshift=3cm,
+        inner sep=0mm,outer sep=0mm,
+    ] (data) {
+        \sf\ldots\&'H'\&'e'\&'l'\&'l'\&'o'\&'\verb*| |'\&
+        'W'\&'o'\&'r'\&'l'\&'d'\&'!'\&'\textbackslash0'\&\sf\ldots\\
+    };
+
+    \draw[-latex,very thick] (ptr) -- (data-1-2);
+
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{pointer arithmetic}
+\begin{tikzpicture}
+    \tikzset{
+        mybox part/.style={minimum width=2cm,font=\scriptsize,align=left,fill=black!10!white},
+        mybox/.style={draw,rectangle,mybox part},
+        mycodebox/.style={draw,rectangle,mybox part,fill=white},
+        mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        myline/.style={line width=1pt,-latex},
+    }
+    \matrix[matrix of nodes,
+        mylabel={read-only data}{<1->},mybox,
+        nodes={draw,rectangle,minimum width=0mm,minimum height=.5cm, inner sep=0mm,anchor=south,
+               font=\tt\scriptsize},
+        xshift=3cm,
+        inner sep=0mm,outer sep=0mm,
+    ] (data) {
+        \sf\ldots\&\lstinline|'H'|\&\lstinline|'e'|\&\lstinline|'l'|\&%
+        \lstinline|'l'|\&\lstinline|'o'|\&\lstinline|' '|\&%
+        \lstinline|'W'|\&\lstinline|'o'|\&\lstinline|'r'|\&%
+        \lstinline|'l'|\&\lstinline|'d'|\&\lstinline|'!'|\&%
+        \lstinline|'\0'|\&\sf\ldots\\
+    };
+    \node[mybox,below=2cm of data-1-2] (ptr0) {\tt hello + 0};
+    \node[below=0pt of ptr0,visible on=<2->] (ptr0ex) {\scriptsize\tt 0x4005C0};
+    \draw[myline] (ptr0) -- (data-1-2);
+    \node[mybox,right=2cm of ptr0] (ptr5) {\tt hello + 5};
+    \draw[myline] (ptr5) -- (data-1-7);
+    \node[below=0pt of ptr5,visible on=<2->] (ptr5ex) {\scriptsize\tt 0x4005C5};
+
+    \node[below=0pt of ptr0ex,visible on=<2->,font=\scriptsize] (ptr0ex2) {
+        \lstinline|*(hello + 0)| is \lstinline|'H'|
+    };
+    \node[below=0pt of ptr5ex,visible on=<2->,font=\scriptsize] (ptr5ex2) {
+        \lstinline|*(hello + 5)| is \lstinline|' '|
+    };
+
+    \node[below=0pt of ptr0ex2,visible on=<3->,font=\scriptsize] (ptr0ex3) {
+        \lstinline|hello[0]| is \lstinline|'H'|
+    };
+    \node[below=0pt of ptr5ex2,visible on=<3->,font=\scriptsize] (ptr5ex3) {
+        \lstinline|hello[5]| is \lstinline|' '|
+    };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{arrays and pointers}
+\begin{itemize}
+\item \cinline|*(foo + bar)| \myemph{exactly the same} as \cinline|foo[bar]|
+\item arrays \myemph{`decay'} into pointers
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{arrays of non-bytes}
+\lstset{
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2>]{@2*}{*@},
+    moredelim=**[is][\btHL<3>]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+    numbers=left,
+    xleftmargin=1cm
+    }
+\cinline|array[2]| and \cinline|*(array + 2)| still the same
+\highBox<2>{startHI}{endHI}
+\highBox<2>{startHI2}{endHI2}
+\begin{ccode}
+int numbers[4] = {10, 11, 12, 13};
+int *pointer;
+pointer = numbers;
+*pointer = 20;  // numbers[0] = 20;
+@\tikzmark{startHI}@pointer = pointer + 2;@\tikzmark{endHI}@
+@\tikzmark{startHI2}@/* adds 8 (2 ints) to address */@\tikzmark{endHI2}@
+*pointer = 30;  // numbers[2] = 30;
+// numbers is {20, 11, 30, 13}
+\end{ccode}
+\begin{tikzpicture}[overlay,remember picture]
+    \begin{visibleenv}<0|handout:0>
+    \node[draw,fill=white,ultra thick,anchor=north] at ([yshift=-.1cm]$(pic cs:startHI2)!0.5!(pic cs:endHI2)$)
+    {
+        assembly: \tt addq \$8, \ldots
+    };
+    \end{visibleenv}
+\end{tikzpicture}
+\begin{comment}
+\begin{lstlisting}
+int numbers[4] = {10, 11, 12, 13};
+int *pointer;
+pointer = numbers;
+*pointer = 20;  // numbers[0] = 20;
+@2*pointer = pointer + 2;*@
+@2*/* adds 8 (2 ints) to address */*@
+*pointer = 30;  // numbers[2] = 30;
+// numbers is {20, 11, 30, 13}
+\end{lstlisting}
+\end{comment}
+% FIXME: Picture for this
+\end{frame}
+

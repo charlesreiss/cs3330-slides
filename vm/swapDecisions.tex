@@ -1,0 +1,113 @@
+
+\begin{frame}<1>[label=swapDecisions]{swapping decisions}
+\begin{itemize}
+\item \myemph<2>{write policy}
+\item \myemph<3>{replacement policy}
+\end{itemize}
+\end{frame}
+
+\againframe<2>{swapDecisions}
+
+\begin{frame}{swapping is writeback}
+\begin{itemize}
+\item implementing write-through is hard
+\begin{itemize}
+    \item when fault happens --- physical page not written
+    \item when OS resumes process --- no chance to forward write
+    \item HW itself doesn't know how to write to disk
+\end{itemize}
+\item write-through would also be really slow
+\begin{itemize}
+    \item HDD/SSD perform best if one writes \myemph{at least a whole page} at a time
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{implementing writeback}
+\begin{itemize}
+\item need a \textit{dirty bit} per page (``was page modified'')
+\item often \myemph{kept in the page table}!
+\vspace{.5cm}
+\item option 1 (most common): \myemph{hardware sets dirty bit} in page table entry (on write)
+    \begin{itemize}
+        \item bit means ``physical page was modified using this PTE''
+    \end{itemize}
+\item option 2: OS sets page read-only, flips read-only+dirty bit on fault
+\end{itemize}
+\end{frame}
+
+\againframe<3>{swapDecisions}
+
+\begin{frame}{replacement policies really matter}
+\begin{itemize}
+\item huge cost for ``miss'' on swapping (milliseconds!)
+\begin{itemize}
+\item many millions of computations on modern processor
+\item much much worse than even L3 caches
+\end{itemize}
+\item replacement policy implemented \myemph{in software}
+\begin{itemize}
+\item a lot more room for fancy policies
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{LRU replacement?}
+\begin{itemize}
+\item problem: need to identify when pages are used
+    \begin{itemize}
+    \item ideally \myemph{every single time}
+    \end{itemize}
+\item not practical to do this exactly
+    \begin{itemize}
+    \item HW would need to keep a list of when each page was accessed, or
+    \item SW would need to force every access to trigger a fault
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{approximating LRU}
+\begin{itemize}
+\item one policy: ``not recently used''
+\item OS periodically marks all pages as unreadable/writeable
+\item when page fault happens:
+    \begin{itemize}
+    \item make page accessible again
+    \item put on list of ``used'' pages
+    \end{itemize}
+\item OS replaces pages not on ``used'' list
+    \begin{itemize}
+    \item tiebreaker: when was page last on used list?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{hardware help for not-recently-used}
+\begin{itemize}
+\item hardware usually implements \myemph{accessed} bit in page table entry
+\item whenever page is read/written --- hardware sets this bit (if not set)
+\vspace{.5cm}
+\item makes it easier (faster?) for OS to maintain ``used '' list
+\item OS can periodically scan/clear ``accessed'' bit
+    \begin{itemize}
+    \item instead of marking pages invalid temporarily
+    \end{itemize}
+\item construct lists of ``used'' pages
+\end{itemize}
+\end{frame}
+
+\begin{frame}{accessed/dirty bits}
+\begin{itemize}
+\item information about how a page table entry was used
+    \begin{itemize}
+    \item \textit{indirectly} about underlying physical page
+    \end{itemize}
+\item kept in \myemph{page table entries} themselves
+\vspace{.5cm}
+\item<2-> multiple page table entries refer to same page
+    \begin{itemize}
+    \item separate valid/accessed bits for each
+    \item OS needs to consolidate them all
+    \end{itemize}
+\end{itemize}
+\end{frame}

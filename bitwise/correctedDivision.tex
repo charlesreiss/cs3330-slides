@@ -1,0 +1,18 @@
+\begin{frame}[fragile,label=divRounding]{divide with proper rounding}
+    \begin{itemize}
+        \item C division: rounds towards zero (truncate)
+        \item arithmetic shift: rounds towards negative infinity
+        \item solution: ``bias'' adjustments --- described in textbook
+    \end{itemize}
+\begin{visibleenv}<2->
+\begin{asmcodeS}
+// %eax = int divideBy8(int %edi)
+divideBy8: // GCC generated code
+    leal   7(%rdi), %eax // %eax <- %edi + 7
+    testl  %edi, %edi    // set cond. codes based on %edi
+    cmovns %edi, %eax    // if (SF == 0) %eax <- %edi
+    sarl   $3, %eax      // arithmetic shift
+    ret
+\end{asmcodeS}
+\end{visibleenv}
+\end{frame}

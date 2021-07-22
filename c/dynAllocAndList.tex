@@ -1,0 +1,71 @@
+\usetikzlibrary{calc,fit,positioning,shapes.multipart}
+
+\begin{frame}[fragile,label=linked]{linked lists / dynamic allocation}
+\small
+\highBox<2>{startA}{endA}
+\begin{ccodeNL}
+typedef struct list_t {
+    int item;
+    @\tikzmark{startA}@struct list_t@\tikzmark{endA}@ *next;
+} list;
+// ...
+\end{ccodeNL}
+\begin{visibleenv}<3->
+\highBox<4>{startMalloc}{endMalloc}
+\highBox<4>{startFree}{endFree}
+\begin{ccodeNL*}{texcomments=false}
+  list* head = @\tikzmark{startMalloc}@malloc(sizeof(list))@\tikzmark{endMalloc}@@\tikzmark{malloc}@;
+    /* C++: new list; */
+  head->item = 42;
+  head->next = NULL;
+  // ...
+  @\tikzmark{startFree}@free(head)@\tikzmark{endFree}@;
+    /* C++: delete list */
+\end{ccodeNL*}
+\end{visibleenv}
+\begin{tikzpicture}[overlay,remember picture]
+\tikzset{
+    mybox part/.style={minimum width=2cm,font=\scriptsize,align=left},
+    mybox/.style={draw,rectangle,mybox part},
+    mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+    myline/.style={line width=1pt,-latex},
+}
+\begin{scope}[every node/.style={visible on=<4->}]
+\node[mybox,right=1cm of {pic cs:malloc},draw,rectangle,text width=1.5cm, text height=2ex, mylabel={head}{<4->}] (head) {};
+\node[mybox,below=.5cm of head,rectangle split,rectangle split parts=2,mylabel={on heap}{<4->}] (mallocd) {
+    \nodepart{one} item: \lstinline|42| 
+    \nodepart{two} next: \lstinline|NULL|
+};
+\end{scope}
+\draw[thick,-latex,visible on=<4->] (head.center) -- ($(head.west) + (-.5cm,0)$) |- ([yshift=1ex]mallocd.west);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=dynamicArrays]{dynamic arrays}
+\begin{ccodeNL}
+int *array = malloc(sizeof(int)*100);
+  // C++: new int[100]
+for (i = 0; i < 100; ++i) {
+    array[i] = i;
+}
+// ...
+free(array); // C++: delete[] array
+\end{ccodeNL}
+\begin{tikzpicture}
+\tikzset{
+    mybox part/.style={minimum width=2cm,font=\scriptsize,align=left},
+    mybox/.style={draw,rectangle,mybox part},
+    mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+    myline/.style={line width=1pt,-latex},
+}
+\node[visible on=<2->,mybox,mylabel={array}{<2->},text width=1.5cm] (array) {\strut};
+\matrix [visible on=<2->,matrix of nodes,below=.5cm of array,mylabel={somewhere on heap}{<2->},
+         column sep=-\pgflinewidth,
+         row sep=0mm,inner sep=0mm,font=\small,nodes={inner sep=.5mm,draw,rectangle,fill=white,text width=4ex,align=center}] (arrayStorage) {
+    \strut\lstinline|0| \& \strut\lstinline|1| \& \strut\lstinline|2| \& \strut\lstinline|3| \& \strut\lstinline|4| \& \strut\lstinline|5| \& \strut\lstinline|6| \& |[draw=none,fill=none]| \ldots\strut \& \strut\lstinline|99| \\
+};
+\draw[latex-latex,thin,visible on=<2->] ([yshift=-1mm]arrayStorage-1-1.south west) -- ([yshift=-1mm]arrayStorage-1-9.south east) node[midway,inner sep=0mm,below=1pt,font=\small] {400 bytes};
+\draw[visible on=<2->,thick,-latex] (array.center) -- ($(array.west) + (-4cm,0)$) |- (arrayStorage.west);
+\end{tikzpicture}
+\end{frame}
+

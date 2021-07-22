@@ -1,0 +1,83 @@
+% FIXME: actual output
+
+\begin{frame}[fragile,label=debugNopJmp]{debugging mode}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont,commandchars=\\\{\}]
++------------------- between cycles    0 and    1 ----------------------+
+| RAX:                0   RCX:                0   RDX:                0 |
+| RBX:                0   RSP:                0   RBP:                0 |
+| RSI:                0   RDI:                0   R8:                 0 |
+| R9:                 0   R10:                0   R11:                0 |
+| R12:                0   R13:                0   R14:                0 |
+| register pP(N) { thePc=0000000000000000 }                             |
+| used memory:   _0 _1 _2 _3  _4 _5 _6 _7   _8 _9 _a _b  _c _d _e _f    |
+|  0x0000000_:   10 70 13 00  00 00 00 00   00 00 70 1c  00 00 00 00    |
+|  0x0000001_:   00 00 00 70  0a 00 00 00   00 00 00 00  10 10 00       |
++-----------------------------------------------------------------------+
+\vemphA{i10bytes set to 0x137010 (reading 10 bytes from memory at pc=0x0)}
+\vemphA{pc = 0x0; loaded [10 : nop]}
+\vemphA{Values of wires:}
+\vemphA{Wire                       Value}
+\vemphA{dest          0x0000000000001370}
+\vemphA{i10bytes  0x00000000000000137010}
+\vemphA{icode                        0x1}
+\vemphA{pc            0x0000000000000000}
+\vemphA{P_thePc       0x0000000000000000}
+\vemphA{p_thePc       0x0000000000000001}
+\vemphA{Stat                         0x1}
+\vemphA{valP          0x0000000000000001}
+.------------------- between cycles    1 and    2 ----------------------+
+...
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile,label=interDebugNopJmp]{interactive + debugging mode}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont,commandchars=\\\{\}]
+$ ./nopjmp_cpu.exe -i -d nopjmp.yo
++------------------- between cycles    0 and    1 ----------------------+
+| RAX:                0   RCX:                0   RDX:                0 |
+| RBX:                0   RSP:                0   RBP:                0 |
+| RSI:                0   RDI:                0   R8:                 0 |
+| R9:                 0   R10:                0   R11:                0 |
+| R12:                0   R13:                0   R14:                0 |
+| register pP(N) { thePc=0000000000000000 }                             |
+| used memory:   _0 _1 _2 _3  _4 _5 _6 _7   _8 _9 _a _b  _c _d _e _f    |
+|  0x0000000_:   10 70 13 00  00 00 00 00   00 00 70 1c  00 00 00 00    |
+|  0x0000001_:   00 00 00 70  0a 00 00 00   00 00 00 00  10 10 00       |
++-----------------------------------------------------------------------+
+\vemphA{(press enter to continue)}
+i10bytes set to 0x137010 (reading 10 bytes from memory at pc=0x0)
+pc = 0x0; loaded [10 : nop]
+Values of wires:
+Wire                       Value
+dest          0x0000000000001370
+i10bytes  0x00000000000000137010
+icode                        0x1
+pc            0x0000000000000000
+P_thePc       0x0000000000000000
+p_thePc       0x0000000000000001
+Stat                         0x1
+valP          0x0000000000000001
++------------------- between cycles    1 and    2 ----------------------+
+...
+\end{Verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile,label=quietNopJmp]{quiet mode}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont]
+$ ./hclrs nopjmp_cpu.hcl -q nopjmp.yo
++----------------------- halted in state: ------------------------------+
+| RAX:                0   RCX:                0   RDX:                0 |
+| RBX:                0   RSP:                0   RBP:                0 |
+| RSI:                0   RDI:                0   R8:                 0 |
+| R9:                 0   R10:                0   R11:                0 |
+| R12:                0   R13:                0   R14:                0 |
+| register pP(N) { thePc=0000000000000000 }                             |
+| used memory:   _0 _1 _2 _3  _4 _5 _6 _7   _8 _9 _a _b  _c _d _e _f    |
+|  0x0000000_:   10 70 13 00  00 00 00 00   00 00 70 1c  00 00 00 00    |
+|  0x0000001_:   00 00 00 70  0a 00 00 00   00 00 00 00  10 10 00       |
++--------------------- (end of halted state) ---------------------------+
+Cycles run: 7
+\end{Verbatim}
+\end{frame}
+

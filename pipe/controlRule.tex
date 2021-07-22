@@ -1,0 +1,19 @@
+\begin{frame}{passing values in pipeline}
+    \begin{itemize}
+        \item read \myemph{prior stage's outputs}
+            \begin{itemize}
+            \item e.g. decode: get from fetch via pipeline registers ({\tt D\_icode}, \ldots)
+            \end{itemize}
+        \item send \myemph{inputs for next stage}
+            \begin{itemize}
+            \item e.g. decode: send to execute via pipeline registers ({\tt d\_icode}, \ldots)
+            \end{itemize}
+        \vspace{.5cm}
+        \item exceptions: \myemph{deliberate sharing} between instructions
+        \begin{itemize}
+            \item via register file/memory/etc.
+            \item via control flow instructions
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+

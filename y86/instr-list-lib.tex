@@ -1,0 +1,15 @@
+\begin{frame}<0>[fragile,label=Y86instrs]{Y86-64 instruction set}
+    \begin{itemize}
+    \item based on x86
+    \item omits most of the 1000+ instructions
+    \item leaves  \\
+        {\tt\begin{tabular}{lll}
+        addq & jmp & pushq \\
+        subq & j{\it CC} & popq \\
+        andq & \myemph<3>{cmov{\it CC}} & \myemph<2>{movq} {\normalfont (renamed)} \\
+        xorq & call & \myemph<4>{hlt} {\normalfont (renamed)} \\
+        nop  & ret & ~ \\
+        \end{tabular}}
+    \item much, much simpler encoding
+    \end{itemize}
+\end{frame}

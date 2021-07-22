@@ -1,0 +1,15 @@
+\begin{frame}[fragile,label=AddIntro]{simple ISA: addq}
+    \instrEncodingStyles
+    \begin{itemize}
+        \item \lstinline|addq %rXX, %rYY|
+        \item encoding: \opify{6} \literalify{0} \rnifyWide{\%rXX} \rnifyWide{\%rYY} (two 4-bit register \#s)
+            \begin{itemize}
+            \item 2 byte instructions, no opcode
+            \end{itemize}
+        \vspace{.5cm}
+        \item for now: no other instructions
+            \begin{itemize}
+            \item later: adding support for nop+halt
+            \end{itemize}
+    \end{itemize}
+\end{frame}

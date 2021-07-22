@@ -1,0 +1,127 @@
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw},
+    >=Latex,
+}
+
+\begin{frame}{arithmetic right shift}
+\begin{itemize}
+\item x86 instruction: {\keywordstyle sar} --- arithmetic shift right
+\item {{\keywordstyle sar} \tt\$\textit{amount}, \%reg} (or variable: {\tt{\keywordstyle sar} \%cl, \%reg})
+\end{itemize}
+\begin{tikzpicture}
+\begin{visibleenv}<1-2>
+\draw[blue,decorate,decoration=brace,ultra thick] (-.2, .7) -- (13., .7) node[midway, above] {\%reg (initial value)};
+\draw[blue,decorate,decoration={brace,mirror},ultra thick] (-.2, -3.1) -- (13., -3.1) node[midway, below] {\%reg (final value)};
+\end{visibleenv}
+\begin{visibleenv}<3>
+\draw[blue,decorate,decoration=brace,ultra thick] (-.2, 1.2) -- (13., 1.2) node[midway, above] {\%reg (initial value)};
+\draw[blue,decorate,decoration={brace,mirror},ultra thick] (-.2, -3.6) -- (13., -3.6) node[midway, below] {\%reg (final value)};
+\end{visibleenv}
+\foreach \x/\v in {28/1,29/0,30/1,31/1} {
+    \node[anchor=south] at ($(0,0) + \x*(0.4, 0)$) {\tt \v};
+    \begin{visibleenv}<3>
+    \node[anchor=south] at ($(0,0.4) + \x*(0.4, 0)$) {\tt \v};
+    \end{visibleenv}
+}
+\foreach \x/\v in {1/0,2/1,3/\strut\ldots,23/\strut\ldots,24/0,25/1,26/0,27/0} {
+    \node[anchor=south] at ($(0,0) + \x*(0.4, 0)$) {\tt \v};
+    \node[anchor=north] at ($(0, -2.5) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+    \begin{visibleenv}<3>
+    \node[anchor=south] at ($(0,0.4) + \x*(0.4, 0)$) {\tt \v};
+    \node[anchor=north] at ($(0, -2.9) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+    \end{visibleenv}
+}
+\foreach \x in {0,1,2,3,...,27} {
+    \draw[simple wire,->] ($(0,0) + \x*(0.4, 0)$) -- ($(0,-2.5) + 4*(0.4, 0) + \x*(0.4, 0)$);
+}
+\begin{visibleenv}<1>
+\foreach \x/\v in {0/0} {
+    \node[blue,anchor=south] at ($(0,0) + \x*(0.4, 0)$) {\tt \v};
+    \node[blue,anchor=north] at ($(0, -2.5) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+}
+\foreach \x in {0,1,2,3} {
+    \draw[simple wire,->,blue] (0,0) -- ($(0,-2.5) + \x*(0.4, 0)$);
+    \node[blue,anchor=north] at ($(0,-2.5) + \x*(0.4, 0)$) {\tt\bfseries 0};
+}
+\end{visibleenv}
+
+\begin{visibleenv}<2>
+\foreach \x/\v in {0/1} {
+    \node[blue,anchor=south] at ($(0,0) + \x*(0.4, 0)$) {\tt \v};
+    \node[blue,anchor=north] at ($(0, -2.5) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+}
+\foreach \x in {0,1,2,3} {
+    \draw[simple wire,->,blue] (0,0) -- ($(0,-2.5) + \x*(0.4, 0)$);
+    \node[blue,anchor=north] at ($(0,-2.5) + \x*(0.4, 0)$) {\tt\bfseries 1};
+}
+\end{visibleenv}
+
+\begin{visibleenv}<3>
+\foreach \x/\v in {0/0} {
+    \node[blue,anchor=south] at ($(0,0.4) + \x*(0.4, 0)$) {\tt \v};
+    \node[blue,anchor=north] at ($(0, -2.5) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+}
+\foreach \x/\v in {0/1} {
+    \node[blue,anchor=south] at ($(0, 0.0) + \x*(0.4, 0)$) {\tt \v};
+    \node[blue,anchor=north] at ($(0,-2.9) + 4*(0.4,0) + \x*(0.4, 0)$) {\tt \v};
+}
+\foreach \x in {0,1,2,3} {
+    \draw[simple wire,->,blue] (0,0) -- ($(0,-2.5) + \x*(0.4, 0)$);
+    \node[blue,anchor=north] at ($(0,-2.5) + \x*(0.4, 0)$) {\tt\bfseries 0};
+    \node[blue,anchor=north] at ($(0,-2.9) + \x*(0.4, 0)$) {\tt\bfseries 1};
+}
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=rightShiftC]{right shift in C}
+\begin{ccodeNL}
+int shift_signed(int x) {
+    return x >> 5;
+}
+unsigned shift_unsigned(unsigned x) {
+    return x >> 5;
+}
+\end{ccodeNL}
+\hrule
+\begin{tabular}{ll}
+\begin{asmcodeNL}
+shift_signed:
+    movl %edi, %eax
+    sarl $5, %eax
+    ret
+\end{asmcodeNL}
+&
+\begin{asmcodeNL}
+shift_unsigned:
+    movl %edi, %eax
+    shrl $5, eax
+    ret
+\end{asmcodeNL}
+\end{tabular}
+\end{frame}
+
+\begin{frame}{standards and shifts in C}
+    \begin{itemize}
+    \item signed right shift is \myemph{implementation-defined}
+        \begin{itemize}
+        \item standard lets compilers choose which type of shift to do
+        \item all x86 compilers I know of --- arithmetic
+        \end{itemize}
+    \item \myemph<2>{we'll assume compiler decides arithmetic in this class}
+    \vspace{.5cm}
+    \item shift amount $\ge$ width of type: undefined
+        \begin{itemize}
+        \item x86 assembly: only uses lower bits of shift amount
+        \end{itemize}
+    \vspace{.5cm}
+    \end{itemize}
+\end{frame}
+

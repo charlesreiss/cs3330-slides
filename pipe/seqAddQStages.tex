@@ -1,0 +1,57 @@
+\begin{frame}[fragile,label=AddCPU]{addq CPU}
+    \begin{tikzpicture}
+        \tikzset{stageLabel/.style={font=\small},stageLine/.style={ultra thick}}
+    \renewcommand{\fetchPrePCDist}{.8cm}
+    \seqAddQ
+    
+    \begin{visibleenv}<1-2|handout:1-2>
+        \draw[b] (splitRBOut) -- ++ (0.25cm,0cm) |- (regSelect4);
+    \end{visibleenv}
+
+    \begin{visibleenv}<2-|handout:2->
+        %fetch 
+        \begin{pgfonlayer}{fg}
+        \draw[fill=yellow,fill opacity=0.05,rounded corners,yellow,line width=2pt]
+            ([xshift=-.75cm,yshift=-.5cm]pcAdd.south west) |- ([yshift=.24cm]pc.north) -|
+            ([xshift=.5cm,yshift=-.75cm]split.south east) -| ([xshift=-.25cm,yshift=-1cm]imem.south west)
+            |- cycle;
+        \node[anchor=north west,align=left] at ([yshift=-.75cm]imem.south west) {fetch and \\ PC update};
+        \end{pgfonlayer}
+        
+        %decode
+        \draw[fill=orange,fill opacity=0.05,rounded corners,orange,line width=2pt]
+            ([xshift=-.75cm,yshift=1.2cm]regs.north west) -| ([xshift=0.05cm,yshift=-1.25cm]regs.north east)
+            -- ([xshift=-.75cm,yshift=-1.25cm]regs.north west) -- cycle;
+        \node [anchor=south] at ([yshift=1.2cm]regs.north) {decode};
+
+        %execute
+        \draw[fill=green,fill opacity=0.05,rounded corners,green,line width=2pt]
+            ([xshift=-.25cm,yshift=2.5cm]alu.north west) rectangle ([xshift=.25cm,yshift=-1cm]alu.south east);
+        \node [anchor=south] at ([yshift=2cm]alu.north) {execute};
+
+        %writeback
+        \draw[fill=blue,fill opacity=0.05,rounded corners,blue,line width=2pt]
+            ([xshift=-.25cm,yshift=2.5cm]regs.south west) rectangle ([xshift=.1cm,yshift=-.25cm]regs.south east);
+        \node [anchor=west] at ([xshift=.1cm]regs.south east) {writeback};
+
+        \coordinate (deBottom) at ([yshift=-.2cm,xshift=2.4cm]regSelect2);
+    \end{visibleenv}
+
+    \begin{visibleenv}<3|handout:3>
+        \draw[red,line width=2pt,-Latex] (splitRBOut) -- ++ (0.25cm,0cm) coordinate (pointSkip) |- (regSelect4);
+        \node[red] (skips) at ([yshift=1.5cm,xshift=1.5cm]pc.north) {signal skips two stages};
+        \draw[dashed,line width=1pt,red,-Latex] (skips) -- ([yshift=.3cm,xshift=.2cm]pointSkip);
+    \end{visibleenv}
+
+    \begin{visibleenv}<4-|handout:4->
+        \coordinate (splitRBOutPost) at ([xshift=0.25cm]splitRBOut);
+        \draw[white,line width=1pt] (splitRBOut) -- (splitRBOutPost) |- (regSelect4);
+        \draw[red,line width=1pt] (splitRBOut) -- (splitRBOutPost) |- 
+            ([xshift=-.5cm]regSelect2) -- ([yshift=-.125cm,xshift=-.5cm]regSelect2 |- regSelect1);
+        \draw[red,line width=1pt,-Latex] ([yshift=.125cm,xshift=-.5cm]regSelect2 |- regSelect1) 
+            |- ([yshift=0.75cm]regs.north) -| ([xshift=.5cm,yshift=.25cm]regRead1) -| ([xshift=1.75cm]alu.west)
+            |- ([yshift=-1cm,xshift=-1cm,]regs.south east) -| ([xshift=-.75cm]regSelect4) -- (regSelect4);
+    \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+

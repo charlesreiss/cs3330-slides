@@ -1,0 +1,16 @@
+\begin{frame}{implementing stalling + prediction}
+    \begin{itemize}
+    \item need to handle updating PC:
+        \begin{itemize}
+        \item stalling: retry same PC
+        \item prediction: use predicted PC
+        \item misprediction: correct mispredicted PC
+        \end{itemize}
+    \item need to updating pipeline registers:
+        \begin{itemize}
+        \item repeat stage in stall: keep same values
+        \item don't go to next stage in stall: insert nop values
+        \item ignore instructions from misprediction: insert nop values
+        \end{itemize}
+    \end{itemize}
+\end{frame}

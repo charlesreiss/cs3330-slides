@@ -1,0 +1,12 @@
+\begin{frame}[fragile,label=ccEx1]{condition codes example (1)}
+\begin{lstlisting}
+  movq $-10, %rax
+  movq $20, %rbx
+  subq %rax, %rbx // %rbx - %rax = 30
+    // result > 0: %rbx was > %rax
+  jle foo // not taken; 30 > 0
+\end{lstlisting}
+\only<2->{30: SF = 0 (not negative), ZF = 0 (not zero)}
+\end{frame}
+
+

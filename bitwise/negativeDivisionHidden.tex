@@ -1,0 +1,11 @@
+\begin{frame}<0>[fragile,label=divideNegTwo]{dividing negative by two}
+    \begin{itemize}
+    \item start with $-x$ 
+    \item flip all bits and add one to get $x$
+    \item \myemph<2>{right shift by one} to get $x/2$
+    \item \myemph<2>{flip all bits} and add one to get $-x/2$
+        \vspace{.5cm}
+    \item<2-> same as right shift by one, adding {\tt 1}s instead of {\tt 0}s \\
+        \myemph<3>{(except for rounding)}
+    \end{itemize}
+\end{frame}

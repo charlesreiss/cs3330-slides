@@ -1,0 +1,16 @@
+\begin{frame}{Stat signal}
+    \begin{itemize}
+    \item how do we stop the simulated machine?
+    \item hard-wired mechanism --- {\tt Stat} wire
+    \item possible values:
+        \begin{itemize}
+        \item {\tt STAT\_AOK} --- keep going
+        \item {\tt STAT\_HLT} --- stop, normal shtdown
+        \item {\tt STAT\_INS} --- invalid instruction
+        \item \ldots (and more errors)
+        \end{itemize}
+    \item (predefined 3-bit constants)
+    \item \myemph{must be set}
+    \item determines if \myemph{simulator} keeps going
+    \end{itemize}
+\end{frame}

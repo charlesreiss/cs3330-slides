@@ -1,0 +1,48 @@
+\begin{frame}[fragile,label=pipeDiagRetBubble]{ret bubbles}
+\begin{tikzpicture}
+\tikzset{
+    fetch/.style={fill=yellow!15},
+    decode/.style={fill=orange!15},
+    execute/.style={fill=green!15},
+    memory/.style={fill=blue!15},
+    writeback/.style={fill=violet!15},
+}
+\tikzset{
+    forwardLine/.style={red!90!black,thick,-Latex},
+    hiForwardOn/.style={alt=#1{blue}{}},
+    forwardLineB/.style={blue,dotted,thick,-Latex},
+    sepLine/.style={densely dotted,thick},
+}
+\matrix[tight matrix no line,
+        nodes={text width=.6cm,font=\tt,minimum height=.7cm,align=center},
+        column 1/.style={nodes={font=\small,text width=8cm,align=left}}] (tbl) {
+|[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
+                            \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \& 9 \\
+    \lstinline|addq %r8, %r9|   \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \& ~ \& ~ \& ~ \& ~ \& ~ \\
+    \lstinline|ret|  \& ~ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \& ~ \& ~ \\
+    \lstinline|???| \& ~ \& ~ \& |[fetch]| F \& ~ \\
+    inserted nop    \& ~ \& ~ \& ~ \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \\
+    \lstinline|???| \& ~ \& ~ \& ~ \& |[fetch]| F \& ~\\
+    inserted nop    \& ~ \& ~ \& ~ \& ~ \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \\
+    \lstinline|???| \& ~ \& ~ \& ~ \& ~ \& |[fetch]| F \& ~\\
+    inserted nop    \& ~ \& ~ \& ~ \& ~ \& ~ \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \\
+    \lstinline|rrmovq %rax, %r8| (return address) \& ~ \& ~ \& ~ \& ~ \& ~ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \\
+};
+\newcommand{\fwd}[4]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLine,hiForwardOn=#4] ([xshift=-.025cm]tbl-#2-\idx.west) -- ([xshift=+.025cm]tbl-#3-\idx.west);
+}
+\newcommand{\fwdB}[4]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLineB,hiForwardOn=#4] ([xshift=-.05cm]tbl-#2-\idx.west) -- ([xshift=-.025cm]tbl-#3-\idx.west);
+}
+\fwd{3}{4}{5}{<0>}
+\fwd{4}{6}{7}{<0>}
+\fwd{5}{8}{9}{<0>}
+    \fwdB{5}{3}{10}{<0>}
+%\fwd{3}{6}{7}{<0>}
+\end{tikzpicture}
+\begin{itemize}
+\item need option: replace instruction with nop (``bubble'')
+\end{itemize}
+\end{frame}

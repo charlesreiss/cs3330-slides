@@ -1,0 +1,10 @@
+
+
+\begin{frame}[fragile,label=derefPrec]{a note on precedence}
+\begin{itemize}
+    \item \cinline|&foo[42]| is the same as \cinline|&(foo[42])| (\textit{not} \cinline|(&foo)[42]|)
+    \item \cinline|*foo[42]| is the same as \cinline|*(foo[42])| (\textit{not} \cinline|(*foo)[42]|)
+    \item \cinline|*foo++| is the same as \cinline|*(foo++)| (\textit{not} \cinline|(*foo)++|)
+\end{itemize}
+\end{frame}
+

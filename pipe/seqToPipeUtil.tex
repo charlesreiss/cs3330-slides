@@ -1,0 +1,73 @@
+\newcommand{\fetchPrePCDist}{1cm}
+\newcommand{\seqStagesStyles}{
+    \tikzset{
+        pcStyle/.style={fill=yellow},
+        dmemLabel/.style={visible on=<0|handout:0>},
+        aluOpExplain/.style={visible on=<0|handout:0>},
+        funcOpExplain/.style={visible on=<0|handout:0>},
+        pipe/.style={draw,hReg,draw=black,thick,minimum width=.2cm},
+        stageLabel/.style={},
+        stageLine/.style={ultra thick},
+        instrRegsMuxRS3/.style={visible on=<0|handout:0>},
+        instrRegsMuxRS4/.style={visible on=<0|handout:0>},
+        instrRegsRS34Loop/.style={visible on=<1-|handout:1->},
+        dmemWBvalENoMux/.style={visible on=<0|handout:0>},
+        dmemWBvalELoop/.style={visible on=<1-|handout:1->},
+    }
+    \renewcommand{\pcMemDist}{.75cm}
+    \renewcommand{\imemRegsDist}{3cm}
+    \renewcommand{\regAluDist}{2cm}
+    \renewcommand{\regMemDist}{4.5cm}
+    \renewcommand{\regMuxDmemDist}{3.75cm}
+    \renewcommand{\regReadOffset}{0.5cm}
+    \renewcommand{\dstMuxDelta}{.25cm}
+}
+
+\newcommand{\seqStagesBase}{
+    \circuitState
+    \circuitConnectDetail
+}
+
+\newcommand{\seqStagesBoxLocs}{
+    \coordinate (fdBottom) at ([xshift=1.25cm]imem.east);
+    \coordinate (deBottom) at ([yshift=-.2cm,xshift=2.4cm]regSelect2);
+    \coordinate (aboveAlu) at ([yshift=3cm]alu.north);
+    \coordinate (beforeMuxB) at ([xshift=-.4cm]muxAluB);
+    \coordinate (emBottom) at ([xshift=.5cm,yshift=-1cm]alu.south east);
+    \coordinate (belowDMem) at ([yshift=-3cm]dmem.south);
+    \coordinate (afterDMem) at ([xshift=.5cm]dmem.east);
+    \coordinate (aboveDMem) at ([yshift=2cm]dmem.north);
+    \coordinate (regSelect4Post) at ([xshift=1cm]regSelect4);
+    \coordinate (regWriteInPre) at ([xshift=-2cm]regWriteIn1);
+    \coordinate (regWriteInUnder) at ([yshift=-2.5cm]regWriteIn1);
+    \coordinate (aboveRegSelect3) at ([yshift=.2cm]regSelect3);
+    \coordinate (mwTop) at ([xshift=1.75cm,yshift=-1cm]regSelect4 -| regs.east);
+}
+
+\newcommand{\seqStagesBoxes}{
+        \seqStagesBoxLocs
+        \draw[stageLine,yellow!80!black,fill=yellow,fill opacity=0.05] ([xshift=-\fetchPrePCDist,yshift=1cm]pc.north west)
+             -| ([xshift=1cm]imem.east)  |- ([yshift=-1cm]iLen.south) -| cycle;
+        \node[stageLabel,text=yellow!30!black] at ([yshift=1.5cm]pc.north) { fetch };
+        % FIXME: include dstM/dstE MUXes in decode
+
+
+        \draw[stageLine,orange!80!black,fill=orange,fill opacity=0.05] ([xshift=1cm,yshift=2.5cm]split.north east |- regSelect1) -|
+            ([yshift=-.2cm,xshift=2.1cm]regSelect2) -|
+            ([xshift=-2cm]regSelect1) |- cycle;
+
+        \node[overlay,stageLabel,draw=none,text=orange!60!black] at ([yshift=2.75cm,xshift=-1cm]regSelect1) { decode };
+        \node[fill=green,fill opacity=0.05,draw,stageLine,fit=(alu) (muxAluA) (muxAluB) (aboveAlu) (beforeMuxB),green!60!black] {};
+        \node[above=3.1cm of alu,stageLabel,text=green!60!black,xshift=-.5cm] { execute};
+        \node[fill=blue,fill opacity=0.05,draw,stageLine,fit=(dmem) (muxDMem) (belowDMem) (afterDMem) (aboveDMem),blue!60!black] {};
+        \node[above=0.25cm of aboveDMem,stageLabel,text=blue!60!black] { memory};
+        \node[fill=violet,fill opacity=0.05,draw,stageLine,violet!60!black,inner sep=.1mm,fit=(regWriteIn1) (regWriteIn2) (aboveRegSelect3) (regSelect4Post) (regWriteInPre) (regWriteInUnder)] {};
+        \node[below right=1.5cm and 1cm of regWriteIn2,stageLabel,text=violet!60!black] { writeback};
+}
+
+\newcommand{\seqStagesRegs}{
+    \node[pipe,fill=yellow!50!orange,anchor=south,minimum height=3cm] (fdRegs) at (fdBottom) {};
+    \node[pipe,fill=orange!50!green,anchor=south,minimum height=3cm] (deRegs) at (deBottom) {};
+    \node[pipe,fill=green!50!blue,anchor=south,minimum height=5cm] (emRegs) at (emBottom) {};
+    \node[pipe,fill=blue!50!violet,anchor=north,minimum height=2.5cm] (mwRegs) at (mwTop) {};
+}

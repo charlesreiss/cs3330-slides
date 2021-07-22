@@ -1,0 +1,45 @@
+\begin{frame}[fragile,label=extractICodeMore]{extracting icode from more}
+\begin{tikzpicture}
+\foreach \x/\v in {0.4/1,0.8/1,1.2/1,1.6/1,2.0/1,2.4/0,2.8/0,3.2/0} {
+    \draw[simple wire] (-\x, 0) node[above] (r\x-\v-num) {\tt\v} -- (-\x, -1);
+};
+\foreach \x/\v in {0/0,0.4/0,0.8/1,1.2/0,1.6/0,2.0/0,2.4/0,2.8/0} {
+    \draw[simple wire] (\x, 0) node[above] (\x-\v-num) {\tt\v} -- (\x, -1);
+};
+
+\foreach \x/\v in {0/1,0.4/1,0.8/1,1.2/1} {
+    \draw[simple wire,blue,->] (\x, 0) -- (\x, -2);
+};
+
+    \begin{scope}[yshift=.5cm]
+\draw[blue!70!black,ultra thick,decorate,decoration={brace}] (-.1, .1) -- (1.3, .1)
+        node[midway,above] {icode};
+\draw[green!70!black,ultra thick,decorate,decoration={brace}] (1.5, .1) -- (2.9, .1)
+        node[midway,above] {ifun};
+\draw[green!70!black,ultra thick,decorate,decoration={brace}] (-1.8, .1) -- (-.2, .1)
+        node[midway,above] {rB};
+\draw[green!70!black,ultra thick,decorate,decoration={brace,mirror}] (-1.9, .1) -- (-3.3, .1)
+        node[midway,above] {rA};
+    \end{scope}
+\end{tikzpicture}
+\begin{visibleenv}<2->
+\begin{ccodeNL}
+// % -- remainder
+unsigned extract_opcode1(unsigned value) {
+    return (value / 16) % 16; 
+}
+
+unsigned extract_opcode2(unsigned value) {
+    return (value % 256) / 16; 
+}
+\end{ccodeNL}
+\end{visibleenv}
+\end{frame}
+
+\begin{frame}{manipulating bits?}
+    \begin{itemize}
+    \item easy to manipulate individual bits in HW
+    \item how do we expose that to software?
+    \end{itemize}
+\end{frame}
+

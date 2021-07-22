@@ -1,0 +1,83 @@
+\begin{frame}[fragile,label=listsB]{some lists}
+\lstset{language=C,style=script}
+\vspace{-.5cm}
+\begin{tikzpicture}
+% FIXME:
+\tikzset{
+    codeBox/.style={draw,anchor=north west}
+}
+\node[codeBox] (sentinelCode) at (0,0) {
+\begin{minipage}{5.5cm}
+\begin{ccodeT}
+short sentinel = -9999;
+short *x;
+x = malloc(sizeof(short)*4);
+x[3] = sentinel;
+...
+\end{ccodeT}
+\end{minipage}
+};
+\node[right=1cm of sentinelCode,label={x},draw] (xSent) {~};
+\matrix[
+    right=1cm of xSent,
+    tight matrix,
+    nodes={text width=.7cm,align=center},
+    row 1/.style={nodes={draw=none,font=\scriptsize\tt}}] (xSentArr) {
+    x[0] \& x[1] \& x[2] \& x[3] \\
+    $1$ \& $2$ \& $3$ \& |[fill=black!20,text width=1.5cm]| {$-9999$} \\
+};
+\draw[-Latex,thick] (xSent) -- (xSentArr);
+\node[codeBox] (rangeCode) at ([yshift=-.2cm]sentinelCode.south west) {
+\begin{minipage}{5.5cm}
+\begin{ccodeT}
+typedef struct range_t {
+    unsigned int length;
+    short *ptr;
+} range;
+range x;
+x.length = 3;
+x.ptr = malloc(sizeof(short)*3);
+...
+\end{ccodeT}
+\end{minipage}
+};
+\matrix[right=.5cm of rangeCode,tight matrix,nodes={text width=1.5cm},
+    row 1/.style={nodes={draw=none,font=\tt}}] (rangeData) {
+    x \\
+    len: 3 \\ ptr: \\
+};
+\matrix[right=1cm of rangeData-2-1,tight matrix,
+    nodes={text width=.7cm,align=center}] (rangePtrData) { 1 \& 2 \& 3 \\ };
+\draw[thick,-Latex] (rangeData-3-1) -- (rangePtrData);
+\node[codeBox] (listsCode) at ([yshift=-.2cm]rangeCode.south west) {
+\begin{minipage}{5.5cm}
+\begin{ccodeT}
+typedef struct node_t {
+    short payload;
+    list *next;
+} node;
+node *x;
+x = malloc(sizeof(node_t));
+...
+\end{ccodeT}
+\end{minipage}
+};
+\node[right=1cm of listsCode,label={x},draw] (xLists) {~};
+\matrix[right=2cm of xLists,label={*x},tight matrix,nodes={text width=2.5cm}] (xVal) {
+   payload: 1 \\
+   ptr: \\
+};
+\draw[-Latex,thick] (xLists) -- (xVal-1-1);
+\draw[-Latex,thick] (xVal-2-1.east) -- ++(.5cm,0cm);
+\begin{visibleenv}<2->
+\draw[blue,line width=.5mm] ([xshift=.5cm,yshift=1cm]xSent.east) coordinate (topLine)
+        -- ([xshift=.5cm,yshift=-1cm]xSent.east) 
+        -- ([xshift=.5cm,yshift=1cm]rangeData.east)
+        -- ([xshift=.5cm,yshift=-1cm]rangeData.east)
+        -- ([xshift=.5cm,yshift=1cm]xLists.east)
+        -- ([xshift=.5cm,yshift=-1cm]xLists.east);
+\node[overlay,blue,font=\small,anchor=north east,align=right] at ([yshift=.6cm]topLine) {$\leftarrow$ on stack\\or regs};
+\node[blue,font=\small,anchor=north west] at ([yshift=.2cm]topLine) {on heap $\rightarrow$};
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}

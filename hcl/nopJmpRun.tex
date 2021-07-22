@@ -1,0 +1,40 @@
+\begin{frame}[fragile,label=hcl2DInteractiveA]{running nop/jmp/halt}
+    \begin{itemize}
+    \item {\tt nopjmp.ys}:
+\begin{Verbatim}[fontsize=\small,commandchars=\\\{\}]
+    nop
+    jmp C
+B:  jmp D
+C:  jmp B
+D:  nop
+    nop
+    halt
+\end{Verbatim}
+    \item \ldots assemble with {\tt yas}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=hcl2DInteractiveB]{nopjmp.yo}
+\begin{itemize}
+    \item {\tt nopjmp.yo}:
+\begin{Verbatim}[fontsize=\small,commandchars=\\\{\}]
+\vemphA{0x000: 10}                   |     nop
+\vemphA{0x001: 701300000000000000}   |     jmp C
+\vemphA{0x00a: 701c00000000000000}   | B:  jmp D
+\vemphA{0x013: 700a00000000000000}   | C:  jmp B
+\vemphA{0x01c: 10}                   | D:  nop
+\vemphA{0x01d: 10}                   |     nop
+\vemphA{0x01e: 00}                   |     halt
+\end{Verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=runningNopJmp]{running nopjmp.yo}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont]
+$ ./hclrs nopjmp_cpu.hcl nopjmp.yo
+...
+...
++--------------------- (end of halted state) ---------------------------+
+Cycles run: 7
+\end{Verbatim}
+\end{frame}

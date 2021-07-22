@@ -1,0 +1,67 @@
+\begin{frame}[fragile,label=loopAsmEx]{while --- levels of optimization}
+\begin{ccodeNL*}{fontsize=\small}
+while (b < 10) { foo(); b += 1; }
+\end{ccodeNL*}
+\lstset{
+    language=myasm,
+    style=smaller,
+    escapechar=`,
+    morekeywords=decq,
+}
+\begin{tabular}{l|l|l}
+\begin{minipage}{4.7cm}
+\begin{visibleenv}<1->
+\begin{lstlisting}
+start_loop:
+  cmpq $10, %rbx
+  jge end_loop
+  call foo
+  addq $1, %rbx
+  jmp start_loop
+end_loop:
+    ...
+    ...
+    ...
+    ...
+\end{lstlisting}
+\end{visibleenv}
+\end{minipage}
+&
+\begin{minipage}{4.5cm}
+\begin{visibleenv}<2->
+\begin{lstlisting}
+  cmpq $10, %rbx
+  jge end_loop
+start_loop:
+  call foo
+  addq $1, %rbx
+  cmpq $10, %rbx
+  jne start_loop
+end_loop:
+    ...
+    ...
+    ...
+\end{lstlisting}
+\end{visibleenv}
+\end{minipage}
+&
+\begin{minipage}{4.7cm}
+\begin{visibleenv}<3->
+\begin{lstlisting}
+  cmpq $10, %rbx
+  jge end_loop
+  movq $10, %rax
+  subq %rbx, %rax
+  movq %rax, %rbx
+start_loop:
+  call foo
+  decq %rbx
+  jne start_loop
+  movq $10, %rbx
+end_loop:
+\end{lstlisting}
+\end{visibleenv}
+\end{minipage}
+\end{tabular}
+\end{frame}
+

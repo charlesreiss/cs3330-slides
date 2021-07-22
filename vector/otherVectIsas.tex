@@ -1,0 +1,27 @@
+\begin{frame}{other vector instructions}
+    \begin{itemize}
+    \item multiple extensions to the X86 instruction set for vector instructions
+    \item early versions (128-bit vectors): SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2
+        \begin{itemize}
+        \item 128-bit vectors
+        \end{itemize}
+    \item this class (256-bit): AVX, AVX2
+    \item not this class (512+-bit): AVX-512
+        \begin{itemize}
+        \item 512-bit vectors
+        \end{itemize}
+    \item also other ISAs have these: e.g. NEON on ARM, MSA on MIPS, AltiVec/VMX on POWER, \ldots
+    \item GPUs are essentially vector-instruction-specialized CPUs
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{other vector interfaces}
+    \begin{itemize}
+    \item intrinsics (our assignments) one way
+    \item some alternate programming interfaces
+        \begin{itemize}
+        \item have compiler do more work than intrinsics
+        \end{itemize}
+    \item e.g. CUDA, OpenCL, GCC's vector instructions
+    \end{itemize}
+\end{frame}

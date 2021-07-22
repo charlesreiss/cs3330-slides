@@ -1,0 +1,41 @@
+\begin{frame}[fragile,label=addqPerfEx]{addq processor timing exercise 1}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+{\small example delays: \\
+\begin{tabular}{ll}
+path & time \\ \hline
+add 2 & 80 ps \\
+instruction memory & 200 ps \\
+register file read & 125 ps \\
+add & 100 ps \\
+register file write & 125 ps \\
+\end{tabular}} \\
+~ \\
+exercise 1: when instruction 1 stores its result in \%rbx, what did instruction 3 \textit{just complete}?
+\begin{lstlisting}[style=smaller]
+addq %rax, %rbx  /* 1 */
+addq %rcx, %rdx
+addq %r8, %r9    /* 3 */
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile,label=addqPerfEx]{addq processor performance exercise}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north east] at ([xshift=-.5cm,yshift=-1cm]current page.north east)
+    {\resizebox{!}{0.25\textwidth}{\usebox{\pipeAddQBox}}};
+\end{tikzpicture}
+{\small example delays: \\
+\begin{tabular}{ll}
+path & time \\ \hline
+add 2 & 80 ps \\
+instruction memory & 200 ps \\
+register file read & 125 ps \\
+add & 100 ps \\
+register file write & 125 ps \\
+\end{tabular}} \\
+now, cycle time = 200 ps + register delays per cycle \\
+~ \\
+exercise 2: \\
+suppose we combine add and register file read together --- new cycle time?
+\end{frame}

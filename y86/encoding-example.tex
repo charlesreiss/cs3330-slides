@@ -1,0 +1,53 @@
+\begin{frame}<1-6>[fragile,label=Y86addOne2]{Y86-64 encoding (2)}
+\lstset{
+    moredelim=**[is][\btHL<1-2|handout:0>]{@1*}{*@},
+    moredelim=**[is][\btHL<3-4|handout:0>]{@2*}{*@},
+    moredelim=**[is][\btHL<5|handout:0>]{@3*}{*@},
+}
+\instrEncodingStyles
+\begin{lstlisting}
+addOne:
+@1*  irmovq  $1,   %rax*@
+@2*  addq    %rdi, %rax*@
+@3*  ret*@
+\end{lstlisting}
+\hrulefill
+
+\tt
+\begin{tabular}{lllll}
+\onslide<1-2|handout:0>{$\star$} \opify{3} & \literalify{0} & \literalify{F} &\only<1>{\rnifyWide{\it \%rax}}\only<2->{\rnify{0}} & \immedify{01 00 00 00 00 00 00 00} \\
+\onslide<3-4|handout:0>{$\star$} \only<3->{\opify{6}} & \only<3>{\fnifyWide{add}}\only<4->{\fnify{0}} & \only<3>{\rnifyWide{\it \%rdi}}\only<4->{\rnify{7}} & \only<3>{\rnifyWide{\it \%rax}}\only<4->{\rnify{0}} \\
+\onslide<5|handout:0>{$\star$} \only<5->{\opify{9}} & \only<5->{\literalify{0}} \\
+\end{tabular}
+
+\hrulefill
+
+\onslide<6->{\tt\small \myemph{3}0 F0 01 00 00 00 00 00 00 00 \myemph{6}0 70 \myemph{9}0}
+\end{frame}
+
+% FIXME: example with JMP
+
+\begin{frame}<1-6>[fragile,label=Y86addLoop]{Y86-64 encoding (3)}
+\lstset{
+    moredelim=**[is][\btHL<1|handout:0>]{@1*}{*@},
+    moredelim=**[is][\btHL<2-3|handout:0>]{@2*}{*@},
+    moredelim=**[is][\btHL<4-|handout:0>]{@3*}{*@},
+}
+\instrEncodingStyles
+\begin{lstlisting}
+@1*doubleTillNegative:*@
+/* suppose at address 0x123 */
+@2*  addq    %rax, %rax*@
+@3*  jge doubleTillNegative*@
+\end{lstlisting}
+\hrulefill
+
+\tt
+\begin{tabular}{lllll}
+\onslide<2-3|handout:0>{$\star$} \opify{6} & \only<1-2>{\fnifyWide{add}}\only<3->{\fnify{0}} &
+            \only<1-2>{\rnifyWide{\it \%rax}}\only<3->{\rnify{0}} \only<1-2>{\rnifyWide{\it \%rax}}\only<3->{\rnify{0}} \\
+\onslide<5|handout:0>{$\star$} \only<4->{\opify{7}} & \only<4->{\fnify{5}} & 
+    \only<4->{\immedify{23 01 00 00 00 00 00 00}} \\
+\end{tabular}
+\end{frame}
+

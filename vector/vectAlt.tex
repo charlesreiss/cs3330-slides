@@ -1,0 +1,12 @@
+\begin{frame}{alternate vector interfaces}
+    \begin{itemize}
+    \item intrinsics functions/assembly aren't the only way to write vector code
+    \item e.g. GCC vector extensions: more like normal C code 
+        \begin{itemize}
+        \item types for each kind of vector
+        \item write {\tt +} instead of {\tt \_mm\_add\_epi32}
+        \end{itemize}
+    \item e.g. CUDA (GPUs): looks like writing multithreaded code, \\ but each thread is vector ``lane''
+    \end{itemize}
+\end{frame}
+

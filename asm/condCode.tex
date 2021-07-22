@@ -1,0 +1,31 @@
+%\againframe<2>{loop2}
+
+\begin{frame}[fragile,label=setCC]{what sets condition codes}
+\begin{itemize}
+\item \textit{most} instructions that compute something \myemph{set condition codes}
+\item some instructions \myemph{only} set condition codes:
+    \begin{itemize}
+    \item {\keywordstyle cmp} $\sim$ {\keywordstyle sub}
+    \item {\keywordstyle test} $\sim$ {\keywordstyle and} (bitwise and --- later)
+    \item \lstinline|testq %rax, %rax| --- result is \%rax
+    \end{itemize}
+\item some instructions don't change condition codes:
+    \begin{itemize}
+    \item {\keywordstyle lea}, {\keywordstyle mov}
+    \item control flow: {\keywordstyle jmp}, {\keywordstyle call}, {\keywordstyle ret}, {\keywordstyle jle}, etc.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}<1>[fragile,label=ccEx4]{condition codes examples (4)}
+\begin{lstlisting}[language=myasm]
+movq $20, %rbx
+addq $-20, %rbx // result is 0
+movq $1, %rax   // irrelevant to cond. codes
+je   foo        // taken, result is 0
+\end{lstlisting}
+\onslide<2>{20 + -20 = 0 --- SF = 0 (not negative), ZF = \myemph<1>{1} (zero)}
+\end{frame}
+
+
+

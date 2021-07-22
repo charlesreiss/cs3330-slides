@@ -1,0 +1,120 @@
+% vectorizing matmul
+
+\begin{frame}[fragile,label=sqSerial]{recall: matmul}
+\lstset{language=C,style=small}
+\begin{lstlisting}
+void matmul(unsigned int *A, unsigned int *B) {
+    for (int k = 0; k < N; ++k)
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                B[i * N + j] += A[i * N + k] * A[k * N + j];
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sqSerialUnrolled]{matmul unrolled}
+\lstset{language=C,style=smaller}
+\begin{lstlisting}
+void matmul(unsigned int *A, unsigned int *B) {
+  for (int k = 0; k < N; ++k) {
+    for (int i = 0; i < N; ++i)
+      for (int j = 0; j < N; j += 4) {
+        /* goal: vectorize this */
+        B[i * N + j + 0] += A[i * N + k] * A[k * N + j + 0];
+        B[i * N + j + 1] += A[i * N + k] * A[k * N + j + 1];
+        B[i * N + j + 2] += A[i * N + k] * A[k * N + j + 2];
+        B[i * N + j + 3] += A[i * N + k] * A[k * N + j + 3];
+      }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sqVectInstr]{handy intrinsic functions for matmul}
+    \begin{itemize}
+        \item {\tt \_mm\_set1\_epi32} --- load four copies of a 32-bit value into a 128-bit value
+            \begin{itemize}
+            \item instructions generated vary; one example: {\tt movq} + {\tt pshufd}
+            \end{itemize}
+        \item {\tt \_mm\_mullo\_epi32} --- multiply four pairs of 32-bit values, give lowest 32-bits of results
+            \begin{itemize}
+            \item generates {\tt pmulld}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sqSerialUnrolledExpand]{vectorizing matmul}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+    moredelim=**[is][\btHL<all:3>]{~3~}{~end~},
+    moredelim=**[is][\btHL<all:4>]{~4~}{~end~},
+    moredelim=**[is][\btHL<all:5>]{~5~}{~end~},
+}
+\begin{lstlisting}
+/* goal: vectorize this */
+~2~B[i * N + j + 0]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~A[k * N + j + 0]~end~;
+~2~B[i * N + j + 1]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~A[k * N + j + 1]~end~;
+~2~B[i * N + j + 2]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~A[k * N + j + 2]~end~;
+~2~B[i * N + j + 3]~end~ ~5~+=~end~ ~4~A[i * N + k] *~end~ ~3~A[k * N + j + 3]~end~;
+\end{lstlisting}
+\hrulefill
+\begin{onlyenv}<all:2>
+\begin{lstlisting}
+// load four elements from B
+Bij = _mm_loadu_si128(&B[i * N + j + 0]);
+... // manipulate vector here
+// store four elements into B
+_mm_storeu_si128((__m128i*) &B[i * N + j + 0], Bij);
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:3>
+\begin{lstlisting}
+// load four elements from A
+Akj = _mm_loadu_si128(&A[k * N + j + 0]);
+... // multiply each by A[i * N + k] here
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:4>
+\begin{lstlisting}
+// load four elements starting with A[k * n + j]
+Akj = _mm_loadu_si128(&A[k * N + j + 0]);
+// load four copies of A[i * N + k]
+Aik = _mm_set1_epi32(A[i * N + k]);
+// multiply each pair
+multiply_results = _mm_mullo_epi32(Aik, Akj);
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<all:5>
+\begin{lstlisting}
+Bij = _mm_add_epi32(Bij, multiply_results);
+// store back results
+_mm_storeu_si128(..., Bij);
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
+
+
+
+\begin{frame}[fragile,label=sqVectCode]{matmul vectorized}
+\lstset{language=C,style=smaller,morekeywords={\_\_m128i},mathescape=true}
+\begin{lstlisting}
+__m128i Cij, Bkj, Aik, Aik_times_Akj;
+
+// Cij = {$C_{i,j}$, $C_{i,j+1}$, $C_{i,j+2}$, $C_{i,j+3}$}
+Cij = _mm_loadu_si128((__m128i*) &B[i * N + j]);
+// Akj = {$A_{k,j}$, $A_{k,j+1}$, $A_{k,j+2}$, $A_{k,j+3}$}
+Bkj = _mm_loadu_si128((__m128i*) &A[k * N + j]);
+
+// Aik = {$A_{i,k}$, $A_{i,k}$, $A_{i,k}$, $A_{i,k}$}
+Aik = _mm_set1_epi32(A[i * N + k]);
+
+// Aik_times_Akj = {$A_{i,k}\times A_{k,j}$, $A_{i,k}\times A_{k,j+1}$, $A_{i,k}\times A_{k,j+2}$, $A_{i,k}\times A_{k,j+3}$}
+Aik_times_Bkj = _mm_mullo_epi32(Aij, Bkj);
+
+// Cij= {$C_{i,j} + A_{i,k}\times B_{k,j}$, $C_{i,j+1} + A_{i,k}\times B_{k,j+1}$, ...}
+Cij = _mm_add_epi32(Bij, Aik_times_Bkj);
+
+// store Bij into B
+_mm_storeu_si128((__m128i*) &B[i * N + j], Bij);
+\end{lstlisting}
+\end{frame}
+

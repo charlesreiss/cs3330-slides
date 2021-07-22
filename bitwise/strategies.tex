@@ -1,0 +1,22 @@
+\begin{frame}[fragile,label=bitStrat]{bitwise strategies}
+    \begin{itemize}
+        \item use paper, find subproblems, etc.
+        \item mask and shift 
+            \begin{itemize}
+                \item \lstinline+(x & 0xF0) >> 4+
+            \end{itemize}
+        \item factor/distribute
+            \begin{itemize}
+                \item \lstinline+(x & 1) | (y & 1) == (x | y) & 1+
+            \end{itemize}
+        \item divide and conquer
+        \item common subexpression elimination
+            \begin{itemize}
+                \item \lstinline+return ((-!!x) & y) | ((-!x) & z)+
+                \item becomes
+                \item \lstinline+d = !x; return ((-!d) & y) | ((-d) & z)+
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+

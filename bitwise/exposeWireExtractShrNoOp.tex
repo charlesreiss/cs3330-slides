@@ -1,0 +1,110 @@
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,fit,matrix,positioning}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw},
+    >=Latex,
+}
+
+\begin{frame}<1-3>[fragile,label=exposeWireSel]{exposing wire selection}
+\begin{itemize}
+\item x86 instruction: {\keywordstyle shr} --- shift right
+\item {{\keywordstyle shr} \tt\$\textit{amount}, \%reg} (or variable: {\tt{\keywordstyle shr} \%cl, \%reg})
+\end{itemize}
+\begin{tikzpicture}
+\draw[blue,decorate,decoration=brace,ultra thick] (-.2, .7) -- (13., .7) node[midway, above] {\%reg (initial value)};
+\draw[blue,decorate,decoration={brace,mirror},ultra thick] (-.2, -3.1) -- (13., -3.1) node[midway, below] {\%reg (final value)};
+\foreach \x/\v in {28/0,29/0,30/1,31/0} {
+    \node[anchor=south] at ($(0,0) + \x*(0.4, 0)$) {\tt \v};
+}
+\foreach \x/\v in {0/0,1/0,2/0,3/\strut\ldots,23/\strut\ldots,24/0,25/1,26/1,27/1} {
+    \node[anchor=south] at ($(0,0) + \x*(0.4, 0)$) (top-\x) {\tt \v};
+    \node[anchor=north] at ($(0, -2.5) + 4*(0.4,0) + \x*(0.4, 0)$) (bottom-\x) {\tt \v};
+}
+\foreach \x in {0,1,2,3,...,27} {
+    \draw[simple wire,->] ($(0,0) + \x*(0.4, 0)$) -- ($(0,-2.5) + 4*(0.4, 0) + \x*(0.4, 0)$);
+}
+\begin{visibleenv}<1>
+    \node[draw,red,very thick,fit=(top-24) (top-27)] {};
+    \node[draw,red,very thick,fit=(bottom-24) (bottom-27)] {};
+\end{visibleenv}
+\begin{visibleenv}<2>
+\foreach \x in {0,1,2,3} {
+    \node[anchor=north,red] at ($(0,-2.5) + \x*(0.4, 0)$) {\tt\bfseries ?};
+}
+\end{visibleenv}
+\begin{visibleenv}<3-4>
+\foreach \x in {0,1,2,3} {
+    \draw[simple wire,->,alt=<2>{red}{black}] ($(-.5, 0) + (0,-2) + \x*(0.4, 0)$) node[above] {\tt 0} -- ($(0,-2.5) + \x*(0.4, 0)$);
+    \node[anchor=north,alt=<2>{red}{black}] at ($(0,-2.5) + \x*(0.4, 0)$) {\tt 0};
+}
+\end{visibleenv}
+\foreach \x in {28,29,30,31} {
+    \fill[top color=black,bottom color=white] ($(0,0) + \x*(0.4, 0)$) rectangle ($(0,-0.5) + \x*(0.4, 0) + (.5pt, 0pt)$);
+}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=exposeWireSelAsm]{shift right}
+\begin{itemize}
+\item x86 instruction: {\keywordstyle shr} --- shift right
+\item {{\keywordstyle shr} \tt\$\textit{amount}, \%reg}
+\item (or variable: {\tt{\keywordstyle shr} \%cl, \%reg})
+\end{itemize}
+\highBox<3>{startMovZ}{endMovZ}
+\highBox<3>{startInstr}{endInstr}
+\begin{asmcodeNL}
+get_top_nibble:
+ // eax <- dil (low byte of rdi) w/ zero padding
+ @\tikzmark{startMovZ}@movzbl %dil, %eax@\tikzmark{endMovZ}@
+ @\tikzmark{startInstr}@shrl $4, %eax@\tikzmark{endInstr}@
+ ret
+\end{asmcodeNL}
+\end{frame}
+
+\begin{frame}[fragile,label=shiftInC]{right shift in C}
+\highBox<1>{startInstr}{endInstr}
+\highBox<1>{startOp}{endOp}
+\begin{asmcodeNL}
+get_top_nibble: 
+  // eax <- dil (low byte of rdi) w/ zero padding
+  movzbl %dil, %eax
+  @\tikzmark{startInstr}@shrl $4, %eax@\tikzmark{endInstr}@
+  ret
+\end{asmcodeNL}
+\begin{ccodeNL}
+typedef unsigned char byte;
+int get_top_nibble(byte value) {
+    return value @\tikzmark{startOp}@>>@\tikzmark{endOp}@ 4;
+}
+\end{ccodeNL}
+\end{frame}
+
+\begin{frame}[fragile,label=shiftInC2]{right shift in C}
+\begin{ccodeS}
+typedef unsigned char byte;
+int get_top_nibble1(byte value) { return value >> 4; }
+int get_top_nibble2(byte value) { return value / 16; }
+\end{ccodeS}
+\begin{visibleenv}<2->
+example output from optimizing compiler:
+\highBox<2>{startOp1}{endOp1}
+\highBox<2>{startOp2}{endOp2}
+\begin{asmcodeS}
+get_top_nibble1:
+   @\pgfmark{startOp1}@shrb@\pgfmark{endOp1}@ $4, %dil
+   movzbl %dil, %eax
+   ret
+
+get_top_nibble2:
+   @\pgfmark{startOp2}@shrb@\pgfmark{endOp2}@ $4, %dil
+   movzbl %dil, %eax
+   ret
+\end{asmcodeS}
+\end{visibleenv}
+\end{frame}
+
+

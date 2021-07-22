@@ -1,0 +1,32 @@
+\begin{frame}[label=VAX]{some VAX instructions}
+    \begin{framed}
+        \small
+        {\tt MATCHC {\sl haystackPtr}, {\sl haystackLen}, {\sl needlePtr}, {\sl needleLen}} \\
+        Find the position of the string in needle within haystack.
+    \end{framed}
+    \begin{framed}
+        \small
+        {\tt POLY {\sl x}, {\sl coefficientsLen}, {\sl coefficientsPtr}} \\
+        Evaluate the polynomial whose coefficients are pointed to by {\tt\sl coefficientPtr}
+        at the value {\tt\sl x}.
+    \end{framed}
+    \begin{framed}
+        \small
+        {\tt EDITPC {\sl sourceLen}, {\sl sourcePtr}, {\sl patternLen}, {\sl patternPtr}} \\
+        Edit the string pointed to by {\tt\sl sourcePtr} using the pattern string specified
+        by {\tt\sl patternPtr}. 
+    \end{framed}
+\end{frame}
+
+\begin{frame}[label=microcode]{microcode}
+    \begin{framed}
+        \small
+        {\tt MATCHC {\sl haystackPtr}, {\sl haystackLen}, {\sl needlePtr}, {\sl needleLen}} \\
+        Find the position of the string in needle within haystack.
+    \end{framed}
+    \begin{itemize}
+        \item loop in hardware???
+        \item typically: lookup sequence of \myemph{microinstructions} (``microcode'')
+        \item secret simpler instruction set
+    \end{itemize}
+\end{frame}

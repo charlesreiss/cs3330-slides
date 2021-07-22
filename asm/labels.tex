@@ -1,0 +1,35 @@
+\begin{frame}[fragile,label=labels0]{labels (1)}
+    \begin{itemize}
+    \item labels represent \myemph{addresses}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=labels1]{labels (2)}
+\begin{asmcodeS}
+    addq string, %rax
+    // intel syntax: add rax, QWORD PTR [label]
+    // rax <- rax + memory[address of "a string"]
+    addq $string, %rax
+    // intel syntax: add rax, OFFSET label
+    // rax <- rax + address of "a string"
+string:  .ascii "a string"
+\end{asmcodeS}
+\begin{itemize}
+    \item {\tt addq label}: read value at the address
+    \item {\tt addq \$label}: use address as an integer constant
+\end{itemize}
+\end{frame}
+
+\begin{frame}<0>[fragile,label=labels2]{labels (3)}
+\begin{asmcodeS}
+loop:    
+    subq $1, %rax
+    cmpq $0, %rax
+    jge loop
+\end{asmcodeS}
+\begin{itemize}
+    \item puts \myemph{address of subq} {\small (or equivalent)} in {\keywordstyle jge} 
+    \item recall: symbol table entry and relocation in object file
+\end{itemize}
+\end{frame}
+

@@ -1,0 +1,180 @@
+\usetikzlibrary{arrows.meta,calc,chains,fit}
+
+\begin{frame}[label=compPipe,fragile]{what's in those files?}
+\newcommand{\firstC}{1}
+\newcommand{\firstS}{2}
+\newcommand{\intelS}{3}
+\newcommand{\markSub}{4}
+\newcommand{\markXor}{5}
+\newcommand{\firstOCode}{6}
+\newcommand{\firstOData}{7}
+\newcommand{\firstSOCorrespond}{8}
+\newcommand{\firstOReloc}{9}
+\newcommand{\firstOSymbols}{10}
+\newcommand{\firstExe}{11}
+    \lstset{
+        language=[x8664gas]Assembler,
+        %moredelim=**[is][\color{green!60!black}]{@1*}{*@},
+        moredelim=**[is][\cbA<\firstSOCorrespond->]{@1*}{*@},
+        moredelim=**[is][\cbB<\firstSOCorrespond->]{@2*}{*@},
+        moredelim=**[is][\cbC<\firstSOCorrespond->]{@3*}{*@},
+        moredelim=**[is][\cbD<\firstSOCorrespond->]{@4*}{*@},
+        moredelim=**[is][\cbE<\markXor>]{@X*}{*@},
+        moredelim=**[is][\cbF<\markSub>]{@S*}{*@},
+        escapechar=`,
+    }
+    \vspace{-.5cm}
+    \begin{tikzpicture}
+    \tikzset{
+        mybox part/.style={minimum width=2cm,font=\scriptsize,align=left},
+        mybox/.style={draw,rectangle,mybox part},
+        mybox thin/.style={draw,rectangle,mybox part,minimum width=1.5cm},
+        mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        mylabel red/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw=red!70!black,very thick,dotted,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        myline/.style={line width=1pt,-latex},
+    }
+    \makeatletter
+    \newenvironment{mycolorbox}[1]
+    {\def\savedcolor{#1}\begin{lrbox}{\@tempboxa}\strut}
+    {\end{lrbox}\setlength{\fboxsep}{0pt}\colorbox{\savedcolor}{\usebox{\@tempboxa}}}
+    \makeatother
+    \def\doEndEnv{\end{mycolorbox}\egroup}
+    \newcommand<>{\cbA}{\only#1{\begin{mycolorbox}{blue!40!white}\bgroup\aftergroup\doEndEnv}}
+    \newcommand<>{\cbB}{\only#1{\begin{mycolorbox}{green!30!white}\bgroup\aftergroup\doEndEnv}}
+    \newcommand<>{\cbC}{\only#1{\begin{mycolorbox}{red!20!white}\bgroup\aftergroup\doEndEnv}}
+    \newcommand<>{\cbD}{\only#1{\begin{mycolorbox}{orange!30!white}\bgroup\aftergroup\doEndEnv}}
+    \newcommand<>{\cbE}{\only#1{\begin{mycolorbox}{violet!30!white}\bgroup\aftergroup\doEndEnv}}
+    \newcommand<>{\cbF}{\only#1{\begin{mycolorbox}{magenta!40!white}\bgroup\aftergroup\doEndEnv}}
+
+    \node[mybox,mylabel={hello.c}{<\firstC->}] (helloC){
+        \begin{minipage}{4cm}
+\begin{ccode*}{xleftmargin=0cm,linenos=false}
+#include <stdio.h>
+int main(void) {
+  puts("Hello, World!");
+  return 0;
+}
+\end{ccode*} 
+        \end{minipage}
+    };
+
+    \node[mybox,mylabel={hello.s}{<\firstS->},anchor=north west,visible on=<\firstS->] (helloS) at ($(helloC.north east) + (2cm, 0)$) {
+\begin{lstlisting}
+    .text
+main:
+    @S*@2*sub  $8, %rsp*@*@
+    mov  $@1*.Lstr*@, %rdi
+    call @3*puts*@
+    @X*xor  %eax, %eax*@
+    @S*add  $8, %rsp*@
+    ret
+
+    .data
+@1*.Lstr*@: .string @4*"Hello, World!"*@
+\end{lstlisting} 
+    };
+
+\begin{visibleenv}<\intelS>
+        \node[overlay,mybox thin,mylabel red={hello.s (Intel syntax)}{<\firstS->},anchor=west,visible on=<\firstS->,fill=white,draw=red!70!black,dotted,ultra thick] (helloSIntel) at ($(helloS.east) + (-1cm, .5cm)$) {
+\begin{lstlisting}
+.text
+main: 
+  sub RSP, 8
+  mov RDI, .Lstr
+  call puts
+  xor EAX, EAX
+  add RSP, 8
+  ret
+
+.data
+.Lstr: .string "Hello, World!"
+\end{lstlisting} 
+};
+\end{visibleenv}
+
+    \begin{visibleenv}<\markXor>
+        \draw[red,very thick,Latex-] ([yshift=-2cm,xshift=-2cm]helloS.north east) coordinate (xorEnd) -- ++(1.75cm,0cm)
+            coordinate (xorLast);
+        \node[align=left,font=\small,thick,draw=red,anchor=west,fill=white] at (xorLast) {
+            sets eax to 0 \\
+            (shorter machine \\
+            code than mov)
+        };
+    \end{visibleenv}
+
+    \begin{visibleenv}<\markSub>
+        \draw[red,very thick,Latex-] ([yshift=-1cm,xshift=-2.25cm]helloS.north east) coordinate (subEnd) -- ++(2cm,0cm)
+            coordinate (subLast);
+        \draw[red,very thick,Latex-] ([yshift=-2.3cm,xshift=-2.25cm]helloS.north east) coordinate (addEnd) -- ++(2cm,0cm)
+            coordinate (addLast);
+        \node[align=left,font=\small,thick,draw=red,anchor=west,fill=white] at ($(subLast)!0.5!(addLast)$) {
+            Linux x86-64 \\
+            calling convention: \\
+            stack addr. must be \\
+            multiple of 16
+        };
+    \end{visibleenv}
+
+    \draw[myline,visible on=<\firstS->] (helloC) -- (helloS);
+    
+    \node[mybox part,visible on=<\firstOCode->,anchor=north west,inner sep=.5mm] (helloOText) at ($(helloC.south west) + (0, -1cm)$) {
+        \textbf{text} (code) segment: \\
+        \texttt{{\cbB<\firstSOCorrespond->48 83 EC 08} BF {\cbA<\firstSOCorrespond->00 00 00 00} E8 {\cbC<\firstSOCorrespond->00 00}} \\
+        \texttt{{\cbC<\firstSOCorrespond->00 00} 31 C0 48 83 C4 08 C3}
+    };
+    \node[mybox part,visible on=<\firstOData->,anchor=north west,inner sep=.5mm] (helloOData) at (helloOText.south west) {
+        \textbf{data} segment: \\
+        \texttt{{\cbD<\firstSOCorrespond->48 65 6C 6C 6F 2C 20 57 6F 72 6C 00}}
+    };
+    \node[mybox part,visible on=<\firstOReloc->,anchor=north west,inner sep=.5mm] (helloOReloc) at (helloOData.south west) {
+        \textbf{relocations}: \\
+        \begin{tabular}{ll}
+        \it take 0s at & \it and replace with \\
+        text, byte 6 ({\cbA$\;$}) & data segment, byte 0 \\
+        text, byte 11 ({\cbC$\;$}) & address of \texttt{puts} \\
+        \end{tabular}
+    };
+    \node[mybox part,visible on=<\firstOSymbols->,anchor=north west,inner sep=.5mm] (helloOSymbols) at (helloOReloc.south west) {
+        \textbf{symbol table}: \\
+        \begin{tabular}{ll}
+        \tt main & text byte 0 \\
+        \end{tabular} 
+    };
+    \node[mybox,mylabel={hello.o}{<\firstOCode->},anchor=north west,visible on=<\firstOCode->,
+          fit=(helloOText) (helloOSymbols),inner sep=0mm] (helloO) {};
+
+    \draw[myline,visible on=<\firstOCode->] (helloS) -- ($(helloO.north east) + (-1cm,0)$);
+
+    \node[mybox,mylabel={hello.exe}{<\firstExe->},anchor=north west,visible on=<\firstExe->] (helloExe) at ($(helloS.south west) + (0, -1cm)$) {
+        (actually binary, but shown as hexadecimal)
+        \ldots \\
+        \texttt{{\cbB 48 83 EC 08} BF {\cbA A7 02 04 00}} \\
+        \texttt{E8 {\cbC 08 4A 04 00} 31 C0 48} \\
+        \texttt{83 C4 08 C3} \ldots \\
+        \ldots (code from stdio.o) \ldots \\
+        \texttt{{\cbD 48 65 6C 6C 6F 2C 20 57 6F}} \\
+        \texttt{{\cbD 72 6C 00}} \ldots \\
+        \ldots (data from stdio.o) \ldots
+    };
+
+    \draw[myline,visible on=<\firstExe->] ($(helloO.east) + (0, 1cm)$) -- ($(helloExe.north) + (-1cm, 0)$) 
+        node[midway,font=\footnotesize,rectangle,fill=white,draw,thin] {+ stdio.o};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=realHelloS]{hello.s}
+\begin{Verbatim}
+        .section        .rodata.str1.1,"aMS",@progbits,1
+.LC0:
+        .string "Hello, World!"
+        .text
+        .globl  main
+main:
+        subq    $8, %rsp
+        movl    $.LC0, %edi
+        call    puts
+        movl    $0, %eax
+        addq    $8, %rsp
+        ret
+\end{Verbatim}
+\end{frame}

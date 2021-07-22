@@ -1,0 +1,37 @@
+\begin{frame}[fragile,label=callret]{call/ret}
+    \begin{itemize}
+    \item {\tt {\bfseries call} LABEL}
+        \begin{itemize}
+        \item push PC (next instruction address) on stack
+        \item jmp to LABEL address
+        \end{itemize}
+    \item {\tt {\bfseries ret}}
+        \begin{itemize}
+        \item pop address from stack
+        \item jmp to that address
+        \end{itemize}
+    \end{itemize}
+\begin{tikzpicture}[overlay,remember picture]
+    \tikzset{offstack/.style={fill=black!25}}
+    \matrix[matrix of nodes,row sep=-\pgflinewidth,
+            nodes={font=\scriptsize,draw,rectangle,minimum width=4cm},
+            above left=.5cm of current page.south east] (stack) {
+            \vdots{} \\
+        memory[\lstinline|%rsp| + 16] \\
+        memory[\lstinline|%rsp| + 8] \\
+        memory[\lstinline|%rsp|] \\
+        |[offstack]| memory[\lstinline|%rsp| - 8] \\
+        |[offstack]| memory[\lstinline|%rsp| - 16] \\
+    };
+    \node[left=1cm of stack-4-1,font=\small,align=left] (popMarker) {address ret jumps to};
+    \node[left=1cm of stack-5-1,font=\small,align=left] (pushMarker) {where call stores return address};
+    \draw[very thick] ([xshift=-1cm]stack-4-1.south west) -- ([xshift=1cm]stack-4-1.south east);
+    %\draw[very thick,black!50,dotted] ([xshift=-1cm]stack-3-1.south west) -- ([xshift=1cm]stack-3-1.south east);
+    %\draw[very thick,black!50,dotted] ([xshift=-1cm]stack-5-1.south west) -- ([xshift=1cm]stack-5-1.south east);
+    \draw[-Latex,thick,double,black!60] ([xshift=-.2cm]stack-1-1.north west) -- ([xshift=-.2cm]stack-3-1.west)
+        node[midway,left,align=right,font=\scriptsize]{stack\\growth};
+    \draw[-Latex] (popMarker) -- (stack-4-1.west);
+    \draw[-Latex] (pushMarker) -- (stack-5-1.west);
+\end{tikzpicture}
+\end{frame}
+

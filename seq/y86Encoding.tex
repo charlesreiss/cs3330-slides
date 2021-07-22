@@ -1,0 +1,69 @@
+\begin{frame}[fragile,label=Y86format]{Y86-64 instruction formats}
+\begin{tikzpicture}
+\instrEncodingTable
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=Y86fn]{Secondary opcodes: {\keywordstyle {\it OP}q}}
+\begin{tikzpicture}
+\tikzset{extra box/.style={opacity=0.5},
+         extra box fn/.style={opacity=1.0}}
+\instrEncodingTable
+\tikzset{
+    hilite/.style={draw,rectangle,rounded corners,line width=2pt,red!80!black}
+}
+\node[fit=(table-8-3),hilite] (fnHi) {};
+\node[yshift=1.5cm,right=0cm of table-8-5.north east,anchor=north west,opacity=.95,fill=white,draw,rectangle,draw=blue!30!black,line width=2pt] (fnTable) {
+    \def\arraystretch{1.4}
+    \begin{tabular}{ll}
+    \fnify{0} & {\keywordstyle add} \\
+    \fnify{1} & {\keywordstyle sub} \\
+    \fnify{2} & {\keywordstyle and} \\ 
+    \fnify{3} & {\keywordstyle xor} \\ 
+    \end{tabular}
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=Y86reg]{Registers: \rA, \rB}
+\begin{tikzpicture}
+\tikzset{extra box/.style={opacity=0.6},
+         extra box register/.style={opacity=1.0}}
+\instrEncodingTable
+\tikzset{
+    hilite/.style={draw,rectangle,rounded corners,line width=2pt,red!80!black}
+}
+\node[hilite,fit=(table-4-4) (table-4-5) (table-8-4) (table-8-5)] {};
+\node[hilite,fit=(table-12-4) (table-12-5) (table-13-4) (table-13-5)] {};
+\node[yshift=1cm,right=1.25cm of table-2-3.north east,anchor=north west,opacity=.95,fill=white,draw,rectangle,draw=blue!30!black,line width=2pt] (fnTable) {
+    \def\arraystretch{1.4}
+    \tt
+    \begin{tabular}{ll@{\hspace{1cm}}ll}
+    \rnify{0} & \%rax & \rnify{8} & \%r8 \\
+    \rnify{1} & \%rcx & \rnify{9} & \%r9 \\
+    \rnify{2} & \%rdx & \rnify{A} & \%r10 \\ 
+    \rnify{3} & \%rbx & \rnify{B} & \%r11 \\
+    \rnify{4} & \%rsp & \rnify{C} & \%r12 \\
+    \rnify{5} & \%rbp & \rnify{D} & \%r13 \\
+    \rnify{6} & \%rsi & \rnify{E} & \%r14 \\
+    \rnify{7} & \%rdi & \literalify{F} & \normalfont\it none\\
+    \end{tabular}
+};
+\end{tikzpicture}
+% FIXME: Why F in blank spots
+% FIXME: Why rB not rA for irmovq
+\end{frame}
+
+\begin{frame}[fragile,label=Y86immed]{Immediates: \V, \D, \Dest}
+\begin{tikzpicture}
+\tikzset{
+    extra box/.style={opacity=0.5},
+    extra box immediate/.style={opacity=1.0},
+    hilite/.style={draw,rectangle,rounded corners,line width=2pt,red!80!black},
+}
+\instrEncodingTable
+\node[visible on=<1>,hilite,fit=(V-5) (D-6) (D-7)] {};
+\node[visible on=<2>,hilite,fit=(Dest-9) (Dest-10)] {};
+\end{tikzpicture}
+\end{frame}
+

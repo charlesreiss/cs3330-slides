@@ -1,0 +1,37 @@
+\begin{frame}[fragile]{arrays: not quite pointers (1)}
+\begin{itemize}
+\item \begin{ccodeNL}
+int array[100];
+int *pointer;
+\end{ccodeNL}
+\item<1-> Legal: \cinline|pointer = array;| 
+\begin{itemize}
+\item same as \cinline|pointer = &(array[0]);|
+\end{itemize}
+\renewcommand{\CancelColor}{\color{red!60!black}}
+\item<2-> \myemph{Illegal}: \xcancel{\cinline|array = pointer;|}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{arrays: not quite pointers (2)}
+\begin{itemize}
+\item \begin{ccodeNL}
+int array[100];
+int *pointer = array;
+\end{ccodeNL}
+\item<1-> \cinline|sizeof(array) == 400|
+\begin{itemize}
+\item \myemph{size of all elements}
+\end{itemize}
+\item<2-> \cinline|sizeof(pointer) == 8|
+\begin{itemize}
+\item \myemph{size of address}
+\end{itemize}
+\item<3-> \cinline|sizeof(&array[0]) == ???|
+\begin{itemize}
+\item (\cinline|&array[0]| same as \cinline|&(array[0])|)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+

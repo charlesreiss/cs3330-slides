@@ -1,0 +1,54 @@
+\usetikzlibrary{positioning}
+
+\begin{frame}{physical caches}
+\begin{itemize}
+    \item so far: caches use \myemph{physical addresses}:
+    \item means cache lookup can't complete without TLB
+        \begin{itemize}
+        \item (and can't start without index from physical address)
+        \end{itemize}
+    \end{itemize}
+\begin{tikzpicture}
+\tikzset{
+    >=Latex,
+    box/.style={minimum height=2cm,minimum width=2cm,draw,thick},
+    myline/.style={->,ultra thick},
+}
+\node (memA) {memory address};
+\node[box,right=1cm of memA] (tlb) {TLB};
+\node[box,right=1cm of tlb] (l1) {L1 cache};
+\draw[myline] (memA) -- (tlb);
+\draw[myline] (tlb) -- (l1);
+\draw[myline,dotted] (memA.north) -- ++(0cm,1.5cm) -| (l1) node[midway,fill=white] {page offset};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{virtual indexing}
+\begin{itemize}
+\item alternate option: have caches hold virtual addresses \textit{and match tags} with virtual addresses
+\item advantage: don't need to wait for TLB lookup at all
+\end{itemize}
+\begin{tikzpicture}
+\tikzset{
+    >=Latex,
+    box/.style={minimum height=2cm,minimum width=2cm,draw,thick},
+    myline/.style={->,ultra thick},
+}
+\node (memA) {memory address};
+\node[box,right=1cm of memA] (l1) {L1 cache};
+\node[box,right=3cm of l1] (tlb) {TLB};
+\draw[myline] (memA) -- (l1);
+\draw[myline,dotted] (l1)-- (tlb) node[midway,fill=white] {on miss};
+\node[box,right=1cm of tlb] (l2) {L2 cache};
+\draw[myline] (tlb) -- (l2);
+\end{tikzpicture}
+\begin{itemize}
+\item but some things more complicated:
+\begin{itemize}
+    \item need to invalidate caches on page table changes
+    \item need to deal multiple VPNs for same physical page (``aliasing'')
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+

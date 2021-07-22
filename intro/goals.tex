@@ -1,0 +1,57 @@
+\begin{frame}<1>[label=goals]{goals/other topics}
+    \begin{itemize}
+    \item understand how hardware works for\ldots{}
+    \item \myemph<2>{program performance}
+    \item \myemph<3>{what compilers are/do}
+    \item \myemph<4>{weird program behaviors} (segfaults, etc.)
+    \end{itemize}
+\end{frame}
+
+\againframe<2>{goals}
+
+\begin{frame}{program performance}
+    \begin{itemize}
+    \item naive model:
+        \begin{itemize}
+        \item one instruction = one time unit
+        \end{itemize}
+    \item number of instructions matters, but \ldots
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{program performance: issues}
+    \begin{itemize}
+    \item \myemph{parallelism}
+        \begin{itemize}
+        \item fast hardware is parallel
+        \item needs multiple things to do
+        \end{itemize}
+    \item \myemph{caching}
+        \begin{itemize}
+        \item accessing things recently accessed is faster
+        \item need reuse of data/code
+        \end{itemize}
+    \item (more in other classes: \myemph{algorithmic} efficiency)
+    \end{itemize}
+\end{frame}
+
+\againframe<3>{goals}
+
+\begin{frame}{what compilers are/do}
+    \begin{itemize}
+    \item understanding weird compiler/linker rrors
+    \item if you want to make compilers
+    \item debugging applications
+    \end{itemize}
+\end{frame}
+
+\againframe<4>{goals}
+
+\begin{frame}{weird program behaviors}
+    \begin{itemize}
+    \item what is a segmentation fault really?
+    \item how does the operating system interact with programs?
+    \item if you want to handle them --- writing OSs
+    \end{itemize}
+\end{frame}
+

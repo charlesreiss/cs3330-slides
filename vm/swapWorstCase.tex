@@ -1,0 +1,14 @@
+\begin{frame}[fragile,label=swapBadCase]{swapping worst-cases}
+\begin{itemize}
+    \item replacing dirty page?
+        \begin{itemize}
+        \item need to perform write before starting read
+        \item OSes prefer non-dirty pages for this reason
+        \end{itemize}
+    \item instruction accesses multiple pages?
+        \begin{itemize}
+            \item e.g. machine code and stack!
+            \item better not evict one to load the other
+        \end{itemize}
+\end{itemize}
+\end{frame}

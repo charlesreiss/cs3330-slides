@@ -1,0 +1,51 @@
+\begin{frame}[fragile,label=exTernaryOneBit]{one-bit ternary}
+\begin{itemize}
+    \item \lstinline|(x ? y : z)|
+    \item constraint: \textit{x, y, and z are 0 or 1}
+    \item now: reimplement in C without if/else/\lstinline+||+/etc.
+        \begin{itemize}
+        \item (assembly: no jumps probably)
+        \end{itemize}
+    \vspace{.5cm}
+    \item<2> divide-and-conquer:
+        \begin{itemize}
+            \item \lstinline|(x ? y : 0)|
+            \item \lstinline|(x ? 0 : z)|
+        \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=exTernaryOneBitParts]{one-bit ternary parts (1)}
+\begin{itemize}
+    \item constraint: \textit{x, y, and z are 0 or 1}
+    \vspace{.5cm}
+\item \lstinline|(x ? y : 0)| 
+    \vspace{.5cm}
+\item<2->
+\begin{tabular}{r|ll}
+    ~ & \bf y=0 & \bf y=1 \\ \hline
+    \bf x=0 & 0 & 0 \\
+    \bf x=1 & 0 & 1 \\
+\end{tabular}
+\item<2-> $\rightarrow$ \lstinline|(x & y)|
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=exTernaryOneBitParts2]{one-bit ternary parts (2)}
+\begin{itemize}
+\item \lstinline|(x ? y : 0)| = \lstinline|(x & y)|
+    \vspace{.5cm}
+\item<2-> \lstinline|(x ? 0 : z)|
+\item<2-> opposite \lstinline|x|: \lstinline|~x|
+\item<2-> \lstinline|((~x) & z)|
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=exTernaryOneBitCombine]{one-bit ternary}
+    \begin{itemize}
+        \item constraint: \textit{x, y, and z are 0 or 1}
+        \item \lstinline|(x ? y : z)|
+        \item {\color{green!70!black}\lstinline+(x ? y : 0)+}\lstinline+ | +{\color{blue!70!black}\lstinline+(x ? 0 : z)+}
+        \item {\color{green!70!black}\lstinline+(x & y)+}\lstinline+ | +{\color{blue!70!black}\lstinline+((~x) & z)+}
+    \end{itemize}
+\end{frame}

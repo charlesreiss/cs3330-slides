@@ -1,0 +1,70 @@
+\begin{frame}[fragile,label=nopExampleStages]{stages example: nop}
+\begin{tikzpicture}
+    \matrix[
+        matrix of nodes,row sep=.5ex,column sep=-\pgflinewidth,
+        nodes={font=\small,align=left},
+        column 1/.style={nodes={text width=2.5cm}},
+        column 2/.style={nodes={text width=4.5cm}},
+        outer sep=0pt
+    ] (stages) {
+        stage \& \lstinline|nop| \\
+        fetch \& {$\mathHL<3|handout:0>{\icode}:\ifun\assign\mathHL<2|handout:0>{M_1[\PC]}$ \\
+                  $\valP\assign\PC+1$} \\
+        decode \& ~ \\
+        memory \& ~ \\
+        write back \& ~ \\
+        PC update \& \mathHL<4|handout:0>{\PC\assign\valP} \\
+    };
+    \draw[thin] (stages-1-1.south west) -- (stages-1-2.south east);
+    \coordinate (imem) at ([xshift=-1.5cm,yshift=-2.6ex]stages-2-2.north east);
+    \node[my callout2=imem,xshift=2cm,align=left,visible on=<2|handout:0>,below=.5cm of imem] {
+        part of output wires \\ from instruction memory
+    };
+    \coordinate (icode) at ([xshift=.5cm,yshift=-2.6ex]stages-2-2.north west);
+    \node[my callout2=icode,visible on=<3|handout:0>,below=.5cm of icode,xshift=2cm,align=left] {
+        name of a wire \\ $\leftarrow$ means putting a value on a wire
+    };
+    \coordinate (PCassignment) at ([xshift=2.6cm,yshift=-1.3ex]stages-6-2.north west);
+    \node[my callout2=PCassignment,visible on=<4|handout:0>,align=left,right=.5cm of PCassignment] {
+        $\leftarrow$ means putting value on \\ input wire to PC register
+    };
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=nopJmpStages]{stages example: nop/jmp}
+\begin{tikzpicture}[circuit logic]
+    \matrix[
+        matrix of nodes,row sep=.5ex,column sep=-\pgflinewidth,
+        nodes={font=\small,align=left},
+        column 1/.style={nodes={text width=2.5cm}},
+        column 2/.style={nodes={text width=4.25cm}},
+        column 3/.style={nodes={text width=4.25cm}},
+        outer sep=0pt
+    ] (stages) {
+        stage \& \lstinline|nop| \& \lstinline|jmp dest| \\
+        fetch \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\valP\assign\PC+1$} 
+              \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\valC\assign M_8[\PC+1]$}
+              \\
+        decode \& ~ \& ~ \\
+        memory \& ~ \& ~ \\
+        write back \& ~ \& ~ \\
+        PC update \& $\mathHL<2>{\PC\assign\valP}$ \& $\mathHL<2>{\PC\assign\valC}$\\
+    };
+    \draw[thin] (stages-1-1.south west) -- (stages-1-3.south east);
+    \begin{visibleenv}<2->
+    \node[hReg=PC,below=0cm of stages,minimum height=1cm] (pc) {};
+    \node[mux,minimum height=1.75cm,minimum width=1cm,inputs={nn},info={center:\scriptsize MUX},left=1cm of pc,logicFill] (nextPCMux) {};
+    \draw[a] (nextPCMux.output) -- (pc.west);
+    \node[left=1cm of nextPCMux.input 1] (valC) {\valC};
+    \node[left=1cm of nextPCMux.input 2] (valP) {\valP};
+    \draw[a] (valC) -- (nextPCMux.input 1);
+    \draw[a] (valP) -- (nextPCMux.input 2);
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+    \node[below right=0cm and 1cm of pc] (icode) {};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+

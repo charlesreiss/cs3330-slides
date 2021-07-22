@@ -1,0 +1,60 @@
+\begin{frame}[fragile,label=seqNoStages]{SEQ without stages}
+    \begin{tikzpicture}[circuit logic]
+        \seqStagesStyles
+        \tikzset{
+            instrRegsMuxRS3/.style={visible on=<1-|handout:1->},
+            instrRegsMuxRS4/.style={visible on=<1-|handout:1->},
+            instrRegsRS34Loop/.style={visible on=<0|handout:0>},
+            dmemWBvalENoMux/.style={visible on=<1-|handout:1->},
+            dmemWBvalELoop/.style={visible on=<0|handout:0>},
+        }
+        \seqStagesBase
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=seqPlusStagesBad]{SEQ with stages}
+    \begin{tikzpicture}[circuit logic]
+        \seqStagesStyles
+        \tikzset{
+            instrRegsMuxRS3/.style={visible on=<1-|handout:1->,alt=<2-|handout:2->{red,ultra thick}},
+            instrRegsMuxRS4/.style={visible on=<1-|handout:1->,alt=<2-|handout:2->{red,ultra thick}},
+            instrRegsRS34Loop/.style={visible on=<0|handout:0>},
+            dmemWBvalENoMux/.style={visible on=<1-|handout:1->,alt=<2-|handout:2->{red, ultra thick}},
+            dmemWBvalELoop/.style={visible on=<0|handout:0>},
+        }
+        \seqStagesBase
+        \seqStagesBoxes
+        \begin{visibleenv}<3|handout:2>
+        \node[draw=red, ultra thick,fill=white] at ([xshift=-2cm,yshift=1cm]regs.north) {
+            rule: signal to \textit{next} stage (except flow control)
+        };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=seqPlusStages]{SEQ with stages (actually sequential)}
+    \begin{tikzpicture}[circuit logic]
+        \seqStagesStyles
+        \seqStagesBase
+        \seqStagesBoxes
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=addPipeRegs]{adding pipeline registers}
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            pcStyle/.style={fill=yellow},
+            pipe/.style={draw,hhReg,alt=<1>{draw=red,ultra thick}{draw=black,thick}},
+            wbPCLine/.style={alt=<2>{red,very thick,dashed},alt=<3->{opacity=0}},
+        }
+        \seqStagesStyles
+        \seqStagesBase
+        \seqStagesBoxes
+        \seqStagesRegs
+        \begin{visibleenv}<2|handout:2>
+        \node[draw=red, ultra thick,fill=white] at ([xshift=-4cm,yshift=1cm]regs.north) {
+            not shown --- control logic
+        };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

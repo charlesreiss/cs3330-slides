@@ -1,0 +1,55 @@
+\begin{frame}[fragile,label=hcl2DPipe]{HCLRS pipeline registers}
+\begin{Verbatim}[fontsize=\fontsize{10}{11}\selectfont]
+register pP {
+    pc : 64 = 0;
+};
+/* Fetch+PC Update*/
+register fD {
+    rA : 4 = REG_NONE; rB : 4 = REG_NONE;
+};
+/* Decode */
+register dE {
+    valA : 64 = 0; valB : 64 = E; dstE : 4 = REG_NONE;
+}
+/* Execute */
+register eW {
+    valE : 64 = 0; dstE : 4 = REG_NONE;
+}
+/* Writeback */
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile,label=hcl2DStageCode]{HCLRS: Fetch/Decode}
+\begin{tikzpicture}
+\node[label={north:unpipelined},align=left] (before) {
+\begin{lstlisting}[language={},style=smaller]
+/* Fetch+PC Update*/
+pc = F_pc;
+x_pc = pc + 2;
+rA = i10bytes[12..16];
+rB = i10bytes[8..12];
+/* Decode */
+reg_srcA = rA;
+reg_srcB = rB;
+reg_dstE = rB;
+valA = reg_outputA;
+valB = reg_outputB;
+\end{lstlisting}
+};
+\node[label={north:pipelined},right=.5cm of before,align=left] (after) {
+\begin{lstlisting}[language={},style=smaller]
+/* Fetch+PC Update*/
+pc = F_pc;
+x_pc = pc + 2;
+f_rA = i10bytes[12..16];
+f_rB = i10bytes[8..12];
+/* Decode */
+reg_srcA = D_rA;
+reg_srcB = D_rB;
+d_dstE = D_rB;
+d_valA = reg_outputA;
+d_valB = reg_outputB;
+\end{lstlisting}
+};
+\end{tikzpicture}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}[fragile,label=Y86addOne1]{Y86-64 encoding (1)}
+\vspace{-.5cm}
+\begin{lstlisting}[language=C]
+long addOne(long x) {
+    return x + 1;
+}
+\end{lstlisting}
+x86-64:
+\begin{lstlisting}
+    movq %rdi, %rax
+    addq $1, %rax
+    ret
+\end{lstlisting}
+Y86-64:
+\begin{visibleenv}<2->
+\begin{lstlisting}
+    irmovq  $1,   %rax
+    addq    %rdi, %rax
+    ret
+\end{lstlisting}
+\end{visibleenv}
+\end{frame}

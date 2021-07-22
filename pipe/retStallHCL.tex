@@ -1,0 +1,19 @@
+\begin{frame}[fragile,label=retBubbleEx]{HCLRS bubble example}
+\begin{Verbatim}[fontsize=\small]
+register fD {
+    icode : 4 = NOP;
+    rA : 4 = REG_NONE;
+    rB : 4 = REG_NONE;
+    ...
+};
+wire need_ret_bubble : 1;
+need_ret_bubble = ( D_icode == RET ||
+                    E_icode == RET ||
+                    M_icode == RET );
+
+bubble_D = ( need_ret_bubble || 
+             ... /* other cases */ );
+\end{Verbatim}
+\end{frame}
+
+

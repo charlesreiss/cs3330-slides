@@ -1,0 +1,50 @@
+\begin{frame}[fragile,label=vectFickle1]{fickle compiler vectorization (1)}
+    \lstset{language=C,style=smaller}
+    \begin{itemize}
+    \item GCC 8.2 and Clang 7.0 generate vector instructions for this:
+\begin{lstlisting}
+#define N 1024
+void foo(unsigned int *A, unsigned int *B) {
+    for (int k = 0; k < N; ++k)
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                B[i * N + j] += A[i * N + k] * A[k * N + j];
+}
+\end{lstlisting}
+\item but not:
+\begin{lstlisting}
+#define N 1024
+void foo(unsigned int *A, unsigned int *B) {
+    for (int i = 0; i < N; ++i)
+        for (int j = 0; j < N; ++j)
+            for (int k = 0; k < N; ++k)
+                B[i * N + j] += A[i * N + k] * A[j * N + k];
+}
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=vectFickle2]{fickle compiler vectorization (2)}
+    \lstset{language=C,style=smaller}
+    \begin{itemize}
+    \item Clang 5.0.0 generates vector instructions for this:
+\begin{lstlisting}
+void foo(int N, unsigned int *A, unsigned int *B) {
+    for (int k = 0; k < N; ++k)
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                B[i * N + j] += A[i * N + k] * A[k * N + j];
+}
+\end{lstlisting}
+\item but not: (fixed in later versions)
+\begin{lstlisting}
+void foo(long N, unsigned int *A, unsigned int *B) {
+    for (long k = 0; k < N; ++k)
+        for (long i = 0; i < N; ++i)
+            for (long j = 0; j < N; ++j)
+                B[i * N + j] += A[i * N + k] * A[k * N + j];
+}
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+% https://godbolt.org/g/q5qGrM

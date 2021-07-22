@@ -1,0 +1,35 @@
+\begin{frame}[fragile,label=negativeShrExerciseB]{exercise}
+\begin{lstlisting}
+int shiftTwo(int x) {
+    return x >> 2;
+}
+\end{lstlisting}
+\begin{itemize}
+\item \texttt{shiftTwo(-6) = \textbf{???}}
+\end{itemize}
+\begin{tabular}{lllll}
+A. -4 & B. -3 & C. -2 & D. -1 & E. 0  \\
+\end{tabular}
+\begin{tabular}{ll}
+F. some positive number & G. something else \\
+\end{tabular}
+\end{frame}
+
+\iftoggle{heldback}{
+    \excludecomment{isheldback}
+}{
+    \includecomment{isheldback}
+}
+
+\begin{frame}[fragile,label=negativeShrExerciseBExplain]{explanation}
+\begin{isheldback}
+\begin{tabular}{r|l}
+    6 = & \tt 000\ldots00000110 \\
+    flip bits & \tt 111\ldots 11111001 \\
+    add one & ~ \\ \hline
+    -6 = & \tt 111\ldots 11111010 \\ \hline
+    arithmetic shift by 2 & \tt \textbf{11}111\ldots 11111110\sout{10} \\
+                       & \tt 111\ldots 111110 {\normalfont (-2)} \\
+\end{tabular}
+\end{isheldback}
+\end{frame}

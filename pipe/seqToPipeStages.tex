@@ -1,0 +1,56 @@
+\begin{frame}[fragile,label=recallStages]{textbook SEQ `stages'}
+    \begin{itemize}
+    \item \myemph{conceptual order only}
+    \vspace{.5cm}
+    \item Fetch: \myemph<3|handout:0>{read} instruction memory
+    \item Decode: \myemph<3|handout:0>{read} register file
+    \item Execute: arithmetic (ALU)
+    \item Memory: \myemph<3|handout:0>{read}/\myemph<2|handout:0>{write} data memory
+    \item Writeback: \myemph<2|handout:0>{write} register file
+    \item PC Update: \myemph<2|handout:0>{write} PC register
+    \end{itemize}
+    \begin{tikzpicture}[overlay,remember picture]
+        \coordinate (marker) at ([xshift=-1cm,yshift=-4cm]current page.north east);
+        \tikzset{
+            box/.style={draw,ultra thick,align=left,anchor=north east},
+        }
+        \begin{visibleenv}<2|handout:0>
+        \node[box] at (marker) {
+            writes happen \\ at end of cycle
+        };
+        \end{visibleenv}
+        \begin{visibleenv}<3|handout:0>
+        \node[box] at (marker) {
+            reads --- ``magic'' \\
+            like combinatorial logic \\
+            as values available
+        };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=recallStages2]{textbook stages}
+    \begin{itemize}
+    \item \sout{conceptual order only} \myemph<1>{pipeline stages}
+    \vspace{.5cm}
+    \item \myemph<2>{Fetch/PC Update}: read instruction memory; \\ \hspace{3cm} \myemph<2>{compute next PC}
+    \item Decode: read register file
+    \item Execute: arithmetic (ALU)
+    \item Memory: read/write data memory
+    \item Writeback: write register file
+    \end{itemize}
+    \begin{tikzpicture}[overlay,remember picture]
+        \coordinate (marker) at ([xshift=-0.5cm,yshift=-5cm]current page.north east);
+        \tikzset{
+            box/.style={draw,ultra thick,align=left,anchor=north east,fill=white},
+        }
+        \begin{visibleenv}<2|handout:0>
+        \node[box] at (marker) {
+            5 stages \\
+            one instruction in each \\
+            compute next to start immediatelly
+        };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+

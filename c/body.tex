@@ -1,0 +1,87 @@
+\typeout{(body.tex)}
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted[ccode]{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeT]{c}{linenos=false,fontsize=\scriptsize,beameroverlays,escapeinside=@@,texcomments}
+%\newminted[asmcode]{gas}{style=tango,linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+%\newminted[asmcodeNL]{gas}{style=tango,linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+
+\newcommand{\xOF}{\ensuremath{\mathtt{OF}}\xspace}
+\newcommand{\xSF}{\ensuremath{\mathtt{SF}}\xspace}
+\newcommand{\xCF}{\ensuremath{\mathtt{CF}}\xspace}
+\newcommand{\xZF}{\ensuremath{\mathtt{ZF}}\xspace}
+
+\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
+
+\newcommand<>{\highBox}[2]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#3
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,fill=green!20,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\newcommand<>{\highBoxX}[3]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#4
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,#3,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\input{lastTime}
+
+\input{quizDemo}
+
+\input{../20180123/condCode}
+
+\input{../20180123/whileToAsm}
+
+\input{../20180123/condCodeAdv}
+
+\input{cTypes}
+
+\input{logicalOps}
+
+\input{pointerArith}
+
+\input{pointerArithEx}
+
+\begin{comment}
+
+\input{arrayNotPointer}
+
+% FIXME: consider whether this is the best place for this?
+\input{commandLineTips}
+
+\input{stdioPrintf}
+
+\input{struct}
+
+\input{dynAllocAndList}
+
+\input{unsignedAndSigned}
+
+\input{cUndef}
+
+\input{cMore}
+\end{comment}
+
+\begin{frame}{backup slides}
+\end{frame}
+
+\input{backupCppNotC}
+

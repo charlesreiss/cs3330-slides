@@ -1,0 +1,130 @@
+\begin{frame}[fragile,label=Muxes]{multiplexers}
+    % FIXME: background colors for output/select 
+    \newcommand{\cA}{\color{red!80!black}}
+    \newcommand{\cB}{\color{blue!80!black}}
+    \newcommand{\cC}{\color{green!60!black}}
+    \newcommand{\cD}{\color{violet!90!black}}
+    \begin{tikzpicture}[circuit logic]
+        \node [draw,mux,inputs={nnnn},info={center:MUX},minimum height=3cm,minimum width=1.5cm] (theMux) {};
+        \draw[thick,latex-] (theMux.input 1) -- +(-.5cm,0cm) node[left] (a) {\cA a};
+        \draw[thick,latex-] (theMux.input 2) -- +(-.5cm,0cm) node[left] (b) {\cB b};
+        \draw[thick,latex-] (theMux.input 3) -- +(-.5cm,0cm) node[left] (c) {\cC c};
+        \draw[thick,latex-] (theMux.input 4) -- +(-.5cm,0cm) node[left] (d) {\cD d};
+        \draw[thick,-latex] (theMux.output) -- +(.5cm,0cm) node[right] (output) {\strut output};
+        \draw[thin,latex-] (theMux.select) -- +(0cm,-.5cm) node[below] (select) {\strut select};
+        \onslide<2->{
+            \node[right=1pt of select] {\strut= {\cA 0} or {\cB 1} or {\cC 2} or {\cD 3}};
+            \node[right=1pt of output] {\strut= {\cA a} or {\cB b} or {\cC c} or {\cD d}};
+        }
+        \onslide<3->{
+            \node[below right=.1cm and -2cm of select,align=left] {
+                truth table: \\
+                \begin{tabular}{ll|l}
+                select bit 1 & select bit 0 & output (many bits) \\
+                \tt 0 & \tt 0 & \cA a \\
+                \tt 0 & \tt 1 & \cB b \\
+                \tt 1 & \tt 0 & \cC c \\
+                \tt 1 & \tt 1 & \cD d \\
+                \end{tabular}
+            };
+        }
+    \end{tikzpicture}
+\end{frame}
+
+% FIXME: ALUs
+
+\begin{frame}[fragile,label=JmpNoOpIntro]{Simple ISA 3: Jmp or No-Op}
+    \begin{itemize}
+        \item actual subset of Y86-64
+        \item \lstinline|jmp LABEL| --- encoded as {\tt 0x70} + address
+        \item \lstinline|nop| --- encoded as {\tt 0x10}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=JmpNopCPU]{jmp+nop CPU}
+    % FIXME: overlay instruction layout pictures
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            dmemNorm/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            regNorm/.style={visible on=<0|handout:0>},
+            imemPcPre/.style={visible on=<1|handout:1>},
+            regPre/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            regNormLabel/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+        }
+        \instrEncodingStyles
+        \circuitState
+        \circuitStatePre
+        \begin{visibleenv}<2->
+            \draw[a] (pc.east) -- (imemAddr);
+            \node[logicBlock,right=.5cm of imemData] (split) {split};
+            \draw[a] (imemData) -- (split);
+            \node[mux,inputs={nn},info={center:\scriptsize MUX},minimum height=1cm,minimum width=.5cm,right=2cm of split,logicFill] (nextPCMux) {};
+            \node[logicBlock,below right=1.2cm and .6cm of split,anchor=west,align=left,font=\small] (testJump) {1 if jmp \\ 0 if nop};
+            \draw[b] ([yshift=-.1cm]split.east) -- ++ (0.2cm,0cm) |- (testJump)
+                node[inner sep=0pt,outer sep=1pt,near start,below,fill=white,font=\scriptsize] (opcodeLabel) { opcode };
+            \draw[b] (testJump.east) -| (nextPCMux.select);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \draw[a] ([yshift=.1cm]split.east) -- ++(0.4cm,0cm) |- (nextPCMux.input 2)
+                node[inner sep=0pt,outer sep=1pt,near end,fill=white,font=\scriptsize] (destLabel){ dest };
+            \coordinate (beforeInput1) at ($(nextPCMux.input 1) + (-1cm, 0cm)$);
+            \node[logicBlock,above right=.5cm and -.5cm of imem,font=\small] (pcPlus) {+ 1 {\footnotesize (nop size)}};
+            \draw[a] (pc.east) -- ++ (0.5cm, 0cm) |- (pcPlus.west);
+            \draw[a] (pcPlus.east) -- ++ (1cm, 0cm) |- (nextPCMux.input 1);
+            \coordinate (beforePC) at ([xshift=-.5cm]pc.west);
+            \draw[a] (nextPCMux.output) -| ++(.5cm, 2cm) -| (beforePC) -- (pc.west);
+        \end{visibleenv}
+
+        % FIXME: port picture from instruction encoding table
+        \begin{visibleenv}<1-|handout:1>
+            \instrEncodingSubTable{below right=1.5cm and -1cm of pc}{encodings}{
+                \nop      \& |[opcode]| 1 \& |[literal]| 0 \\
+                \keywordstyle jmp \Dest \& |[opcode]| 7 \& |[literal]| 0 
+                        \& ~ \& ~ \& ~ \& ~ 
+                        \& ~ \& ~ \& ~ \& ~ 
+                        \& ~ \& ~ \& ~ \& ~
+                        \& ~ \& ~ \& ~ \& ~
+                    \\
+            };
+            \node[immediateLabel=\Dest,inner sep=0pt,outer sep=0pt,fit=(encodings-2-4) (encodings-2-19)] (DestJmp) {};
+        \end{visibleenv}
+        
+        \begin{visibleenv}<4|handout:2>
+            \node[right=1cm of nextPCMux,offsetBox,yshift=1cm] {
+                \lstinline|nop|
+            };
+            \draw[line width=1.5pt,red,-latex] (pcPlus.east) -- ++ (1cm, 0cm) |- (nextPCMux.input 1);
+            \draw[line width=1.5pt,red,-latex] (nextPCMux.input 1) -- (nextPCMux.output);
+            %\draw[line width=1.5pt,red,-latex] (nextPCMux.output) -| ++(.5cm,2cm) -| (beforePC) -- (pc.west);
+            \node[inner sep=0pt,outer sep=1pt,below right=1pt of nextPCMux.select,font=\small,color=red] {\tt 0};
+        \end{visibleenv} 
+        \begin{visibleenv}<5|handout:3>
+            \node[right=1cm of nextPCMux,offsetBox,yshift=1cm] {
+                \lstinline|jmp dest|
+            };
+            \draw[line width=1.5pt,red,-latex] ([yshift=.1cm]split.east) -- ++(0.4cm,0cm) |- (nextPCMux.input 2);
+            \draw[line width=1.5pt,red,-latex] (nextPCMux.input 2) -- (nextPCMux.output);
+            %\draw[line width=1.5pt,red,-latex] (nextPCMux.output) -| ++(.5cm,2cm) -| (beforePC) -- (pc.west);
+            \node[inner sep=0pt,outer sep=1pt,below right=1pt of nextPCMux.select,font=\small,color=red] {\tt 1};
+        \end{visibleenv} 
+        \begin{visibleenv}<6-|handout:4>
+            \node[left=1pt of opcodeLabel,bookLabel] {icode};
+            \node[draw,cross out,fit=(opcodeLabel),inner sep=0pt, outer sep=0pt] {};
+            \node[draw,cross out,fit=(destLabel),inner sep=0pt, outer sep=0pt] {};
+            \node[below=1pt of destLabel, bookLabel] {valC};
+            \node[right=1pt of pcPlus.east,bookLabel] {valP};
+            \node[right=1pt of nextPCMux.output,bookLabel] {PC};
+        \end{visibleenv}
+        \begin{visibleenv}<7|handout:4>
+            \node[fit=(testJump),draw,rectangle,color=red!90!black,line width=3pt,dashed,label={[font=\small,color=red!90!black]0:not in listing}] (testJumpHighlight) {};
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+

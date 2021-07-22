@@ -1,0 +1,69 @@
+\newcommand{\memoryPicture}{
+\matrix (memoryWithLabels) [matrix of nodes,
+    row sep=2mm,
+    inner sep=0mm,
+    font=\small\ttfamily,
+    nodes={text depth=0pt,inner sep=0.2mm,inner xsep=1mm},
+    column 1/.style={align=right,column sep=2mm},
+    column 2/.style={align=left,minimum width=1cm},
+    row 1/.style={font=\small\bfseries}] {
+        address \& value \\
+        0xFFFFFFFF  \& 0x14\\
+        0xFFFFFFFE  \& 0x45\\
+        0xFFFFFFFD  \& 0xDE\\
+        \ldots  \& \ldots \\
+        0x00042006  \& 0x06\\
+        0x00042005  \& 0x05\\
+        0x00042004  \& 0x04\\
+        0x00042003  \& 0x03\\
+        0x00042002  \& 0x02\\
+        0x00042001  \& 0x01\\
+        0x00042000  \& 0x00\\
+        0x00041FFF  \& 0x03\\
+        0x00041FFE  \& 0x60\\
+        \ldots  \& \ldots \\
+        0x00000002  \& 0xFE\\
+        0x00000001  \& 0xE0\\
+        0x00000000  \& 0xA0\\
+};
+\draw[black!80!white,line width=1pt] (memoryWithLabels-2-2.north west) rectangle (memoryWithLabels-4-2.south east);
+\draw[black!80!white,line width=1pt] (memoryWithLabels-6-2.north west) rectangle (memoryWithLabels-14-2.south east);
+\draw[black!80!white,line width=1pt] (memoryWithLabels-16-2.north west) rectangle (memoryWithLabels-18-2.south east);
+\foreach \x in {3,4,7,8,...,14,17,...,18} {
+    \draw[black!80!white,line width=1pt] (memoryWithLabels-\x-2.north west) -- (memoryWithLabels-\x-2.north east);
+}
+}
+
+\begin{frame}[fragile,label=endiannes]{endianness}
+\begin{tikzpicture}
+\memoryPicture
+\node[right=10mm of memoryWithLabels-2-2] (code) {
+\begin{minipage}{4cm}
+\begin{minted}{c++}
+int *x = (int*)0x42000;
+cout << *x << endl;
+\end{minted}
+\end{minipage}
+};
+%\node[right=1mm of memoryWithLabels-12-2] {\Huge$\Leftarrow$};
+\onslide<2->{
+    \node[fit=(memoryWithLabels-9-2) (memoryWithLabels-12-2),rectangle,draw=orange!70!black,line width=1mm] {};
+}
+\onslide<3->{
+    \node[below=.2cm of code,xshift=10mm] (le) {\ttfamily 0x030201\myemph{00} $=$};
+    \node[right=0cm of le] (leDec) {50462976};
+    \node[below=2cm of le] (be) {\ttfamily 0x\myemph{00}010203 $=$};
+    \node[right=0cm of be] (beDec) {66051};
+}
+\begin{pgfonlayer}{bg}
+\onslide<4->{
+    \node[below=.1cm of le,xshift=.5cm,fill=blue!20, align=center] {little endian \\ (least significant byte has lowest address)};
+    \node[fit=(leDec),inner sep=1mm,draw=blue!70!black,fill=blue!10, line width=1mm] (boxLe) {};
+    \node[below=.1cm of be,xshift=.5cm,fill=green!20, align=center] {big endian \\ (most significant byte has lowest address)};
+    \node[fit=(beDec),inner sep=1mm,draw=green!70!black,fill=green!10, line width=1mm] (boxBe) {};
+}
+\end{pgfonlayer}
+\onslide<5->{
+}
+\end{tikzpicture}
+\end{frame}

@@ -1,0 +1,28 @@
+\begin{frame}[fragile,label=registerOperation]{registers}
+    \begin{tikzpicture}
+        \node[hReg={}] (pc) {};
+        \draw[a,latex-] (pc.west) -- ++(-1cm, 0cm);
+        \draw[a] (pc.east) -- ++(1cm, 0cm);
+        \node[below=1.5cm of pc,visible on=<1>] (everyCC) {
+            updates every \myemph{clock cycle}
+        };
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.5cm)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (3, 0) -- (3, 1) -- (4, 1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+            \draw[ultra thick,red!95!black] (3, 0) -- (3, 1);
+        \end{scope}
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.6cm)$)}] 
+            \fill[color=blue!80!black] (0, 0) rectangle (0.99, -.5);
+            \fill[color=green!40!white] (1.01, 0) rectangle (2.99, -.5);
+            \fill[color=violet!60!black] (3.01, 0) rectangle (4., -.5);
+            \node[anchor=east,font=\small] at (0,-.25) {register output};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[color=green!40!white] (0.2, -0.6) rectangle (1.01, -1.1);
+            \fill[pattern=north west lines] (1.01, -0.6) rectangle (1.7, -1.1);
+            \fill[color=violet!60!black] (1.7, -0.6) rectangle (3.01, -1.1);
+            \fill[pattern=north west lines] (3.01, -0.6) rectangle (3.9, -1.1);
+            \fill[color=orange!40] (3.9, -0.6) rectangle (4., -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {register input};
+        \end{scope}
+    \end{tikzpicture}
+\end{frame}

@@ -1,0 +1,94 @@
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw}
+    >=Latex,
+}
+
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted[ccode]{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeT]{c}{linenos=false,fontsize=\scriptsize,beameroverlays,escapeinside=@@,texcomments}
+%\newminted[asmcode]{gas}{style=tango,linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+%\newminted[asmcodeNL]{gas}{style=tango,linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller2,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+\lstset{language=myasm}
+\usepgflibrary{shapes.gates.logic.mux}
+\input{../common/y86Util}
+\newcommand{\keywordstyle}{\tt \bfseries}
+
+\begin{frame}{last time}
+    \begin{itemize}
+    \item hardware description language
+        \begin{itemize}
+        \item programming language that compiles to circuits
+        \end{itemize}
+    \item stages as conceptual division
+        \begin{itemize}
+        \item not the order things happen
+        \item easier to figure out wiring stage-by-stage?
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{on office hour locations}
+\end{frame}
+
+\begin{frame}{on the homework}
+    \begin{itemize}
+    \item can use multiple statements and temporary variables
+    \item only arithmetic shifts available
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{on this week's quiz}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\input{layers}
+
+\input{powersOfTwo}
+
+\input{procAndMem}
+
+\input{endianness}
+
+\input{compPipe}
+
+\input{pointArith}
+
+\input{listsTypes}
+
+\input{attSyntax}
+
+\input{ccExs}
+
+\input{compilingSwitches}
+
+\input{pushPop}
+
+\input{y86Encoding}
+
+\input{bitStrat}
+
+\input{shifts}
+
+\input{hwComponents}
+
+\input{seqCircuit}
+
+\input{settingMuxes}
+

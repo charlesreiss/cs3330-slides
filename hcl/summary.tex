@@ -1,0 +1,20 @@
+\begin{frame}{HCLRS summary}
+    \begin{itemize}
+    \item declare/assign values to \myemph{wires}
+    \item \myemph{MUXes} with
+        \begin{itemize}
+        \item {\tt [ test1: value1; test2: value2; 1: default; ]}
+        \end{itemize}
+    \item register banks with {\tt \textbf{register} iO}:
+        \begin{itemize}
+        \item next value on {\tt i\_name}; current value on {\tt O\_name}
+        \end{itemize}
+    \item fixed functionality
+        \begin{itemize}
+        \item register file (15 registers; 2 read + 2 write)
+        \item memories (data + instruction)
+        \item Stat register (start/stop/error)
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+

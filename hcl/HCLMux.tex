@@ -1,0 +1,22 @@
+\begin{frame}{MUXes in HCLRS}
+\begin{itemize}
+\item book calls ``case expression''
+\item conditions evaluated (as if) \myemph{in order}
+\item first match is output:
+{\tt\small
+result = [ \\
+\hspace{.5cm} x == 5: 1; \\
+\hspace{.5cm} x in \{0, 6\}: 2; \\
+\hspace{.5cm} x > 2: 3; \\
+\hspace{.5cm} 1: 4; \\
+]; \\
+}
+    \begin{itemize}
+    \item x = 5: result is 1
+    \item x = 6: result is 2
+    \item x = 3: result is 3
+    \item x = 4: result is 3
+    \item x = 1: result is 4
+    \end{itemize}
+\end{itemize}
+\end{frame}

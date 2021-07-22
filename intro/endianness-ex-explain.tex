@@ -1,0 +1,112 @@
+\usetikzlibrary{decorations.pathreplacing,matrix}
+\begin{frame}[fragile,label=endianExViz]{exercise visualization}
+\lstset{
+    language=C++,style=smaller,
+    moredelim=**[is][{\btHL<2>[fill=green!30]}]{@a}{a@},
+    moredelim=**[is][{\btHL<2>[fill=blue!30]}]{@b}{b@},
+    moredelim=**[is][\btHL<3>]{@3}{3@},
+    moredelim=**[is][\btHL<4>]{@4}{4@},
+}
+\vspace{1.1cm}
+\tikzmark{copy1}
+\begin{lstlisting}
+for (int i = 0; i < 4; ++i) { /* copy value1/2 into buffer */
+    @abuffer[i] = ptr_value1[i];a@ @bbuffer[i+4] = ptr_value2[i];b@
+}
+\end{lstlisting}
+\vspace{1cm}
+\tikzmark{copy2}
+\begin{lstlisting}
+for (int i = 0; i < 4; ++i) { /* copy buffer[1..5] into value1 */
+    @3ptr_value1[i] = buffer[i+1];3@
+}
+\end{lstlisting}
+\tikzmark{copy3}
+\begin{tikzpicture}[overlay,remember picture]
+\tikzset{
+    small box/.style={draw,thick,font=\small},
+    small label/.style={font=\small},
+    my array/.style={
+        tight matrix,
+        nodes={text width=.7cm,text depth=0mm,font=\tt\small,align=center},
+        row 2/.style={
+            nodes={font=\fontsize{9}{10}\selectfont,draw=none,align=center},
+        }
+    },
+    real value/.style={font=\small\tt\selectfont},
+}
+\matrix[my array,anchor=north west,label={[small label]north:value1 {\scriptsize (bytes in hex)}}] (value1 init) at ([yshift=1.2cm]pic cs:copy1) {
+    78 \& 56 \& 34 \& 12 \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value1 init-2-1.south west) -- (value1 init-2-4.south east)
+    node[midway,below,real value] {0x12345678};
+\matrix[my array,anchor=north west,label={[small label]north:value2 {\scriptsize (bytes in hex)}}] (value2 init) at ([xshift=.25cm]value1 init.north east) {
+    F0 \& DE \& BC \& 9A \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value2 init-2-1.south west) -- (value2 init-2-4.south east)
+    node[midway,below,real value] {0x9ABCDEF0};
+\matrix[my array,anchor=north west,label={[small label]north:buffer}] (buffer init) at ([xshift=.25cm]value2 init.north east) {
+    ? \& ? \& ? \& ? \& ? \& ? \& ? \& ? \\
+    0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \\
+};
+
+\matrix[my array,anchor=north west,label={[small label]north:value1}] (value1 copy1) at ([yshift=1.2cm]pic cs:copy2) {
+    78 \& 56 \& 34 \& 12 \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value1 copy1-2-1.south west) -- (value1 copy1-2-4.south east)
+    node[midway,below,real value] {0x12345678};
+\matrix[my array,anchor=north west,label={[small label]north:value2}] (value2 copy1) at ([xshift=.25cm]value1 copy1.north east) {
+    F0 \& DE \& BC \& 9A \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value2 copy1-2-1.south west) -- (value2 copy1-2-4.south east)
+    node[midway,below,real value] {0x9ABCDEF0};
+\matrix[my array,anchor=north west,label={[small label]north:buffer}] (buffer copy1) at ([xshift=.25cm]value2 copy1.north east) {
+    78 \& 56 \& 34 \& 12 \& F0 \& DE \& BC \& 9A \\
+    0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \\
+};
+
+\matrix[my array,anchor=north west,label={[small label]north:value1}] (value1 copy2) at ([yshift=0cm]pic cs:copy3) {
+    56 \& 34 \& 12 \& F0 \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value1 copy2-2-1.south west) -- (value1 copy2-2-4.south east)
+    node[midway,below,real value] {0xF01234\myemph<4>{56}};
+\matrix[my array,anchor=north west,label={[small label]north:value2}] (value2 copy2) at ([xshift=.25cm]value1 copy2.north east) {
+    F0 \& DE \& BC \& 9A \\
+    0 \& 1 \& 2 \& 3 \\
+};
+\draw[very thick,decorate,decoration={brace,mirror}] (value2 copy2-2-1.south west) -- (value2 copy2-2-4.south east)
+    node[midway,below,real value] {0x9ABCDEF0};
+\matrix[my array,anchor=north west,label={[small label]north:buffer}] (buffer copy2) at ([xshift=.25cm]value2 copy2.north east) {
+    78 \& 56 \& 34 \& 12 \& F0 \& DE \& BC \& 9A \\
+    0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \\
+};
+\begin{visibleenv}<2>
+    \path[draw=green!50!black,very thick,fill=green,fill opacity=0.1]
+        (value1 copy1-1-1.north west) rectangle (value1 copy1-1-4.south east);
+    \path[draw=green!50!black,very thick,fill=green,fill opacity=0.1]
+        (buffer copy1-1-1.north west) rectangle (buffer copy1-1-4.south east);
+
+    \path[draw=blue!50!black,very thick,fill=blue,fill opacity=0.1]
+        (value2 copy1-1-1.north west) rectangle (value2 copy1-1-4.south east);
+    \path[draw=blue!50!black,very thick,fill=blue,fill opacity=0.1]
+        (buffer copy1-1-5.north west) rectangle (buffer copy1-1-8.south east);
+\end{visibleenv}
+\begin{visibleenv}<3>
+    \path[draw=red!50!black,very thick,fill=red,fill opacity=0.1]
+        (value1 copy2-1-1.north west) rectangle (value1 copy2-1-4.south east);
+    \path[draw=red!50!black,very thick,fill=red,fill opacity=0.1]
+        (buffer copy2-1-2.north west) rectangle (buffer copy2-1-5.south east);
+\end{visibleenv}
+\begin{visibleenv}<4>
+    \path[draw=red!50!black,very thick,fill=red,fill opacity=0.1]
+        (value1 copy2-1-1.north west) rectangle (value1 copy2-1-1.south east);
+\end{visibleenv}
+\begin{pgfonlayer}{bg}
+\end{pgfonlayer}
+\end{tikzpicture}
+\end{frame}

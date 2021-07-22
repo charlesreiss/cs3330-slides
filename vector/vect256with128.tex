@@ -1,0 +1,28 @@
+\begin{frame}{256-bit with 128-bit?}
+    \begin{itemize}
+    \item Intel designed 256-bit vector instructions with 128-bit ones in mind
+    \item goal: possible to use 128-bit vector ALUs to implement 256-bit instructions
+        \begin{itemize}
+        \item split 256-bit instruction into two ALU operations
+        \end{itemize}
+    \item means less instructions move values from top to bottom half of vector
+        \begin{itemize}
+        \item in particular, complicated to move 16-bit value between halfs
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{aside on AVX and clock speeds}
+    \begin{itemize}
+    \item some processors ran slower when 256-bit ALUs are being used
+        \begin{itemize}
+        \item includes a lot of notable Intel CPUs
+        \end{itemize}
+    \item why? they give out heat --- can't maintain higher clock speed
+        \begin{itemize}
+        \item for energy reasons, shut down when not used
+        \end{itemize}
+    \vspace{.5cm}
+    \item still faster \textit{assuming you're using vectors a lot}
+    \end{itemize}
+\end{frame}

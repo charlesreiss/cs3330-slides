@@ -1,0 +1,18 @@
+\begin{frame}[fragile,label=rightShift]{right shift in math}
+\begin{tabular}{l@{\hspace{3cm}}l}
+\lstinline|1 >> 0 == 1| & \tt 0000 0001 \\
+\lstinline|1 >> 1 == 0| & \tt {\color{red!60}0}000 0000 \\
+\lstinline|1 >> 2 == 0| & \tt {\color{red!60}00}00 0000 \\
+~ & ~ \\
+\lstinline|10 >> 0 == 10| & \tt 0000 1010 \\
+\lstinline|10 >> 1 ==  5| & \tt {\color{red!60}0}000 0101 \\
+\lstinline|10 >> 2 ==  2| & \tt {\color{red!60}00}00 0010 \\
+\end{tabular}
+\vspace{0.3cm}
+\begin{center}
+\large
+$x$ \lstinline|>>| $y = \left\lfloor x \times 2^{-y}\right\rfloor$ \\
+\end{center}
+\end{frame}
+
+

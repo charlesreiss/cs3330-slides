@@ -1,0 +1,23 @@
+\begin{frame}{ISAs: who does the work?}
+\begin{itemize}
+\item CISC-like (harder to make hardware, easier to use assembly)
+    \begin{itemize}
+    \item choose instructions with \myemph<2>{particular assembly language} in mind?
+    \item hardware designer provides \myemph<3>{operations assembly-writers} wants
+        \begin{itemize}
+        \item let the hardware worry about optimizing it?
+        \end{itemize}
+    \end{itemize}
+\item RISC-like (easier to make hardware, harder to use assembly)
+    \begin{itemize}
+    \item choose instructions with \myemph<2>{particular HW implementation} in mind?
+    \item hardware designer exposes \myemph<3>{things it can do efficiently} to assembly-writers
+        \begin{itemize}
+        \item building blocks for compiler to make efficient programs?
+        \end{itemize}
+    \end{itemize}
+\vspace{.5cm}
+\item note: \textit{general} differences --- no firm RISC v. CISC line
+\end{itemize}
+\end{frame}
+

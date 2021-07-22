@@ -1,0 +1,54 @@
+\begin{frame}[fragile,label=ifToAsmEx]{exercise}
+\begin{lstlisting}[language=myasm,style=smaller]
+    subq %rax, %rbx
+    addq %rbx, %rcx
+    je after
+    addq %rax, %rcx
+after:
+\end{lstlisting}
+This is equivalent to what C code? {\scriptsize (rax = var. assigned to register \%rax, etc.)}
+
+\begin{tikzpicture}
+\tikzset{
+    code box/.style={draw,minimum width=6.5cm,minimum height=2cm,font=\fontsize{9}{10}\selectfont,align=left}
+}
+\node[code box] (code1) at (0,0) {
+\begin{lstlisting}[language=C,style=smaller]
+rbx -= rax;
+rcx += rbx;
+if (rcx == 0) {
+    rcx += rax;
+}
+\end{lstlisting}
+};
+\node[code box] (code2) at (7.5,0) {
+\begin{lstlisting}[language=C,style=smaller]
+rbx -= rax;
+rcx += rbx;
+if (rbx == rcx) {
+    rcx += rax;
+}
+\end{lstlisting}
+};
+\node[code box] (code3) at (0,-3) {
+\begin{lstlisting}[language=C,style=smaller]
+rbx -= rax;
+rcx += rbx;
+if (rbx + rcx == 0) {
+    rcx += rax;
+}
+\end{lstlisting}
+};
+\node[code box] (code4) at (7.5,-3) {
+\begin{lstlisting}[language=C,style=smaller]
+rcx += (rbx - rax);
+if (rcx == (rbx - rax)) {
+    rcx += rax;
+}
+\end{lstlisting}
+};
+\foreach \x/\lbl in {1/A,2/B,3/C,4/D} {
+    \node[draw,thick,circle,anchor=center,fill=white]  at (code\x.north west) {\lbl};
+}
+\end{tikzpicture}
+\end{frame}

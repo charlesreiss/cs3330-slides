@@ -1,0 +1,23 @@
+\usetikzlibrary{shapes.callouts}
+
+\begin{frame}{why C?}
+    \begin{itemize}
+    \item \textit{almost} a subset of C++
+        \begin{itemize}
+        \item notably removes classes, new/delete, iostreams
+        \item other changes, too, so C code often not valid C++ code
+        \end{itemize}
+    \item \myemph{direct\tikzmark{direct} correspondence} to assembly
+    \end{itemize}
+    \begin{tikzpicture}[overlay,remember picture]
+        \onslide<2|handout:0>{
+            \node[my callout=direct,align=left] {Should help you understand machine! \\
+                                     Manual translation to assembly};
+        }
+        \onslide<3|handout:0>{
+            \node[my callout=direct,align=left] {But ``clever'' (optimizing) compiler \\
+                                     might be confusingly indirect instead};
+        }
+    \end{tikzpicture}
+\end{frame}
+

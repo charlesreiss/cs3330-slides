@@ -1,0 +1,71 @@
+
+\begin{frame}{Simple ISA: nop/halt}
+\begin{itemize}
+    \item \lstinline|nop|
+    \begin{itemize}
+        \item encoding: (1 byte) \texttt{10}
+    \end{itemize}
+    \item \lstinline|halt|
+    \begin{itemize}
+        \item encoding: (1 byte) \texttt{00}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{nop/halt CPU}
+\providecommand{\keywordstyle}{\tt\bfseries}
+    \begin{tikzpicture}[circuit logic US]
+        \tikzset{
+            dmemNorm/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<1-|handout:1->},
+            isStatReg/.style={visible on=<1-|handout:1->},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            instrRegs/.style={visible on=<0|handout:0>},
+            regNorm/.style={visible on=<0|handout:0>},
+            regNormLabel/.style={visible on=<0|handout:0>},
+            imemPcPre/.style={visible on=<1|handout:1>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            regPre/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            regNormLabel/.style={visible on=<0|handout:0>},
+        }
+        \instrEncodingStyles
+        \circuitState
+        \circuitStatePre
+        \begin{visibleenv}<2->
+            \draw[a] (pc.east) -- (imemAddr);
+            \node[logicBlock,right=.5cm of imemData] (split) {split};
+            \draw[a] (imemData) -- (split);
+            \node[mux,inputs={nnn},
+                  info={center:\scriptsize MUX},
+                  minimum height=1.5cm,
+                  minimum width=.7cm,
+                  right=5cm of split,
+                  logicFill
+            ] (stat mux) {};
+            \node[logicBlock,below right=2.4cm and .6cm of split,anchor=west,align=left,font=\small] (testJump) {0 if halt \\ 1 if nop \\ 2 if other};
+            \draw[b] ([yshift=-.1cm]split.east) -- ++ (0.2cm,0cm) |- (testJump)
+                node[inner sep=0pt,outer sep=1pt,near start,below,fill=white,font=\scriptsize] (opcodeLabel) { icode };
+            \draw[b] (testJump.east) -| (stat mux.select);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \draw[aR] (stat mux.input 1) -- ++ (-1cm, 0cm) node[left,font=\tt\small] {STAT\_HLT};
+            \draw[aR] (stat mux.input 2) -- ++ (-1cm, 0cm) node[left,font=\tt\small] {STAT\_AOK};
+            \draw[aR] (stat mux.input 3) -- ++ (-1cm, 0cm) node[left,font=\tt\small] {STAT\_INS};
+            \draw[a] (stat mux.output) -- ++ (1cm, 0cm) node[right,font=\tt] {Stat};
+        \end{visibleenv}
+        \begin{visibleenv}<4->
+            \draw[a] (pc.east) -- ++(1cm, 0cm) |- ([yshift=-1.5cm,xshift=-1cm]pc.south) |- (pc.west);
+            \node[draw,logicFill,align=center,font=\small] at ([xshift=1mm,yshift=-1.5cm]pc.south) {+ 2 \\ \scriptsize (instr. size)};
+        \end{visibleenv}
+        % FIXME: port picture from instruction encoding table
+        \begin{visibleenv}<1-|handout:1>
+            \instrEncodingSubTable{below right=3cm and 0cm of pc}{encodings}{
+                \halt     \& |[opcode]| 0 \& |[literal]| 0 \\
+                \nop      \& |[opcode]| 1 \& |[literal]| 0 \\
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

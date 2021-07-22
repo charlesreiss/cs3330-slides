@@ -1,0 +1,28 @@
+\begin{frame}{swapping is writeback}
+\begin{itemize}
+\item implementing write-through is hard
+\begin{itemize}
+    \item when fault happens --- physical page not written
+    \item when OS resumes process --- no chance to forward write
+    \item HW itself doesn't know how to write to disk
+\end{itemize}
+\item write-through would also be really slow
+\begin{itemize}
+    \item HDD/SSD perform best if one writes \myemph{at least a whole page} at a time
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{implementing writeback}
+\begin{itemize}
+\item need a \textit{dirty bit} per page (``was page modified'')
+\item often \myemph{kept in the page table}!
+\vspace{.5cm}
+\item option 1 (most common): \myemph{hardware sets dirty bit} in page table entry (on write)
+    \begin{itemize}
+        \item bit means ``physical page was modified using this PTE''
+    \end{itemize}
+\item option 2: OS sets page read-only, flips read-only+dirty bit on fault
+\end{itemize}
+\end{frame}
+

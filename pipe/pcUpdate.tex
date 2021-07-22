@@ -1,0 +1,133 @@
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+
+\begin{frame}[fragile,label=buildPCUpdate]{building the PC update (one possibility)}
+\begin{tikzpicture}[circuit logic]
+    \tikzset{
+        note/.style={align=left,inner sep=0.5mm},
+        note border/.style={draw=red, ultra thick},
+        hiliteFill/.style={fill=red!15},
+        hiliteCircuit/.style={draw=red,very thick},
+    }
+    \node[hReg={\fontsize{9}{10}\selectfont PC},minimum height=1.5cm,fill=yellow] (pc) {};
+    \node[anchor=west,font=\small] (to instr mem) at ([xshift=7cm]pc.east) { to instr. mem };
+    \begin{visibleenv}<1-3>
+        \draw[a] (pc.east) -- (to instr mem);
+    \end{visibleenv}
+    \node[anchor=north west,logicFill,font=\small,inner sep=1mm] (plus instr len) at ([xshift=2.5cm,yshift=-1.2cm]pc.south west) {
+        + instr. length
+    };
+    \begin{visibleenv}<1-3>
+    \draw[a] (pc.east) -| (plus instr len.north);
+    \end{visibleenv}
+    \begin{visibleenv}<1>
+        \draw[a,alt=<1>{red}] (plus instr len.west) -| ([xshift=-1cm]pc.west)  -- (pc.west);
+    \end{visibleenv}
+
+    \begin{visibleenv}<1->
+        \node[note,anchor=south west,alt=<1>{hiliteFill}] (note1) at ([xshift=-3cm,yshift=4.5cm]pc.north west) {
+            (1) normal case: PC $\leftarrow$ PC + instr len
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<2->
+        \node[note,anchor=north west,alt=<2>{hiliteFill}] (note2) at (note1.south west) {
+            (2) immediate: call/jmp, and \textit{prediction} for cond. jumps
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+        \node[note,anchor=north west,alt=<3>{hiliteFill}] (note3) at (note2.south west) {
+            (3) repeat previous PC for stalls (load/use hazard, halt, ret?)
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<4->
+        \node[note,anchor=north west,alt=<4>{hiliteFill}] (note4) at (note3.south west) {
+            (4) correct for misprediction of conditional jump
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \node[note,anchor=north west,alt=<5>{hiliteFill}] (note5) at (note4.south west) {
+            (5) correct for missing return address for \texttt{ret}
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<2->
+        \node[anchor=south west,align=right,font=\small] (immed) at ([yshift=1.9cm]to instr mem.north west) {
+            immediate value
+        };
+        \node[alt=<2>{hiliteCircuit},anchor=output,mux,inputs={nnn},minimum height=2cm,
+              logicFill,font=\small] (beforePcMux) at ([xshift=-1cm]pc.east) {MUX};
+        \draw[a,alt=<2>{hiliteCircuit}] (immed) -| ([xshift=-1cm]beforePcMux.input 1) -- (beforePcMux.input 1);
+        \draw[a] (plus instr len.west) -| ([xshift=-1cm]beforePcMux.input 2) -- (beforePcMux.input 2);
+        \draw[a,alt=<2>{hiliteCircuit}] (beforePcMux.output) -- (pc.west);
+        \node[inner sep=0mm,
+              fit={
+                  ([yshift=-2.25mm,xshift=-3mm]pc.south)
+                  ([yshift=-3.5mm,xshift=3mm]pc.south)
+              },cross out,alt=<2>{draw=red}{draw=black},ultra thick] {};
+        \node[font=\fontsize{9}{10}\selectfont,anchor=north] at ([yshift=-3.5mm]pc.south) {predicted PC};
+    \end{visibleenv}
+    \begin{visibleenv}<2>
+        \draw[a,hiliteCircuit] (beforePcMux.input 1) -- (beforePcMux.output);
+    \end{visibleenv}
+    \begin{visibleenv}<3>
+        \draw[a,alt=<3>{hiliteCircuit}] (pc.east) -- ++(1.5cm, 0cm) |- ([yshift=-1cm]pc.south) 
+            -| ([xshift=-.5cm]beforePcMux.input 3) -- (beforePcMux.input 3);
+    \end{visibleenv}
+    \begin{visibleenv}<3>
+        \draw[a,hiliteCircuit] (beforePcMux.input 3) -- (beforePcMux.output) -- (pc.west);
+    \end{visibleenv}
+    \begin{visibleenv}<4->
+        \node[alt=<4>{hiliteCircuit},anchor=input 3,mux,inputs={nnn},minimum height=1.5cm,
+            logicFill,font=\scriptsize] (afterPcMux) at([xshift=1cm]pc.east) {MUX};
+        \draw[a] (pc.east) -- (afterPcMux.input 3);
+        \draw[a] (afterPcMux.output) -| (plus instr len.north);
+        \draw[a] (afterPcMux.output) -| (to instr mem.west -| plus instr len.north) -- (to instr mem.west);
+        \draw[a] (afterPcMux.output) -- ++(.5cm, 0cm) |- ([yshift=-1cm]pc.south) 
+            -| ([xshift=-.5cm]beforePcMux.input 3) -- (beforePcMux.input 3);
+        \node[anchor=south west,align=right,font=\small] (cond jump correct) at ([yshift=0.6cm]to instr mem.north west) {
+            next PC from cond. jump
+        };
+        \draw[a,alt=<4>{hiliteCircuit}] (cond jump correct.west) -| ([xshift=-.4cm]afterPcMux.input 1) --
+            (afterPcMux.input 1);
+    \end{visibleenv}
+    \begin{visibleenv}<4>
+        \draw[a,hiliteCircuit] (afterPcMux.input 1) -- (afterPcMux.output);
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \node[anchor=south west,align=right,font=\small] (ret correct) at ([yshift=1.2cm]to instr mem.north west) {
+            return address from ret
+        };
+        \draw[a,alt=<5>{hiliteCircuit}] (ret correct.west) -| ([xshift=-.8cm]afterPcMux.input 2) --
+            (afterPcMux.input 2);
+    \end{visibleenv}
+    \begin{visibleenv}<5>
+        \draw[a,hiliteCircuit] (afterPcMux.input 2) -- (afterPcMux.output);
+    \end{visibleenv}
+    \begin{visibleenv}<6>
+        \tikzset{
+            from mark/.style={fill={#1},draw=black,thick,inner sep=.5mm,font=\small}
+        }
+        \node[from mark=yellow,anchor=east] at ([xshift=-.5cm]immed.west) {via instr. mem};
+        \node[from mark={rgb:green,3;blue,3;white,5},anchor=east] at ([xshift=-.5cm]cond jump correct.west) {via execute/memory pipeline regs};
+        \node[from mark={rgb:blue,3;violet,3;white,5},anchor=east] at ([xshift=-.5cm]ret correct.west) {via memory/writeback pipeline regs};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{PC update overview}
+    \begin{itemize}
+    \item predict based on instruction length + immediate
+    \item override prediction with stalling sometimes
+    \item correct when prediction is wrong just before fetching
+        \begin{itemize}
+        \item retrieve corrections from pipeline register outputs for jCC/ret instruction
+        \end{itemize}
+    \vspace{.5cm}
+    \item above is what textbook does
+    \item alternative: could instead correct prediction just before setting PC register
+        \begin{itemize}
+        \item retrieve corrections into PC cycle before corrections used
+        \item moves logic from beginning-of-fetch to end-of-previous-fetch
+        \end{itemize}
+    \item {\small I think this is more intuitive, but consistency with textbook is less confusing\ldots}
+    \end{itemize}
+\end{frame}

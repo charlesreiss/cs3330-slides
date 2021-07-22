@@ -1,0 +1,21 @@
+
+\begin{frame}[fragile,label=imem]{instruction memory}
+    \begin{tikzpicture}
+        \node[mem] (imem) {Instr. \\ Mem.};
+        \coordinate (imemData) at (imem.east);
+        \coordinate (imemAddr) at (imem.west);
+        \draw[thick,-latex] (imemData) -- +(.5cm,0cm) node [font=\small,right] { data (HCL: \texttt{i10bytes}) };
+        \draw[thick,latex-] (imemAddr) -- +(-.3cm,0cm) node [font=\small,left] { address (HCL: \texttt{pc}) };
+        \begin{scope}[shift={($(imem.south east) + (-1, -3)$)}] 
+            \node[anchor=east,font=\small] at (0,-.25) {address input};
+            \fill[color=red!80!black] (0.1, 0) rectangle (2.0, -.5);
+            \fill[pattern=north west lines] (0.0, -.6) rectangle (0.9, -1.1);
+            \fill[color=blue!80!black] (0.9, -.6) rectangle (2.0, -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {data output};
+            \draw[thin,-latex] (0.0, -1.3) -- (1.5, -1.3) node[right,font=\scriptsize] {time};
+        \end{scope}
+
+    \end{tikzpicture}
+\end{frame}
+
+

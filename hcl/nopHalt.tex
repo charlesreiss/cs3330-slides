@@ -1,0 +1,53 @@
+% FIXME: example output
+
+\tikzset{
+    pinOn/.style={
+        pin edge={-,thick,visible on=#1},
+        visible on=#1,
+    },
+}
+
+\begin{frame}[fragile,label=nopHltCPU]{nop/halt CPU}
+\begin{tikzpicture}[circuit logic US]
+        \tikzset{
+            hiOn/.style={alt=#1{draw=red,ultra thick}{}},
+        }
+        \node[hRegSmall=thePc,pcStyle] (pc) {};
+        \node[mem,right=1.5cm of pc,font=\scriptsize] (imem) {Instr. \\ Mem.};
+        \node[draw,fill=blue!20] (add1) at ([yshift=-2cm,xshift=-.25cm]pc.north) { add 1 };
+
+        \draw[a] (pc.east) -- (imem.west);
+        \draw[a] (pc.east) -- ++(.75cm,0cm) |- (add1.east);
+        \draw[a] (add1.west) -| ([xshift=-1cm]pc.west) -- node[near end,pin={[pinOn=<0>]west:valP}] {} (pc.west);
+        \coordinate (textLoc)  at ([yshift=-.1cm,xshift=-1cm]add1.south west);
+        
+        \node[hRegSmall=Stat,anchor=north] (Stat) at ([xshift=6cm,yshift=.5cm]add1) {};
+        \node[draw,mux,inputs=nnn,minimum height=1cm,hiOn=<2>,label={[font=\scriptsize,align=center]center:M\\U\\X}] (statMux) at ([xshift=-1cm]Stat.west) {~};
+        \draw[bR] (statMux.input 1) -- ++(-.5cm,0cm) node[left,font=\tt\scriptsize] {STAT\_AOK};
+        \draw[bR] (statMux.input 2) -- ++(-.5cm,0cm) node[left,font=\tt\scriptsize] {STAT\_HLT};
+        \draw[bR] (statMux.input 3) -- ++(-.5cm,0cm) node[left,font=\tt\scriptsize] {STAT\_INS};
+        \draw[b] (statMux.output) -- (Stat.west);
+
+        \node[draw,fill=blue!20,font=\small,hiOn=<3>] (extractOp) at (statMux |- imem.west) { extract opcode };
+        \draw[a] (imem.east) -- (extractOp.west);
+        \draw[b] (extractOp.south -| statMux.north) -- (statMux.north);
+
+        \coordinate (textLoc)  at ([yshift=-.1cm,xshift=-1cm]add1.south west);
+\begin{scope}[every node/.style={font=\fontsize{9}{10}\selectfont\tt,align=left,anchor=north west,inner sep=.25mm}]
+\begin{visibleenv}<4->
+\node[at={(textLoc)}] (registerDecl) {
+{\bfseries register} \textcolor{blue!80!black}{p}\textcolor{green!60!black}{P} \{ \\
+\hspace{.5cm} thePc : 64 = 0; \\
+\} \\
+p\_thePc = P\_thePc + 1; \\
+pc = P\_thePc; \\
+Stat = [ \\
+\hspace{.5cm} \myemph<5>{i10bytes[4..8]} == NOP : STAT\_AOK; \\
+\hspace{.5cm} \myemph<5>{i10bytes[4..8]} == HALT : STAT\_HLT; \\
+\hspace{.5cm} \myemph<6>{1} : STAT\_INS; // {\normalfont\textit{(default case)}} \\
+];
+};
+\end{visibleenv}
+\end{scope}
+\end{tikzpicture}
+\end{frame}

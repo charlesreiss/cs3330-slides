@@ -1,0 +1,63 @@
+\providecommand{\nopJmpSetup}{
+    \tikzset{
+        dmemNorm/.style={visible on=<0|handout:0>},
+        ccsNorm/.style={visible on=<0|handout:0>},
+        isStat/.style={visible on=<0|handout:0>},
+        isStatReg/.style={visible on=<0|handout:0>},
+        instrRegsPre/.style={visible on=<0|handout:0>},
+        regNorm/.style={visible on=<0|handout:0>},
+        regNormLabel/.style={visible on=<0|handout:0>},
+        imemPcPre/.style={visible on=<1|handout:1>},
+        regPre/.style={visible on=<0|handout:0>},
+        hiOver/.style={opacity=0.2,fill=green},
+        bookLabel/.style={color=red!60!black,font=\small\bfseries,outer sep=0pt,inner sep=1pt,fill=white},
+        dest wire/.style={},
+        plus one wire/.style={},
+        pc mux/.style={},
+    }
+}
+\providecommand{\nopJmpBase}{
+    \node[hRegSmall=PC,pcStyle] (pc) {};
+    \node[mem,right=2.cm of pc,font=\scriptsize] (imem) {Instr. \\ Mem.};
+    \coordinate (imemData) at (imem.east);
+    \coordinate (imemAddr) at (imem.west);
+    \coordinate (beforePC) at ([xshift=-1cm]pc);
+    \draw[a] (pc.east) -- (imemAddr);
+    \node[logicBlock,right=.5cm of imemData] (split) {split};
+    \draw[a] (imemData) -- (split);
+}
+\providecommand{\nopJmpStat}{
+    \begin{pgfonlayer}{fg}
+        \draw[b] ([yshift=-.1cm]split.east) -| ++ (0.2cm, -2cm) node[logicBlock,below,font=\small,align=center] {{\tt Stat} \\ logic} node[pos=0.7,fill=white,inner sep=0.2mm,font=\tt\scriptsize] {icode};
+    \end{pgfonlayer}
+}
+\providecommand{\nopJmpStatSmall}{
+    \draw[b] ([yshift=-.1cm]split.east) -| ++ (0.2cm, -1.5cm) node[logicBlock,below,font=\tiny,align=center] {{\tt Stat} \\ logic};
+}
+\providecommand{\nopJmpMux}{
+        \node[mux,minimum height=1.2cm,minimum width=.65cm,inputs={nn},info={center:\scriptsize MUX},right=2cm of split,logicFill,pc mux] (nextPCMux) {~};
+}
+\providecommand{\nopJmpMuxSelect}{
+        \node[logicBlock,below right=1.2cm and .6cm of split,anchor=west,align=left,font=\small] (testJump) {0 if nop \\ 1 if jmp};
+        \draw[b] (testJump.east) -| (nextPCMux.select);
+        \draw[b] ([yshift=-.1cm]split.east) -- ++ (0.2cm,0cm) |- (testJump)
+            node[inner sep=0.5pt,outer sep=1pt,near start,below,fill=white,font=\scriptsize] (opcodeLabel) { \tt icode };
+        \draw[a,dest wire] ([yshift=.1cm]split.east) -- ++(0.4cm,0cm) |- (nextPCMux.input 2)
+            node[inner sep=0pt,outer sep=1pt,near end,fill=white,font=\scriptsize] (destLabel){ dest };
+}
+\providecommand{\nopJmpNopOnlyPlus}{
+    \node[logicBlock,anchor=north,font=\small,align=center] (pcPlus) at ([yshift=-1cm]pc.south) {+ 1 \\ {\footnotesize (nop size)}};
+    \draw[a] (pc.east) -- ++ (1cm, 0cm) |- (pcPlus.east);
+    \draw[a] (pcPlus.west) -| (beforePC) -- (pc.west);
+}
+\providecommand{\nopJmpNopPlusPre}{
+    \node[plus one wire,logicBlock,above right=.5cm and -.5cm of imem,font=\small] (pcPlus) {+ 1 {\footnotesize (nop size)}};
+    \draw[plus one wire,a] (pc.east) -- ++ (1cm, 0cm) |- (pcPlus.west);
+}
+\providecommand{\nopJmpNopPlusPost}{
+    \draw[plus one wire,a] (pcPlus.east) -- ++ (1cm, 0cm) |- (nextPCMux.input 1);
+    \draw[a] (nextPCMux.output) -| ++(.5cm, 2cm) -| (beforePC) -- (pc.west);
+}
+\providecommand{\nopJmpNopPlusPostNoMux}{
+    \draw[plus one wire,a] (pcPlus.east) -- ++(.5cm, 0cm) |- ([yshift=2cm]split.center) -| (beforePC) -- (pc.west);
+}

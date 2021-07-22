@@ -1,0 +1,29 @@
+\begin{frame}{synchronous versus asynchronous}
+\begin{itemize}
+\item exceptions: OS gets control --- two kinds of ways
+    \vspace{.5cm}
+\item \myemph{synchronous} --- triggered by a particular instruction
+    \begin{itemize}
+        \item \myemph{traps}: program triggered transfer (``system call'')
+        \item \myemph{faults}: something went wrong 
+            \begin{itemize}
+            \item memory not in address space (``Segmentation fault'')
+            \item privileged instruction
+            \item divide by zero
+            \item invalid instruction
+            \end{itemize}
+    \end{itemize}
+\item \myemph{asynchronous} --- comes from outside the program
+    \begin{itemize}
+    \item \myemph{interrupt}: device triggered event
+        \begin{itemize}
+        \item timer expired
+        \item key pressed
+        \item hard disk input ready
+        \end{itemize}
+    \item \myemph{abort}: hardware broke
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+

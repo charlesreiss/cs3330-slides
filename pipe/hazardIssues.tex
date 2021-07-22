@@ -1,0 +1,29 @@
+\begin{frame}<1>[fragile,label=stallCosts]{stalling costs}
+    \begin{itemize}
+    \item with only stalling:
+    \item extra 3 cycles (total 4) for every {\tt ret}\tikzmark{forRet}
+    \item extra 2 cycles (total 3) for conditional jmp\tikzmark{cJmp}
+    \item up to 3 extra cycles for data dependencies\tikzmark{data}
+        \vspace{.5cm}
+    \item<2-> can we do better?
+    \end{itemize}
+
+    \begin{tikzpicture}[overlay,remember picture]
+        \begin{visibleenv}<3>
+            \node[my callout=forRet,anchor=west,align=left] at ([xshift=-1cm,yshift=-2cm]pic cs:forRet) {
+                can't easily read memory early \\
+                might be written in previous instruction
+            };
+        \end{visibleenv}
+        \begin{visibleenv}<4>
+            \node[my callout=cJmp,anchor=west] at ([xshift=1cm,yshift=0.5cm]pic cs:cJmp) {
+                trick: guess and check
+            };
+        \end{visibleenv}
+        \begin{visibleenv}<5>
+            \node[my callout=data,anchor=west] at ([xshift=-4cm,yshift=-0.5cm]pic cs:data) {
+                trick: use values waiting to get to register file
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}[fragile,label=StagesAndTime]{stages and time}
+    \begin{itemize}
+        \item {\small fetch / decode / execute / memory / write back / PC update}
+        \item \myemph{Order} when these events happen \lstinline|pushq %rax| instruction:
+            \begin{enumerate}
+                \item instruction read
+                \item memory changes
+                \item \lstinline|%rsp| changes
+                \item PC changes
+            \end{enumerate}
+        \item Hint: recall how registers, register files, memory works
+        \vspace{-.1cm}
+        \item\begin{tabular}{ll}
+            \textbf{a.} & 1; then 2, 3, and 4 in any order \\
+            \textbf{b.} & 1; then 2, 3, and 4 at almost the same time \\
+            \textbf{c.} & 1; then 2; then 3; then 4 \\
+            \textbf{d.} & 1; then 3; then 2; then 4 \\
+            \textbf{e.} & 1; then 2; then 3 and 4 at almost the same time \\
+            \textbf{f.} & something else \\
+        \end{tabular}
+    \end{itemize} 
+\end{frame}
+

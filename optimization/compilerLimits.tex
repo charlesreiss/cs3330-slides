@@ -1,0 +1,19 @@
+\begin{frame}<1>[fragile,label=compileLimits]{compiler limitations}
+    \begin{itemize}
+        \item \myemph<2>{needs to generate code that does the same thing}\ldots
+            \begin{itemize}
+                \item \ldots even in corner cases that ``obviously don't matter''
+            \end{itemize}
+        \item \myemph<3,4>{often doesn't `look into' a method}
+            \begin{itemize}
+                \item needs to assume it might do anything
+            \end{itemize}
+        \item \myemph<4>{can't predict what inputs/values will be}
+            \begin{itemize}
+                \item e.g. lots of loop iterations or few?
+            \end{itemize}
+        \item \myemph<3,4>{can't understand code size versus speed tradeoffs}
+    \end{itemize}
+\end{frame}
+
+

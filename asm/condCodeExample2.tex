@@ -1,0 +1,16 @@
+\begin{frame}<1>[fragile,label=ccEx3]{condition codes example: no cmp (3)}
+\begin{lstlisting}[language=myasm]
+movq $-10, %rax  // rax <- (-10)
+movq $20, %rbx   // rbx <- 20
+subq %rax, %rbx  // rbx <- rbx - rax = 30
+jle  foo // not taken, %rbx - %rax > 0
+\end{lstlisting}
+\alt<2->{SF = 0, ZF = 0 (not negative, not zero)}{~}
+\begin{lstlisting}[language=myasm]
+movq $20, %rbx   // rbx <- 20
+addq $-20, %rbx  // rbx <- rbx + (-20) = 0
+je   foo         // taken, result is 0
+                 // x - y = 0 -> x = y
+\end{lstlisting}
+\alt<2->{SF = 0, ZF = 1 (not negative, is zero)}{~}
+\end{frame}

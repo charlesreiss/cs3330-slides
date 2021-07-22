@@ -1,0 +1,179 @@
+\begin{frame}{times three circuit}
+\countStyles
+\circuitStyles
+\begin{tikzpicture}
+\node[one] (aInput) {$A$};
+\coordinate (aInputSplit) at ([xshift=1cm]aInput);%
+\draw[one,aN] (aInput.east) -- (aInputSplit);
+\node[add,text height=.1cm,inner sep=0cm,outer sep=0cm,font=\small,anchor=west] (alu1) at ([xshift=1cm]aInputSplit.east) {ADD};
+\draw[one,a] (aInputSplit) |- (alu1.-130);
+\draw[one,a] (aInputSplit) |- (alu1.130);
+\node[add,text height=.1cm,inner sep=0cm,outer sep=0cm,font=\small,anchor=130] (alu2) at ([xshift=3cm]alu1.east) {ADD};
+\draw[two,a] (alu1.east) -- (alu2.130) node[midway,fill=white]{$2\times A$};
+\draw[one,a] (aInputSplit) |- (alu2.-130);
+\draw[three,a] (alu2.east) -- ++(1cm,0) node[right] {$3 \times A$};
+
+\coordinate (timelineBase) at ($(aInput.south)+(1.5cm,-3cm)$);
+\begin{scope}[shift={(timelineBase)}]
+    \begin{visibleenv}<2->
+        \begin{scope}[every node/.style={anchor=north east,inner sep=0pt,inner xsep=5pt}]
+            \node[one] at (0,0) {$A$};
+            \node at (0,-0.5) {add $A+A$};
+            \node[two] at (0,-1) {$2\times A$};
+            \node at (0,-1.5) {add $2A+A$};
+            \node[three] at (0,-2.0){$3\times A$};
+        \end{scope}
+        \begin{scope}[
+            every node/.style={
+                anchor=north west,
+                pos=0.0,
+                xshift=3mm,
+                inner sep=1pt,
+                outer sep=0pt
+            },
+            indet/.style={
+                pattern=north west lines,pattern color=black!50
+            }
+        ]
+            \fill[one] (0,0) rectangle (8, -0.4) node {\textcolor{white}{7}};
+            \fill[pattern=crosshatch,oneX] (0,-0.5) rectangle (3, -0.9);
+            \fill[indet] (0,-1.0) rectangle (3, -1.4);
+            \fill[two] (3,-1.0) rectangle (8, -1.4) node {\textcolor{white}{14}};
+            \fill[pattern=crosshatch,twoX] (3,-1.5) rectangle (6, -1.9);
+            \fill[indet] (0,-2.0) rectangle (6, -2.4);
+            \fill[three] (6,-2.0) rectangle (8, -2.4) node {\textcolor{white}{21}};
+        \end{scope}
+        \begin{scope}[
+            every node/.style={font=\scriptsize,anchor=south,append after command={
+        [very thick] ($(\tikzlastnode.south) + (0cm,0mm)$)edge($(\tikzlastnode.south) + (0cm,1mm)$)
+            }}]
+            \node at (0,0) {0 ps};
+            \node at (3,0) {50 ps};
+            \node at (6,0) {100 ps};
+        \end{scope}
+    \end{visibleenv}
+
+    \begin{visibleenv}<3->
+        \draw[red,very thick] (0,0) coordinate (startMark) -- ++(0,-.6cm);
+        \draw[red,very thick] (6,0.0) coordinate (endMark) -- ++(0,-2.5cm);
+        \draw[red,very thick,Latex-Latex] (startMark) -- (endMark) node [midway,above=1mm,black,xshift=-2cm,fill=white,inner sep=1pt] (lat) {100 ps latency};
+        \node[fill=white,right=0cm of lat,inner sep=1pt] {$\implies$ 10 results/ns throughput};
+    \end{visibleenv}
+\end{scope}
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{times three and repeat}
+\newcommand{\picoMarks}{
+        \begin{scope}[
+            every node/.style={font=\scriptsize,anchor=south,append after command={
+        [very thick] ($(\tikzlastnode.south) + (0cm,0mm)$)edge($(\tikzlastnode.south) + (0cm,1mm)$)
+            }}]
+            \node at (0,0) {0 ps};
+            \node at (2,0) {100 ps};
+            \node at (4,0) {200 ps};
+            \node at (6,0) {300 ps};
+            \node at (8,0) {400 ps};
+            \node at (10,0) {500 ps};
+        \end{scope}
+}
+\begin{tikzpicture}
+\tikzset{
+        one/.style={blue!80!black},
+        two/.style={green!60!black},
+        three/.style={violet!80!black},
+        oneA/.style={blue!80!black},
+        twoA/.style={green!60!black},
+        threeA/.style={violet!80!black},
+        oneXA/.style={pattern color=blue!80!black},
+        twoXA/.style={pattern color=green!60!black},
+        threeXA/.style={pattern color=violet!80!black},
+        oneB/.style={red!80!black},
+        twoB/.style={orange!60!black},
+        threeB/.style={cyan!80!black},
+        oneXB/.style={pattern color=red!80!black},
+        twoXB/.style={pattern color=orange!60!black},
+        threeXB/.style={pattern color=cyan!80!black},
+}
+\coordinate (timelineBase) at (0,0);
+\coordinate (pipeTimelineBase) at (0,-3.5);
+\begin{scope}[shift={(timelineBase)}]
+    \begin{visibleenv}<1->
+        \begin{scope}[every node/.style={anchor=north east,inner sep=0pt,inner xsep=5pt}]
+            \node[one] at (0,0) {$A$};
+            \node at (0,-.5) {add $A+A$};
+            \node[two] at (0,-1) {$2\times A$};
+            \node at (0,-1.5) {add $2A+A$};
+            \node[three] at (0,-2.){$3\times A$};
+        \end{scope}
+        \begin{scope}[
+            every node/.style={
+                anchor=north west,
+                pos=0.0,
+                xshift=0mm,
+                inner sep=1pt,
+                outer sep=0pt
+            },
+            indet/.style={
+                pattern=north west lines,pattern color=black!75
+            }
+        ]
+            \foreach \cnt/\num/\var in {0/7/A,1/17/B,2/4/A,3/1/B,4/23/A} {
+                \pgfmathsetmacro{\base}{\cnt*2.01}
+                \fill[one\var] ({\base+0},0) rectangle ({\base+2.01},-0.4) node {\textcolor{white}{\num}};
+                \fill[pattern=crosshatch,twoX\var] ({\base},-0.5) rectangle ({\base+1.},-0.9); % node {\textcolor{black}{\scriptsize\num+\num}};
+                \fill[indet] ({\base+0},-1) rectangle ({\base+1.0},-1.4);
+                \pgfmathtruncatemacro{\numTwo}{\num+\num}
+                \fill[two\var] ({\base+1.0},-1) rectangle ({\base+2.01},-1.4) node {\textcolor{white}{\numTwo}};
+                \fill[indet] ({\base+0},-2.0) rectangle ({\base+2.0},-2.4);
+                \fill[pattern=crosshatch,threeX\var] ({\base+1},-1.5) rectangle ({\base+2},-1.9); % node {\textcolor{black}{\scriptsize\numTwo+\num}};
+                \begin{pgfonlayer}{fg}
+                \fill[three\var] ({\base+1.95},-2.0) rectangle ({\base+2.05},-2.4); 
+                    % node {\textcolor{white}{\num}};
+                \end{pgfonlayer}{fg}
+            }
+        \end{scope}
+        \picoMarks
+    \end{visibleenv}
+\end{scope}
+
+\begin{scope}[shift={(pipeTimelineBase)}]
+    \begin{visibleenv}<2->
+        \begin{scope}[every node/.style={anchor=north east,inner sep=0pt,inner xsep=5pt}]
+            \node[one] at (0,0) {$A$};
+            \node at (0,-.5) {add $A+A$};
+            \node[two] at (0,-1) {$2\times A$};
+            \node at (0,-1.5) {add $2A+A$};
+            \node[three] at (0,-2.){$3\times A$};
+        \end{scope}
+        \begin{scope}[
+            every node/.style={
+                anchor=north west,
+                pos=0.0,
+                xshift=0mm,
+                inner sep=1pt,
+                outer sep=0pt
+            },
+            indet/.style={
+                pattern=north west lines,pattern color=black!75
+            }
+        ]
+            \foreach \cnt/\num/\var in {0/7/A,1/17/B,2/4/A,3/1/B,4/23/A} {
+                \pgfmathsetmacro{\base}{\cnt*1.1}
+                \fill[one\var] ({\base+0},0) rectangle ({\base+1.1},-0.4) node {\textcolor{white}{\num}};
+                \fill[pattern=crosshatch,twoX\var] ({\base+0.05},-0.5) rectangle ({\base+1.05},-0.9); % node {\textcolor{black}{\scriptsize\num+\num}};
+                \pgfmathtruncatemacro{\numTwo}{\num+\num}
+                \fill[two\var] ({\base+1.1},-1.0) rectangle ({\base+2.2},-1.4) node {\textcolor{white}{\numTwo}};
+                \fill[pattern=crosshatch,threeX\var] ({\base+1.15},-1.5) rectangle ({\base+2.15},-1.9); % node {\textcolor{black}{\scriptsize\numTwo+\num}};
+                \pgfmathtruncatemacro{\numThree}{\num+\num+\num}
+                \fill[three\var] ({\base+2.2},-2.0) rectangle ({\base+3.3},-2.4) node {\textcolor{white}{\numThree}};
+            }
+        \end{scope}
+        \picoMarks
+    \end{visibleenv}
+\end{scope}
+
+\end{tikzpicture}
+\end{frame}
+

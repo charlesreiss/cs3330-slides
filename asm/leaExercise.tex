@@ -1,0 +1,17 @@
+
+\begin{frame}[fragile,label=usingLEATricks]{exercise: what is this function?}
+\begin{asmcodeNL}
+mystery:
+    leal 0(,%rdi,8), %eax
+    subl %edi, %eax
+    ret
+\end{asmcodeNL}
+\begin{ccodeNL}
+int mystery(int arg) { return ...; }
+\end{ccodeNL}
+\begin{tabular}{ll}
+A. {\tt arg * 9}  & D. {\tt -arg * 7} \\
+B. {\tt -arg * 9} & E. \maybeEmph<2>{none of these} \\
+C. {\tt arg * 8}  & F. it has a different prototype \\
+\end{tabular}
+\end{frame}

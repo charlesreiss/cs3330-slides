@@ -1,0 +1,48 @@
+\usetikzlibrary{arrows.meta,calc,patterns}
+
+\begin{frame}[label=timesThreePipe]{pipelined times three}
+\countStyles
+\circuitStyles
+\begin{tikzpicture}
+\timesThreePipeStuff
+\coordinate (timelineBase) at ($(aInput.south)+(2cm,-3cm)$);
+\begin{scope}[shift={(timelineBase)}]
+    \begin{visibleenv}<2->
+        \begin{scope}[every node/.style={anchor=north east,inner sep=0pt,inner xsep=5pt}]
+            % TODO: Add clock signal
+            \node[one] at (0,0) {$A$ ($t+2$)};
+            \node[one] at (0,-0.5) {$A$ ($t+1$)};
+            \node[two] at (0,-1) {$2\times A$ ($t+1$)};
+            \node[three] at (0,-1.5){$3\times A$ ($t+0$)};
+        \end{scope}
+    \end{visibleenv}
+    \begin{scope}[
+        every node/.style={
+            anchor=north west,
+            pos=0.0,
+            xshift=3mm,
+            inner sep=1pt,
+            outer sep=0pt
+        },
+        indet/.style={
+            pattern=north west lines,pattern color=black!50
+        }
+    ]
+        \begin{visibleenv}<2->
+            \fill[oneA] (0,0) rectangle (3, -0.4) node {\textcolor{white}{7}};
+            \fill[oneA] (3,-0.5) rectangle (6, -0.9) node {\textcolor{white}{7}};
+            \fill[twoA] (3,-1.0) rectangle (6, -1.4) node {\textcolor{white}{14}};
+            \fill[threeA] (6,-1.5) rectangle (8, -1.9) node {\textcolor{white}{21}};
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+            \fill[oneB] (3,0) rectangle (6, -0.4) node {\textcolor{white}{17}};
+            \fill[oneB] (6,-0.5) rectangle (8, -0.9) node {\textcolor{white}{17}};
+            \fill[twoB] (6,-1.0) rectangle (8, -1.4) node {\textcolor{white}{34}};
+            %\fill[threeA] (6,-1.5) rectangle (8, -1.9) node {\textcolor{white}{21}};
+        \end{visibleenv}
+    \end{scope}
+
+\end{scope}
+\end{tikzpicture}
+\end{frame}
+

@@ -1,0 +1,30 @@
+\input{../seq/nopJmpLib}
+\begin{frame}[fragile,label=nopJmpCPU]{nop/halt $\rightarrow$ nop/jmp CPU}
+    \begin{tikzpicture}[circuit logic US]
+        \nopJmpSetup
+        \nopJmpBase
+        \nopJmpStat
+        \begin{visibleenv}<3->
+            \nopJmpMux
+        \end{visibleenv}
+        \begin{visibleenv}<3>
+            \draw[aR,red] (nextPCMux.input 2) -| ++(-.5cm,-1cm) node[below,font=\scriptsize] {jmp PC?};
+        \end{visibleenv}
+        \begin{visibleenv}<4->
+            \nopJmpMuxSelect
+        \end{visibleenv}
+        \begin{visibleenv}<1>
+            \nopJmpNopOnlyPlus
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+            \nopJmpNopPlusPre
+        \end{visibleenv}
+        \begin{visibleenv}<2>
+            \nopJmpNopPlusPostNoMux
+            \draw[a] (pcPlus.east) -- ++(.5cm, 0cm) |- ([yshift=2cm]split.center) -| (beforePC) -- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \nopJmpNopPlusPost
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

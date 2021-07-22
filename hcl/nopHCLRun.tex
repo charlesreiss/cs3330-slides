@@ -1,0 +1,96 @@
+\begin{frame}{nop CPU: running}
+    \begin{itemize}
+    \item need a program in memory
+        \begin{itemize}
+        \item .yo file
+        \end{itemize}
+    \item {\tt tools/yas} --- convert {\tt .ys}  to {\tt .yo}
+    \item {\tt tools/yis} --- reference interpreter for {\tt .yo} files
+        \begin{itemize}
+        \item if your processor doesn't do the same thing\ldots
+        \end{itemize}
+    \item can build tools by running {\tt make}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=makeProgram]{nop CPU: creating a program}
+    \begin{itemize}
+    \item create assemby file: nops.ys:
+\begin{Verbatim}
+    nop
+    nop
+    nop
+    nop
+    nop
+\end{Verbatim}
+    \item assemble using {\tt tools/yas nops.ys} or {\tt make nops.yo}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=nopYo]{nop.yo}
+    \begin{itemize}
+    \item more readable/simpler than normal executables:
+\begin{Verbatim}
+0x000: 10                   | nop
+0x001: 10                   | nop
+0x002: 10                   | nop
+0x003: 10                   | nop
+0x004: 10                   | nop
+                            | 
+\end{Verbatim}
+    \item loaded into data and program memory
+    \item parts left of {\tt |} just comments
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=runSim1]{running a simulator (1)}
+    \begin{itemize}
+    \vspace{.25cm}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont]
+Usage: ./hclrs [options] HCL-FILE [YO-FILE [TIMEOUT]]
+Runs HCL_FILE on YO-FILE. If --check is specified, no YO-FILE may be supplied.
+Default timeout is 9999 cycles.
+
+Options:
+    -c, --check         check syntax only
+    -d, --debug         output wire values after each cycle and other debug
+                        output
+    -q, --quiet         only output state at the end
+    -t, --testing       do not output custom register banks (for autograding)
+    -h, --help          print this help menu
+    -i, --interactive   prompt after each cycle
+        --trace-assignments 
+                        show assignments in the order they are simulated
+        --version       print version number
+\end{Verbatim}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=runSim2]{running a simulator (2)}
+\begin{Verbatim}[fontsize=\fontsize{8}{9}\selectfont,commandchars=\\\{\}]
+$ ./hclrs nop_cpu.hcl nops.yo
++------------------- between cycles    0 and    1 ----------------------+
+| RAX:                0   RCX:                0   RDX:                0 |
+| RBX:                0   RSP:                0   RBP:                0 |
+| RSI:                0   RDI:                0   R8:                 0 |
+| R9:                 0   R10:                0   R11:                0 |
+| R12:                0   R13:                0   R14:                0 |
+| register \vemphA{pF(N) { thePc=0000000000000000 }}                             |
+| used memory:   _0 _1 _2 _3  _4 _5 _6 _7   _8 _9 _a _b  _c _d _e _f    |
+|  0x0000000_:   \vemphB{10 10 10 10  10}                                        |
++-----------------------------------------------------------------------+
+\vemphC{pc = 0x0; loaded [10 : nop]}
+....
++------------ timed out after  9999 cycles in state: -------------------+
+| RAX:                0   RCX:                0   RDX:                0 |
+| RBX:                0   RSP:                0   RBP:                0 |
+| RSI:                0   RDI:                0   R8:                 0 |
+| R9:                 0   R10:                0   R11:                0 |
+| R12:                0   R13:                0   R14:                0 |
+| register pF(N) { thePc=000000000000270f }                             |
+| used memory:   _0 _1 _2 _3  _4 _5 _6 _7   _8 _9 _a _b  _c _d _e _f    |
+|  0x0000000_:   10 10 10 10  10                                        |
++-----------------------------------------------------------------------+
+\end{Verbatim}
+\end{frame}
+

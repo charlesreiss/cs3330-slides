@@ -1,0 +1,40 @@
+\begin{frame}{using YAS}
+    \begin{itemize}
+    \item download HCLRS (we'll use it later)
+    \item extract the archive
+    \item run \texttt{make}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=exampleYs]{example.ys}
+    \begin{itemize}
+    \item example.ys:
+    \end{itemize}
+\begin{Verbatim}
+    irmovq $100, %rax
+    irmovq $1, %rcx
+    irmovq $10, %rdx
+loop:
+    subq %rdx, %rax 
+    subq %rcx, %rdx
+    jg loop
+    halt
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}[fragile,label=exmapleYo]{example.yo}
+    \begin{itemize}
+    \item run \texttt{tools/yas example.ys}
+    \item example.yo:
+    \end{itemize}
+\begin{Verbatim}
+0x000: 30f06400000000000000 |     irmovq $100, %rax
+0x00a: 30f10100000000000000 |     irmovq $1, %rcx
+0x014: 30f20a00000000000000 |     irmovq $10, %rdx
+0x01e:                      | loop:
+0x01e: 6120                 |     subq %rdx, %rax 
+0x020: 6112                 |     subq %rcx, %rdx
+0x022: 761e00000000000000   |     jg loop
+0x02b: 00                   |     halt
+\end{Verbatim}
+\end{frame}

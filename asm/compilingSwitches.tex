@@ -1,0 +1,182 @@
+\usetikzlibrary{arrows.meta,decorations.pathreplacing,matrix}
+
+\begin{frame}[fragile,label=compSw1]{compiling switches (1)}
+\begin{ccodeNL*}{fontsize=\small}
+switch (a) {
+    case 1: ...; break;   
+    case 2: ...; break;
+    ...
+    default: ...
+}
+\end{ccodeNL*}
+\lstset{
+    language=myasm,
+    style=smaller,
+    escapechar=`,
+    morekeywords=decq,
+}
+\begin{lstlisting}
+    // same as if statement?
+    cmpq $1, %rax
+    je code_for_1
+    cmpq $2, %rax
+    je code_for_2
+    cmpq $3, %rax
+    je code_for_3
+    ...
+    jmp code_for_default
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=compSw2]{compiling switches (2)}
+\begin{ccodeNL*}{fontsize=\small}
+switch (a) {
+    case 1: ...; break;
+    case 2: ...; break;
+    ...
+    case 100: ...; break;
+    default: ...
+}
+\end{ccodeNL*}
+\lstset{
+    language=myasm,
+    style=smaller,
+    escapechar=`,
+    morekeywords=decq,
+}
+\begin{lstlisting}
+    // binary search
+    cmpq $50, %rax
+    jl code_for_less_than_50
+    cmpq $75, %rax
+    jl code_for_50_to_75
+    ...
+code_for_less_than_50:
+    cmpq $25, %rax
+    jl less_than_25_cases
+    ...
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=compSw3]{compiling switches (3a)}
+\begin{ccodeNL*}{fontsize=\small}
+switch (a) {
+    case 1: ...; break;
+    case 2: ...; break;
+    ...
+    case 100: ...; break;
+    default: ...
+}
+\end{ccodeNL*}
+\lstset{
+    language=myasm,
+    style=smaller,
+    escapechar=`,
+    morekeywords={decq,.quad}
+}
+\begin{tabular}{l@{\hspace{1cm}}l}
+{\begin{lstlisting}
+// jump table
+cmpq $100, %rax
+jg code_for_default
+cmpq $1, %rax
+jl code_for_default
+jmp *table - 8(,%rax,8)
+\end{lstlisting}
+}
+    &
+{\begin{lstlisting}
+table:
+  // not instructions
+  // .quad = 64-bit (4 x 16) constant
+  .quad code_for_1
+  .quad code_for_2
+  .quad code_for_3
+  .quad code_for_4
+    ...
+\end{lstlisting}
+} 
+\end{tabular}
+\end{frame}
+
+% FIXME: visualization here
+\begin{frame}[fragile,label=compSw3b]{compiling switches (3b)}
+\begin{tikzpicture}
+\tikzset{
+    hilite table/.style={alt=<2>{fill=red!10}},
+}
+\node[font=\tt] (asm) {
+    jmp *table-8(,\%rax,8)
+};
+\node[anchor=north west,draw,font=\small,align=left] at ([xshift=1cm]asm.north east) {
+    \myemph<3>{suppose RAX = 2}, \\ \myemph<2>{\texttt{table} located at 0x12500} 
+};
+\begin{visibleenv}<2->
+\matrix[tight matrix,
+    nodes={text width=2.3cm},
+    column 1/.style={nodes={
+        draw=none,text width=3cm,align=right,font=\fontsize{9}{10}\selectfont\tt\color{blue!70!black},
+    }},
+    column 2/.style={nodes={draw=none,font=\tt\small}},
+    column 3/.style={nodes={font=\tt}},
+    anchor=north west
+] at (asm.south west){
+    \& \normalfont\bfseries address \& |[draw=none]|\normalfont\bfseries value \\
+    ~ \& \ldots \& |[draw=none]|\ldots\\
+    ~ \& 0x124F8 \& |[draw=none]| \ldots \\
+    table \& 0x12500 \& |[hilite table,alias=table top]| 0x13008 \\
+    table + 0x08 \& 0x12508 \& |[hilite table,alias=table target]| 0x130A0 \\
+    table + 0x10 \& 0x12510 \& |[hilite table]| 0x130C8 \\
+    table + 0x18 \& 0x12518 \& |[hilite table]| 0x13110 \\
+    ~ \& \ldots \& |[draw=none,alias=table bottom]|\ldots\\
+    ~ \\
+    ~ \& \ldots \& |[draw=none]|\ldots\\
+    code\_for\_1 \& 0x13008 \& \ldots \\
+    ~ \& \ldots \& |[draw=none]|\ldots\\
+    ~ \\
+    ~ \& \ldots \& |[draw=none]|\ldots\\
+    code\_for\_2 \&  0x130A0 \& |[alias=code target]|\ldots \\
+    ~ \& \ldots \& |[draw=none]|\ldots\\
+    ~ \\
+};
+\end{visibleenv}
+\begin{visibleenv}<2>
+    \draw[very thick,decorate,decoration={brace}] ([xshift=1mm]table top.north east) -- ([xshift=1mm]table bottom.south east) node[midway,right] {table --- list of code addresses};
+\end{visibleenv}
+\begin{visibleenv}<3>
+    \draw[red,very thick,Latex-,align=left] (table target.east) -- ++(1cm,0cm) node[right] { 
+        $(\text{table}-8)+\text{rax}\times8 =$ \\
+        $\text{\tt 0x124F8} + \text{\tt 0x10} = \text{\tt 0x12508}$
+    };
+\end{visibleenv}
+\begin{visibleenv}<4>
+    \draw[red,very thick,-Latex,align=left] (table target.east) -- ++(.75cm,0cm) |-
+        (code target.east) node[pos=0.25,right] {
+            pointer to machine code
+        };
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=computeJump]{computed jumps}
+\lstset{
+    language=myasm,
+    morekeywords={decq,.quad}
+}
+\begin{lstlisting}[language=myasm]
+  cmpq $100, %rax
+  jg code_for_default
+  cmpq $1, %rax
+  jl code_for_default
+  // jump to memory[table + rax * 8]
+    // table of pointers to instructions
+  jmp *table(,%rax,8)
+  // intel: jmp QWORD PTR[rax*8 + table]
+  ...
+table:
+  .quad code_for_1
+  .quad code_for_2
+  .quad code_for_3
+  ...
+\end{lstlisting}
+\end{frame}

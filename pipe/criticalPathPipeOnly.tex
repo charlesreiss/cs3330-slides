@@ -1,0 +1,42 @@
+\begin{frame}{recall: critical path}
+    \begin{itemize}
+        \item \myemph{every path} from state output to state input needs enough time
+            \begin{itemize}
+            \item output --- may change on rising edge of clock
+            \item input --- must be stable sufficiently before rising edge of clock
+            \end{itemize}
+        \vspace{.5cm}
+    \item with pipelining: \myemph{start from/end at pipeline register} (mostly)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=pipeAddQPaths]{pipelined addq paths}
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            pathLine/.style={line width=1.5pt,-{Latex[length=5pt,width=9pt]}},
+        }
+        \tikzset{pipeline regs/.style={}}
+        \pipeAddQ
+        \draw[green!30!black,pathLine,transform canvas={yshift=-.2mm,xshift=-.1mm}] (pc.east) -- ++ (.5cm, 0cm) |- (pcAdd.east) -- (pcAdd.west) --
+            ++ (-.25cm, 0cm) |- (pc.west);
+        \draw[blue!50!black,pathLine,transform canvas={yshift=.2mm,xshift=.1mm}] (pc.east) -- (imemAddr) -- (imemData) -- (split.west) -- (splitRAOut)
+            -- ++(0.125cm,0cm) |- (fdSrcA.west);
+        \draw[yellow!50!black,pathLine,transform canvas={yshift=.4mm,xshift=.2mm}] (pc.east) -- (imemAddr) -- (imemData) -- (split.west) -- (splitRBOut)
+            -- ++(0.25cm,0cm) |- (fdSrcB.west);
+        \draw[orange!80!black,pathLine,transform canvas={yshift=.2mm,xshift=.1mm}] (fdSrcB.east) -- (regSelect2) -- (regRead2) -- (deValB.west);
+        \draw[magenta!80!black,pathLine,transform canvas={yshift=.2mm,xshift=.1mm}] (deValA.east) --
+            ++ (.25cm,0cm) |- (alu.120) -- (alu.east) -- ++(.5cm,0cm) |- (ewValE.east);
+        \draw[red!80!black,pathLine,transform canvas={yshift=.2mm,xshift=.1mm}] (ewValE.west) 
+            -| ([xshift=-.5cm]regWriteIn2) -- ([xshift=1cm]regWriteIn2);
+        \node[below=1cm of imem,xshift=2cm,align=left,font=\fontsize{10}{11}\selectfont] {
+            \color{green!30!black} path 1: 80 picoseconds \\
+            \color{blue!50!black} path 2: \textbf<2>{210 picoseconds} \\
+            \color{yellow!50!black} path 3: \textbf<2>{210 picoseconds} \\
+            \color{orange!80!black} path 4: 135 picoseconds \\
+            \color{magenta!80!black} path 5: 110 picoseconds \\
+            \color{red!80!black} path 6: 135 picoseconds \\
+            \ldots \\
+            overall cycle time: \textbf<2>{210 picoseconds}
+        };
+    \end{tikzpicture}
+\end{frame}

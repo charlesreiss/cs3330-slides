@@ -1,0 +1,89 @@
+\begin{frame}{on virtual machines}
+\begin{itemize}
+    \item process can be called a `virtual machine'
+    \item programmed like a complete computer\ldots{}
+    \vspace{.5cm}
+    \item<2-> but weird interface for I/O, memory --- system calls
+    \item<2-> can we make that \myemph{closer to the real machine}?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{trap-and-emulate}
+\begin{itemize}
+    \item privileged instructions trigger a \myemph{protection fault}
+    \item we assume operating system \myemph{crashes}
+    \vspace{.5cm}
+    \item what if OS \myemph{pretends the privileged instruction works}?
+\end{itemize}
+\end{frame}
+
+\begin{frame}<1-2>[fragile,label=trapEmWrite]{trap-and-emulate: write-to-screen}
+\lstset{
+    language=C,
+    style=small,
+    moredelim=**[is][\btHL<2|handout:2>]{@2}{@},
+    moredelim=**[is][\btHL<3|handout:3>]{@3}{@},
+    moredelim=**[is][\btHL<4|handout:4>]{@4}{@},
+}
+\begin{lstlisting}
+struct Process {
+    AddressSpace address_space;
+    SavedRegisters registers;
+};
+
+void handle_protection_fault(Process *process) {
+    // normal: would crash
+    if (@2was_write_to_screen()@) {
+        @3do_write_system_call(process);@
+        @4process->registers->pc +=@
+            @4WRITE_TO_SCREEN_LENGTH;@
+    } else {
+        ...
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=wasWriteToScreen]{was\_write\_to\_screen()}
+\lstset{
+    language=C,
+    style=small,
+}
+\begin{itemize}
+    \item how does OS know what caused protection fault?
+    \item option 1: hardware ``type'' register
+    \item option 2: check instruction:
+\begin{lstlisting}
+int opcode = (*process->registers->pc & 0xF0) >> 4;
+if (opcode == WRITE_TO_SCREEN_OPCODE) 
+   ...
+\end{lstlisting}
+\end{itemize} 
+\end{frame}
+
+\againframe<3-4>{trapEmWrite}
+
+\begin{frame}{system virtual machines}
+\begin{itemize}
+    \item turn \myemph{faults into system calls}
+    \item emulate machine that looks more like `real' machine
+    \vspace{.5cm}
+    \item what software like VirtualBox, VMWare, etc. does
+    \item more complicated than this:
+        \begin{itemize}
+        \item on x86, some privileged instructions don't cause faults
+        \item dealing with address spaces is a lot of extra work
+        \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{process VM versus system VM}
+\begin{tabular}{l|l}
+Linux process feature & real machine feature \\\hline
+files, sockets & I/O devices \\
+threads & CPU cores \\
+mmap/brk (used by malloc) & ??? \\
+signals & exceptions \\
+\end{tabular}
+\end{frame}
+

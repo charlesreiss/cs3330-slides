@@ -1,0 +1,406 @@
+\usetikzlibrary{arrows.meta,matrix}
+
+\begin{frame}{page table space exercise (1)}
+\begin{itemize}
+\item 4-level page table
+\item 512 PTEs of 8 bytes each for each page table
+\vspace{.5cm}
+\item suppose a process has exactly one page allocated
+\item how much space for page tables?
+\iftoggle{heldback}{}{
+    \item<2-> 1 page at each level (4KB each)
+    \item<2-> exactly one valid entry in each of them
+}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{page table space exercise (1)}
+\iftoggle{heldback}{}{
+\begin{tikzpicture}
+    \tikzset{
+        >=Latex,
+        used/.style={fill=green},
+        connect/.style={very thick,->},
+        tight matrix/.append style={inner sep=1mm,draw,thick,nodes=thin},
+    },
+    \matrix[tight matrix] (first) {
+        ~ \\
+        ~ \\
+        |[used,alias=firstAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of first] (second) {
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[used,alias=secondAlloc]| ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of second] (third) {
+        ~ \\
+        |[used,alias=thirdAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of third] (fourth) {
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[used,alias=fourthAlloc]| ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \draw[connect] (firstAlloc.east) -- ++(.5cm,0cm) |- (second-1-1.west);
+    \draw[connect] (secondAlloc.east) -- ++(.5cm,0cm) |- (third-1-1.west);
+    \draw[connect] (thirdAlloc.east) -- ++(.5cm,0cm) |- (fourth-1-1.west);
+    \draw[connect] (fourthAlloc) -- ++(1cm, 0cm) node[right] {the one page};
+    \node[below=.25cm of first] {1 page table};
+    \node[below=.25cm of second] {2};
+    \node[below=.25cm of third] {3};
+    \node[below=.25cm of fourth] {4};
+    \node[align=left,below=2cm of fourth] { \myemph{4 page tables} at 1 page/page table \\ plus 1 page of data \\ 5 pages total };
+\end{tikzpicture}
+}
+\end{frame}
+
+\begin{frame}{page table space exercise (2)}
+\begin{itemize}
+\item 4-level page table
+\item 512 PTEs of 8 bytes each for each page table
+\vspace{.5cm}
+\item suppose a process has exactly two pages allocated:
+    \begin{itemize}
+    \item one at address 0x0, one at address {\tt 0x20000000000}
+    \end{itemize}
+\item how much space for page tables?
+\iftoggle{heldback}{}{
+    \item<2-> 1 shared first-level PT, with two valid entries
+    \item<2-> two second-level PTs, each with one valid entry
+    \item<2-> two third-level PTs, each with one valid entry
+    \item<2-> two fourth-level PTs, each with one valid entry
+}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{page table space exercise (2)}
+\iftoggle{heldback}{}{
+\begin{tikzpicture}
+    \tikzset{
+        >=Latex,
+        used/.style={fill=green},
+        connect/.style={very thick,->},
+        tight matrix/.append style={inner sep=1mm,draw,thick,nodes=thin},
+    },
+    \matrix[tight matrix] (first) {
+        |[used,alias=firstAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=firstAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of first] (second) {
+        |[used,alias=secondAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,below=1cm of second] (secondB) {
+        |[used,alias=secondAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of second] (third) {
+        |[used,alias=thirdAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of secondB] (thirdB) {
+        |[used,alias=thirdAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of third] (fourth) {
+        |[used,alias=fourthAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of thirdB] (fourthB) {
+        |[used,alias=fourthAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \draw[connect] (firstAlloc.east) -- ++(.5cm,0cm) |- (second-1-1.west);
+    \draw[connect] (secondAlloc.east) -- ++(.5cm,0cm) |- (third-1-1.west);
+    \draw[connect] (thirdAlloc.east) -- ++(.5cm,0cm) |- (fourth-1-1.west);
+    \draw[connect] (fourthAlloc) -- ++(1cm, 0cm) node[right] {page at {\tt 0x0}};
+
+    \draw[connect] (firstAllocB.east) -- ++(.5cm,0cm) |- (secondB-1-1.west);
+    \draw[connect] (secondAllocB.east) -- ++(.5cm,0cm) |- (thirdB-1-1.west);
+    \draw[connect] (thirdAllocB.east) -- ++(.5cm,0cm) |- (fourthB-1-1.west);
+    \draw[connect] (fourthAllocB) -- ++(1cm, 0cm) node[right] {page at {\tt 0x20000000000}};
+    %\node[align=left,below=2cm of fourth] { \myemph{7 page tables} at 1 page/page table \\ plus 2 page of data \\ 9 pages total };
+\end{tikzpicture}
+}
+\end{frame}
+
+\begin{frame}{page table space exercise (3)}
+\begin{itemize}
+\item 4-level page table; each PT: 512 PTEs of 8 bytes
+\item suppose a process has 100 pages of stack, 100 pages of code+constants (contiguous)
+    \begin{itemize}\item stack and code+constants far apart\end{itemize}
+\item how much space for page tables? \only<2->{--- \textit{minimum:}}
+\iftoggle{heldback}{}{
+    \item<2-> 1 shared first-level PT, with two valid entries
+    \item<2-> two second-level PT, each with one valid entry
+    \item<2-> two third-level PT, each with one valid entry
+    \item<2-> two fourth-level PT, each with 100 valid entries
+}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{page table space exercise (3)}
+\iftoggle{heldback}{}{
+\begin{tikzpicture}
+    \tikzset{
+        >=Latex,
+        used/.style={fill=green},
+        connect/.style={very thick,->},
+        tight matrix/.append style={inner sep=1mm,draw,thick,nodes=thin},
+    },
+    \matrix[tight matrix] (first) {
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=firstAlloc]| ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=firstAllocB]| ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of first] (second) {
+        |[used,alias=secondAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,below=1cm of second] (secondB) {
+        |[used,alias=secondAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of second] (third) {
+        |[used,alias=thirdAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of secondB] (thirdB) {
+        |[used,alias=thirdAllocB]| ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of third,nodes={used}] (fourth) {
+        |[used,alias=fourthAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+        ~ \\
+        |[fill=none]| ~ \\
+        |[fill=none]| ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of thirdB,nodes={used}] (fourthB) {
+        ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+        ~ \\
+        |[fill=none]| ~ \\
+        |[fill=none]| ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+    };
+    \draw[connect] (firstAlloc.east) -- ++(.5cm,0cm) |- (second-1-1.west);
+    \draw[connect] (secondAlloc.east) -- ++(.5cm,0cm) |- (third-1-1.west);
+    \draw[connect] (thirdAlloc.east) -- ++(.5cm,0cm) |- (fourth-1-1.west);
+    \draw[connect] (fourth-1-1.east) -- ++(1cm, 0cm) node[right] {first of 100 pages of code};
+
+    \draw[connect] (firstAllocB.east) -- ++(.5cm,0cm) |- (secondB-1-1.west);
+    \draw[connect] (secondAllocB.east) -- ++(.5cm,0cm) |- (thirdB-1-1.west);
+    \draw[connect] (thirdAllocB.east) -- ++(.5cm,0cm) |- (fourthB-1-1.west);
+    \draw[connect] (fourthB-1-1.east) -- ++(1cm, 0cm) node[right] {first of 100 pages of stack};
+    %\node[align=left,below=2cm of fourth] { \myemph{7 page tables} at 1 page/page table \\ plus 2 page of data \\ 9 pages total };
+\end{tikzpicture}
+}
+\end{frame}
+
+\begin{frame}{page table space exercise (3)}
+\begin{itemize}
+\item 4-level page table; each PT: 512 PTEs of 8 bytes
+\item suppose a process has 100 pages of stack, 100 pages of code+constants (contiguous)
+\item how much space for page tables? \only<2->{--- \textit{maximum:}}
+\iftoggle{heldback}{}{
+    \item<2-> 1 shared first-level PT, with four valid entries
+    \item<2-> four second-level PT, each with one valid entry
+        \begin{itemize}\item two for stack, two for code+constants\end{itemize}
+    \item<2-> four third-level PT, each with one valid entry
+    \item<2-> four fourth-level PT, each with 50 valid entries
+}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=ptSpaceEx3Pic]{page table space exercise (3)}
+\iftoggle{heldback}{}{
+\begin{tikzpicture}
+    \tikzset{
+        >=Latex,
+        used/.style={fill=green},
+        connect/.style={very thick,->},
+        tight matrix/.append style={inner sep=1mm,draw,thick,nodes=thin},
+    },
+    \matrix[tight matrix] (first) {
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=firstAllocX]| ~ \\
+        |[used,alias=firstAlloc]| ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=firstAllocBX]| ~ \\
+        |[used,alias=firstAllocB]| ~ \\
+        ~ \\
+        |[draw=none]| \ldots \\
+    };
+    \matrix[tight matrix,above right=-1cm and 2cm of first] (secondX) {
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=secondAllocX]| ~ \\
+    };
+    \matrix[tight matrix,below=.5cm of secondX] (second) {
+        |[used,alias=secondAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of second] (third) {
+        |[used,alias=thirdAlloc]| ~ \\
+        ~ \\
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,right=1cm of secondX] (thirdX) {
+        ~ \\
+        |[draw=none,align=center]| \ldots \\
+        ~ \\
+        |[used,alias=thirdAllocX]| ~ \\
+    };
+    \matrix[tight matrix,right=1cm of third,nodes={used}] (fourth) {
+        |[used,alias=fourthAlloc]| ~ \\
+        ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+        ~ \\
+        |[fill=none]| ~ \\
+        |[fill=none]| ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+    };
+    \matrix[tight matrix,above=1cm of fourth,nodes={used}] (fourthX) {
+        |[fill=none]| ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+        |[used]| ~ \\
+        |[used]| ~ \\
+        |[draw=none,fill=none,align=center]| \ldots \\
+        |[used]| ~ \\
+    };
+    \draw[connect] (firstAlloc.east) -- ++(.5cm,0cm) |- (second-1-1.west);
+    \draw[connect] (secondAlloc.east) -- ++(.5cm,0cm) |- (third-1-1.west);
+    \draw[connect] (thirdAlloc.east) -- ++(.5cm,0cm) |- (fourth-1-1.west);
+    \draw[connect] (fourth-1-1.east) -- ++(1cm, 0cm) node[right,align=left] {first of \\ last 50 pages of code};
+
+    \draw[connect] (firstAllocX.east) -- ++(.5cm,0cm) |- (secondX-1-1.west);
+    \draw[connect] (secondAllocX.east) -- ++(.5cm,0cm) |- (thirdX-1-1.west);
+    \draw[connect] (thirdAllocX.east) -- ++(.5cm,0cm) |- (fourthX-1-1.west);
+    \draw[connect] (fourthX-3-1.east) -- ++(1cm, 0cm) node[right,align=left] {first of \\ first 50 pages of code};
+
+    \draw[connect,dotted] (firstAllocBX.east) -- ++(1cm,0cm) |- ++(2cm,-1cm) node[right] {(similar arrangement for stack pages)};
+\end{tikzpicture}
+}
+\end{frame}
+
+% FIXME: picture of this situation
+
+\begin{frame}{page table space exercise (4)}
+\begin{itemize}
+\item 4-level page table; each PT: 512 PTEs of 8 bytes
+\item suppose a process has 200 pages, randomly distributed in PT
+\item about how much space for page tables?
+\item<2-> about 165 ($\pm \sim 8$) entries in first-level PT
+    \begin{itemize}
+        \item (some pages randomly share first-level PT entries)
+    \end{itemize}
+\item<2-> about 165 second-level PTs, 200 third-level, 200 fourth-level
+\item<2-> a bit less than 600 page tables --- almost 2400 KB
+\end{itemize}
+\end{frame}

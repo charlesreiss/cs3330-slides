@@ -1,0 +1,47 @@
+
+\begin{frame}[fragile,label=plusRegBlocking]{caching blocking + loop unroll + no alias (1)}
+\lstset{
+    style=small,language=C,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+}
+blocking for k, i (missing j), plus unrolling for i:
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; i += 2)
+    for (int j = 0; j < N; ++j) {
+      float ~2~Ci0j~end~ = C[(i+0)*N+j];
+      float ~2~Ci1j~end~ = C[(i+1)*N+j];
+      for(int kk = k; kk < k + 2; ++kk) {
+        float ~2~Bkj~end~ = B[kk*N+j];
+        Ci0j += A[(i+0)*N+kk] * Bkj;
+        Ci1j += A[(i+1)*N+kk] * Bkj;
+      }
+      C[(i+0)*N+j] += Ci0j;
+      C[(i+1)*N+j] += Ci1j;
+    }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=plusRegBlocking2]{caching blocking + loop unroll + no alias (2)}
+\lstset{
+    style=small,language=C,
+    moredelim=**[is][\btHL<all:2>]{~2~}{~end~},
+}
+plus explicitly unroll loop over $k$ values
+\begin{lstlisting}
+for (int k = 0; k < N; k += 2)
+  for (int i = 0; i < N; i += 2)
+    for (int j = 0; j < N; ++j) {
+      float ~2~Ci0j~end~ = C[(i+0)*N+j];
+      float ~2~Ci1j~end~ = C[(i+1)*N+j];
+      float ~2~Bk0j~end~ = B[(k+0)*N+j];
+      float ~2~Bk1j~end~ = B[(k+1)*N+j];
+      Ci0j += A[(i+0)*N+k] * Bk0j;
+      Ci0j += A[(i+0)*N+k+1] * Bk1j;
+      Ci1j += A[(i+1)*N+k] * Bk0j;
+      Ci1j += A[(i+1)*N+k+1] * Bk1j;
+      C[(i+0)*N+j] += Ci0j;
+      C[(i+1)*N+j] += Ci1j;
+    }
+\end{lstlisting}
+\end{frame}

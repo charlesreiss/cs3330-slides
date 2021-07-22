@@ -1,0 +1,51 @@
+\tikzset{wire/.style={draw,thick,>=Latex}}
+
+\begin{frame}{describing hardware}
+    \begin{itemize}
+    \item how do we describe hardware?
+    \item pictures?
+    \end{itemize}
+    \begin{tikzpicture}
+        \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+        \node[hRegSmall={count}] (reg) at (4.5, 2) {};
+        \draw[wire,->] (add1) -- (reg);
+        \draw[wire,->] (reg) -- (6, 2) -- (6, 0) -- (0, 0) -- (0, 2) -- (add1);
+        \coordinate (pinPoint) at (6, 1);
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits with pictures?}
+    \begin{itemize}
+    \item yes, something you can do
+    \item such commercial tools exist, but\ldots
+    \vspace{.5cm}
+    \item not commonly used for processors
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{hardware description language}
+    \begin{itemize}
+    \item \myemph{programming language for hardware}
+    \item (typically) text-based representation of circuit
+    \vspace{.5cm}
+    \item often abstracts away details like:
+        \begin{itemize}
+        \item how to build arithmetic operations from gates
+        \item how to build registers from transistors
+        \item how to build memories from transistors
+        \item how to build MUXes from gates
+        \item \ldots
+        \end{itemize}
+    \item those details also not a topic in this course
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{our tool: HCLRS}
+    \begin{itemize}
+    \item built for this course
+    \item assumes you're making a processor
+    \vspace{.5cm}
+    \item somewhat different from textbook's HCL
+    \end{itemize}
+\end{frame}
+

@@ -1,0 +1,62 @@
+\begin{frame}{optimizing real programs}
+    \begin{itemize}
+    \item spend effort where \myemph{it matters}
+    \item e.g. 90\% of program time spent reading files, but optimize computation?
+    \item e.g. 90\% of program time spent in routine A, but optimize B?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{profilers}
+    \begin{itemize}
+    \item first step --- tool to determine where you spend time
+    \item tools exist to do this for programs
+    \item example on Linux: \texttt{perf}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{perf usage}
+    \begin{itemize}
+    \item \textit{sampling} profiler
+        \begin{itemize}
+        \item stops periodically, takes a look at what's running
+        \end{itemize}
+    \item \texttt{perf record OPTIONS program}
+        \begin{itemize}
+        \item example OPTIONS:
+        \item \texttt{-F 200} --- record 200/second
+        \item \texttt{--call-graph=lbr} --- record stack traces (using method ``lbr'')
+        \end{itemize}
+    \item \texttt{perf report} or \texttt{perf annotate}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{children/self}
+    \begin{itemize}
+        \item ``children'' --- samples  in function or things it called
+        \item ``self'' --- samples in function alone
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{demo}
+\end{frame}
+
+\begin{frame}{other profiling techniques}
+    \begin{itemize}
+    \item count number of times each function is called
+    \item not sampling --- exact counts, but higher overhead
+        \begin{itemize}
+        \item might give less insight into amount of time
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{tuning optimizations}
+    \begin{itemize}
+    \item biggest factor: how fast is it actually
+    \item setup a benchmark 
+        \begin{itemize}
+        \item make sure it's realistic (right size? uses answer? etc.)
+        \end{itemize}
+    \item compare the alternatives
+    \end{itemize}
+\end{frame}

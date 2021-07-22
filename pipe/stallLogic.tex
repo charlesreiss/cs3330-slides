@@ -1,0 +1,12 @@
+\begin{frame}{fetch/decode logic --- advance or not}
+    \begin{tikzpicture}[circuit logic]
+        % FIXME: color on PC
+        \node[hReg={rA, rB, etc.},minimum height=3cm,fill=yellow!50!orange] (pc) {};
+        \node[draw,left=1cm of pc,mux,inputs={nn},info={center:MUX},minimum height=3cm,minimum width=2cm] (pcMux) {};
+        \draw[a] (pcMux) -- (pc);
+        \draw[aR] (pcMux.input 1) -- +(-1cm,0cm) node[left] { from instr. memory };
+        \draw[a] (pc.east) -- +(1cm,0cm) |- ([yshift=-1cm]pc.south) -| ([xshift=-1cm]pcMux.input 2) -- (pcMux.input 2);
+        \draw[bR,red] (pcMux.south) -- +(0cm,-2cm) node[below] { should we stall? };
+        \draw[a] (pc.east) -- +(2cm,0cm) node[right] { \ldots };
+    \end{tikzpicture}
+\end{frame}

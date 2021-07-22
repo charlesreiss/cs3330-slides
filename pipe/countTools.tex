@@ -1,0 +1,78 @@
+\newcommand{\countStyles}{
+\tikzset{
+        one/.style={blue!80!black},
+        two/.style={green!60!black},
+        three/.style={violet!80!black},
+        oneA/.style={blue!80!black},
+        twoA/.style={green!60!black},
+        threeA/.style={violet!80!black},
+        oneX/.style={pattern color=blue!80!black},
+        twoX/.style={pattern color=green!60!black},
+        threeX/.style={pattern color=violet!80!black},
+        oneXA/.style={pattern color=blue!80!black},
+        twoXA/.style={pattern color=green!60!black},
+        threeXA/.style={pattern color=violet!80!black},
+        oneB/.style={red!80!black},
+        twoB/.style={orange!60!black},
+        threeB/.style={cyan!80!black},
+        oneXB/.style={pattern color=red!80!black},
+        twoXB/.style={pattern color=orange!60!black},
+        threeXB/.style={pattern color=cyan!80!black},
+        not in count/.style={black},
+}
+}
+
+\newcommand{\circuitStyles}{
+    \tikzset{
+        add/.style={trapezium,
+            trapezium angle=40,
+            shape border rotate=270,
+            minimum width=1.8cm,
+            minimum height=1.8cm,
+            text depth=.5cm,
+            inner sep=0cm,
+            trapezium stretches=true,
+            append after command={%
+                    \pgfextra
+                        \draw (\tikzlastnode.top left corner) --
+                           (\tikzlastnode.top right corner) -- 
+                           (\tikzlastnode.bottom right corner) -- 
+                           ($(\tikzlastnode.bottom right corner)!.666!(\tikzlastnode.bottom side)$)--
+                           ([xshift=5mm]\tikzlastnode.bottom side)--
+                           ($(\tikzlastnode.bottom side)!.334!(\tikzlastnode.bottom left corner)$)--
+                           (\tikzlastnode.bottom left corner)--
+                           (\tikzlastnode.top left corner);
+                    \endpgfextra},
+            text opacity=0.0,
+            label={[anchor=east]east:ADD}},
+        a/.style={very thick,-Latex},
+        aN/.style={very thick},
+    }
+}
+\newcommand{\plusTwo}{+2}
+\newcommand{\plusOne}{+1}
+\newcommand{\timesThreePipeStuff}{
+% FIXME: arrows into registers
+\begin{scope}[one]
+\node[one,hReg={$A$ ($t\plusTwo$)},very thick] (aInput) {};
+\end{scope}
+\begin{scope}[not in count]
+\draw[aR,very thick] (aInput.west) -- ++ (-.5cm, 0cm) node[left] {\ldots};
+\end{scope}
+\coordinate (aInputSplit) at ([xshift=1cm]aInput);
+\draw[one,aN] (aInput.east) -- (aInputSplit);
+\node[add,text height=.1cm,inner sep=0cm,outer sep=0cm,font=\small,anchor=west] (alu1) at ([xshift=1.5cm]aInputSplit.east) {ADD};
+\draw[one,a] (aInputSplit) |- (alu1.-130);
+\draw[one,a] (aInputSplit) |- (alu1.130);
+\node[add,text height=.1cm,inner sep=0cm,outer sep=0cm,font=\small,anchor=130] (alu2) at ([xshift=4cm]alu1.east) {ADD};
+\draw[two,a] (alu1.east) -- (alu2.130) node[midway,hReg={$2\times A$ ($t\plusOne$)},fill=white] (twoTimesReg) {};
+\draw[one,a] (aInputSplit) |- (alu2.-130);
+\begin{scope}[one]
+\node[hRegSmall={$A$ ($t\plusOne$)},fill=white,very thick] (aInputCopy) at (twoTimesReg.south |- alu2.-130) {};
+\end{scope}
+\draw[three,a] (alu2.east) -- ++(1.5cm,0) node[right,hReg={$3\times A$ ($t+0$)}] (threeTimesReg) {};
+\begin{scope}[not in count]
+\draw[a] (threeTimesReg.east) -- ++ (.5cm, 0cm) node[right] {\ldots};
+\end{scope}
+}
+

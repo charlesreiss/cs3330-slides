@@ -1,0 +1,132 @@
+\begin{frame}[fragile,label=addqRegs]{addq pipeline registers}
+\vspace{-.5cm}
+    \begin{tikzpicture}
+    \matrix[
+        matrix of nodes,row sep=.2ex,column sep=-\pgflinewidth,
+        nodes={font=\small,align=left},
+        column 1/.style={nodes={text width=2cm}},
+        column 2/.style={nodes={text width=4.2cm}},
+        outer sep=0pt,
+    ] (stages) {
+        stage \& \lstinline|addq rA, rB| \\
+        fetch \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\mathHL<2>{\vrA}:\mathHL<2>{\vrB}\assign M_1[\PC+1]$ \\
+                  $\valP\assign\PC+2$}
+              \\
+        PC update \& $\PC\assign\valP$ \\
+        decode \& {$\mathHL<3>{\valA}\assign R[\mathHL<2>{\vrA}]$\\
+                   $\mathHL<3>{\valB}\assign R[\mathHL<2>{\vrB}]$\\
+                   \onslide<5->{$\mathHL<5-6>{\dstE\assign \vrB}$}
+                   } \\
+        execute \& {$\mathHL<4>{\valE}\assign \mathHL<3>{\valA} + \mathHL<3>{\valB}$} \\
+        memory \& ~ \\
+        write back \& {$R[\only<1-4>{\mathHL<2>{\vrB}}\only<5->{\mathHL<5-6>{\dstE}}] \assign \mathHL<4>{\valE}$} \\
+    };
+    \draw[double] (stages-1-1.south west) -- (stages-1-2.south east);
+    \foreach \x in {3,4,5,6} {
+        \draw[overlay,thin,dashed] ([xshift=-4cm]stages-\x-2.south west) -- ([xshift=8cm]stages-\x-2.south east);
+        \draw[overlay,ultra thick,color=white] ([xshift=.5cm]stages-\x-2.south east) -- ([xshift=1cm]stages-\x-2.south east);
+    }
+    \node[horizReg={PC},fill=yellow] at ([xshift=1cm]stages-2-2.south east) {};
+    \begin{visibleenv}<1>
+        \node[horizReg={icode},fill=yellow!50!orange] at ([xshift=1cm]stages-3-2.south east) {};
+        \node[horizReg={icode},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<2-4>
+        \node[horizReg={icode, \myemph<2>{rA, rB}},fill=yellow!50!orange] at ([xshift=1cm]stages-3-2.south east) {};
+        \node[horizReg={icode, \myemph<2>{rB}},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode, \myemph<2>{rB}},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode, \myemph<2>{rB}},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+        \node[horizReg={icode, rB, \myemph<3>{valA, valB}},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<4>
+        \node[horizReg={icode, rB, \myemph<4>{valE}},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode, rB, \myemph<4>{valE}},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \node[horizReg={icode, rA, rB},fill=yellow!50!orange] at ([xshift=1cm]stages-3-2.south east) {};
+        \node[horizReg={icode, \myemph<5-6>{dstE}, valA, valB},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode, \myemph<5-6>{dstE}, valE},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode, \myemph<5-6>{dstE}, valE},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+
+    \end{visibleenv}
+    \begin{visibleenv}<6>
+        \node[overlay,my callout2=stages-4-2.south,align=left,anchor=north] at ([yshift=-.5cm]stages-4-2.south) {
+            redundant with rB + icode \\
+            but will make implementation simpler
+        };
+    \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=pushqRegs]{pushq pipeline registers}
+    \begin{tikzpicture}
+    \matrix[
+        matrix of nodes,row sep=.2ex,column sep=-\pgflinewidth,
+        nodes={font=\small,align=left},
+        column 1/.style={nodes={text width=2cm}},
+        column 2/.style={nodes={text width=4cm}},
+        outer sep=0pt,
+    ] (stages) {
+        stage \& \lstinline|pushq rA| \\
+        fetch \& {$\icode:\ifun\assign M_1[\PC]$ \\
+                  $\valP\assign\PC+2$}
+              \\
+        PC update \& $\PC\assign\valP$ \\
+        decode \& {$\mathHL<3>{\valA}\assign R[\mathHL<2>{\vrA}]$\\$\mathHL<3>{\valB}\assign R[\%rsp]$\\
+                \only<5->{$\mathHL<5-6>{\dstE}\assign \%rsp$}} \\
+        execute \& {$\mathHL<4>{\valE}\assign \mathHL<3>{\valB} - 8$} \\
+        memory \&  {$M[\mathHL<4>{\valE}]\assign \mathHL<3>{\valA}$} \\
+        write back \& {$R[\only<1-4>{\%rsp}\only<5->{\mathHL<5>{\dstE}}]\assign \valE$} \\
+    };
+    \draw[double] (stages-1-1.south west) -- (stages-1-2.south east);
+    \foreach \x in {3,4,5,6} {
+        \draw[overlay,thin,dashed] ([xshift=-4cm]stages-\x-2.south west) -- ([xshift=8cm]stages-\x-2.south east);
+        \draw[overlay,ultra thick,color=white] ([xshift=.5cm]stages-\x-2.south east) -- ([xshift=1cm]stages-\x-2.south east);
+    }
+    \node[horizReg={PC},fill=yellow] at ([xshift=1cm]stages-2-2.south east) {};
+    \begin{visibleenv}<1>
+        \node[horizReg={icode},fill=yellow!50!orange] at ([xshift=1cm]stages-3-2.south east) {};
+        \node[horizReg={icode},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<1->
+        \node[horizReg={icode},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<2->
+        \node[horizReg={icode, \myemph<2>{rA}},fill=yellow!50!orange] at ([xshift=1cm]stages-3-2.south east) {};
+        \node[horizReg={icode},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<3-4>
+        \node[horizReg={icode, \myemph<3>{valA, valB}},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<3>
+        \node[horizReg={icode, \myemph<3>{valA}},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<1-3>
+        \node[horizReg={icode},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<4>
+        \node[horizReg={icode, valA, \myemph<4>{valE}},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode, valE},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<5->
+        \node[horizReg={icode, valA, valB, \myemph<5>{dstE}},fill=orange!50!green] at ([xshift=1cm]stages-4-2.south east) {};
+        \node[horizReg={icode, valA, valE, \myemph<5>{dstE}},fill=green!50!blue] at ([xshift=1cm]stages-5-2.south east) {};
+        \node[horizReg={icode, valE, \myemph<5>{dstE}},fill=blue!50!violet] at ([xshift=1cm]stages-6-2.south east) {};
+    \end{visibleenv}
+    \begin{visibleenv}<6>
+        \node[overlay,my callout2=stages-4-2.south,align=left,anchor=north] at ([yshift=-.5cm]stages-4-2.south) {
+            redundant with icode \\
+            but will make implementation simpler
+        };
+    \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+

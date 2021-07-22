@@ -1,0 +1,28 @@
+\begin{frame}{privileged instructions}
+\begin{itemize}
+\item can't let \myemph{any program} run some instructions
+\item allows machines to be shared between users (e.g. lab servers)
+\item examples:
+    \begin{itemize}
+    \item set exception table
+    \item set address space
+    \item talk to I/O device (hard drive, keyboard, display, \ldots)
+    \item \ldots
+    \end{itemize}
+\item processor has two modes:
+\begin{itemize}
+    \item kernel mode --- privileged instructions work
+    \item user mode --- privileged instructions cause exception instead
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{kernel mode}
+\begin{itemize}
+\item extra one-bit register: ``are we in kernel mode''
+\item exceptions \myemph{enter kernel mode}
+\item return from exception instruction \myemph{leaves kernel mode}
+\end{itemize}
+\end{frame}
+
+

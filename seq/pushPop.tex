@@ -1,0 +1,36 @@
+\begin{frame}[fragile,label=pushpop]{push/pop}
+\begin{itemize}
+    \item \lstinline|pushq %rbx|
+    \begin{itemize}
+        \item \lstinline|%rsp| $\leftarrow$ \lstinline|%rsp| $-\;8$
+        \item memory[\lstinline|%rsp|] $\leftarrow$ \lstinline|%rbx|
+    \end{itemize}
+    \item \lstinline|popq %rbx|
+    \begin{itemize}
+        \item \lstinline|%rbx| $\leftarrow$ memory[\lstinline|%rsp|]
+        \item \lstinline|%rsp| $\leftarrow$ \lstinline|%rsp| $+\;8$
+    \end{itemize}
+\end{itemize}
+\begin{tikzpicture}[overlay,remember picture]
+    \tikzset{offstack/.style={fill=black!25}}
+    \matrix[matrix of nodes,row sep=-\pgflinewidth,
+            nodes={font=\scriptsize,draw,rectangle,minimum width=4cm},
+            above left=.5cm of current page.south east] (stack) {
+            \vdots{} \\
+        memory[\lstinline|%rsp| + 16] \\
+        memory[\lstinline|%rsp| + 8] \\
+        memory[\lstinline|%rsp|] \\
+        |[offstack]| memory[\lstinline|%rsp| - 8] \\
+        |[offstack]| memory[\lstinline|%rsp| - 16] \\
+    };
+    \node[left=1cm of stack-4-1,font=\small] (popMarker) {value to pop};
+    \node[left=1cm of stack-5-1,font=\small] (pushMarker) {where to push};
+    \draw[very thick] ([xshift=-1cm]stack-4-1.south west) -- ([xshift=1cm]stack-4-1.south east);
+    %\draw[very thick,black!50,dotted] ([xshift=-1cm]stack-3-1.south west) -- ([xshift=1cm]stack-3-1.south east);
+    %\draw[very thick,black!50,dotted] ([xshift=-1cm]stack-5-1.south west) -- ([xshift=1cm]stack-5-1.south east);
+    \draw[-Latex,thick,double,black!60] ([xshift=-.2cm]stack-1-1.north west) -- ([xshift=-.2cm]stack-3-1.west)
+        node[midway,left,align=right,font=\scriptsize]{stack\\growth};
+    \draw[-Latex] (popMarker) -- (stack-4-1.west);
+    \draw[-Latex] (pushMarker) -- (stack-5-1.west);
+\end{tikzpicture}
+\end{frame}

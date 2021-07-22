@@ -1,0 +1,125 @@
+\usetikzlibrary{arrows.meta,calc,matrix}
+\newcommand{\onSwap}{4}
+\newcommand{\onMovA}{5}
+\newcommand{\onMovB}{6}
+\newcommand{\onMovC}{7}
+\newcommand{\onMovD}{8}
+\newcommand{\onRet}{9}
+
+\begin{frame}[fragile,label=attSwap]{swap}
+\lstset{
+    language=myasm,
+    style=small,
+    moredelim=**[is][\btHL<\onSwap>]{@1}{1@},
+    moredelim=**[is][\btHL<\onMovA>]{@2}{2@},
+    moredelim=**[is][\btHL<\onMovB>]{@3}{3@},
+    moredelim=**[is][\btHL<\onMovC>]{@4}{4@},
+    moredelim=**[is][\btHL<\onMovD>]{@5}{5@},
+    moredelim=**[is][\btHL<\onRet>]{@6}{6@},
+}
+\begin{tikzpicture}
+\tikzset{
+    code box/.style={draw,thick},
+    mark read/.style={alt=<#1>{fill=yellow!10}},
+    mark read addr/.style={alt=<#1>{fill=blue!10}},
+    mark write/.style={alt=<#1>{fill=red!20}},
+    mark addr/.style={blue},
+    mark value/.style={red},
+    >=Latex,
+}
+\node[code box,label={north:swap (AT\&T syntax)}] (swap att) {
+\begin{lstlisting}
+// swap(long *rdi,
+//      long *rsi)
+@1swap1@: 
+  @2movq (%rdi), %rax2@
+  @3movq (%rsi), %rdx3@
+  @4movq %rdx, (%rdi)4@
+  @5movq %rax, (%rsi)5@
+  @6ret6@
+\end{lstlisting}
+};
+\begin{visibleenv}<2>
+\node[code box,alt=<2>{draw=red,very thick},label={north:swap (Intel syntax)},anchor=north west] (swap intel)
+    at ([xshift=.5cm]swap att.north east) {
+\begin{lstlisting}
+
+
+swap:
+  mov RAX, QWORD PTR [RDI]
+  mov RDX, QWORD PTR [RSI]
+  mov QWORD PTR [RDI], RDX
+  mov QWORD PTR [RSI], RAX
+  ret
+\end{lstlisting}
+};
+\end{visibleenv}
+\begin{visibleenv}<3>
+\node[code box,alt=<3>{draw=red,very thick},label={north:as pseudocode},anchor=north west] (swap pseudo)
+    at ([xshift=.5cm]swap att.north east) {
+\begin{lstlisting}[language=]
+
+
+swap:
+    RAX <- memory[RDI (arg 1)]
+    RDX <- memory[RSI (arg 2)]
+    memory[RDI (arg 1)] <- RDX
+    memory[RSI (arg 2)] <- RAX
+    return
+\end{lstlisting}
+};
+\end{visibleenv}
+\begin{visibleenv}<4->
+\matrix[tight matrix,
+    column 1/.style={nodes={draw=none,text width=1.15cm}},
+    column 2/.style={nodes={draw,thick,font=\tt,text width=2.25cm,minimum height=.6cm}},
+    row sep=1mm,
+    label={north:registers},
+    anchor=north west
+] (regs) at ([xshift=.5cm]swap att.north east) {
+\%rax \& |[alias=rax,mark write=\onMovA,mark read=\onMovD]| \only<1-\onSwap>{???}\only<\onMovA->{0x99999} \\
+\%rdx \& |[alias=rdx,mark write=\onMovB,mark read=\onMovC]| \only<1-\onSwap>{???}\only<\onMovB->{0x77777} \\
+\%rdi \& |[alias=rdi,mark read addr=\onMovA,mark read addr=\onMovC]| 0x04000 \\
+\%rsi \& |[alias=rsi,mark read addr=\onMovB,mark read addr=\onMovD]| 0x04030 \\
+\%rsp \& 0xEFFF8 \\
+\ldots \& |[draw=none]| \ldots \\
+};
+\matrix[tight matrix,
+    column 1/.style={nodes={draw=none,font=\small\tt,text width=2cm}},
+    column 2/.style={nodes={draw,thick,font=\small\tt,text width=2cm,minimum height=.6cm}},
+    row 1/.style={nodes={font=\small\bfseries,draw=none}},
+    row sep=-0.25mm,
+    label={north:memory},
+    anchor=north west
+] (mem) at ([xshift=1.5cm]regs.north east) {
+address \& value \\
+0x00000 \& 0xFFFF3\\
+0x00008 \& 0x32123 \\
+\ldots \& |[draw=none]| \ldots \\
+|[alias=starRdiA]| 0x04000 \& |[alias=starRdi,mark read=\onMovA,mark write=\onMovC]| \only<1-\onMovB>{0x99999}\only<\onMovC->{0x77777} \\
+0x04008 \& 0x00002 \\
+\ldots \& |[draw=none]| \ldots \\
+0x04028 \& 0x00090 \\
+|[alias=starRsiA]| 0x04030 \& |[alias=starRsi,mark read=\onMovB,mark write=\onMovD]| \only<1-\onMovC>{0x77777}\only<\onMovD->{0x99999} \\
+0x04038 \& 0x00078 \\
+\ldots \& |[draw=none]| \ldots \\
+};
+\end{visibleenv}
+\begin{visibleenv}<\onMovA>
+\draw[->,very thick,mark addr] (rdi.east) -- ++ (.5cm, 0cm) |- ([yshift=-.1cm]starRdiA.west);
+\draw[->,very thick,mark value] ([yshift=.1cm]starRdiA.west) -- ++ (-.5cm, 0cm) |- (rax.east);
+\end{visibleenv}
+\begin{visibleenv}<\onMovB>
+\draw[->,very thick,mark addr] (rsi.east) -- ++ (.5cm, 0cm) |- ([yshift=-.1cm]starRsiA.west);
+\draw[->,very thick,mark value] ([yshift=.1cm]starRsiA.west) -- ++ (-.5cm, 0cm) |- (rdx.east);
+\end{visibleenv}
+\begin{visibleenv}<\onMovC>
+\draw[->,very thick,mark addr] (rdi.east) -- ++ (.5cm, 0cm) |- ([yshift=-.1cm]starRdiA.west);
+\draw[->,very thick,mark value] (rdx.east) -- ++ (1cm, 0cm) |- ([yshift=.1cm]starRdiA.west);
+\end{visibleenv}
+\begin{visibleenv}<\onMovD>
+\draw[->,very thick,mark addr] (rsi.east) -- ++ (.5cm, 0cm) |- ([yshift=-.1cm]starRsiA.west);
+\draw[->,very thick,mark value] (rax.east) -- ++ (1cm, 0cm) |- ([yshift=.1cm]starRsiA.west);
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}

@@ -1,0 +1,91 @@
+\begin{frame}{critical path}
+    \begin{itemize}
+        \item \myemph{every path} from state output to state input needs enough time
+            \begin{itemize}
+            \item output --- may change on rising edge of clock
+            \item input --- must be stable sufficiently before rising edge of clock
+            \end{itemize}
+        \item critical path: \myemph{slowest} of all these paths --- determines cycle time
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=seqPaths]{SEQ paths}
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            imemPc/.style={visible on=<1-|handout:1->},
+            instrRegs/.style={visible on=<1-|handout:1->},
+            instrRegs/.style={visible on=<1-|handout:1->},
+            regsLogic/.style={visible on=<1-|handout:1->},
+            aluOpExplain/.style={visible on=<0|handout:0>},
+            dmemPC/.style={visible on=<1-|handout:1->},
+            logicDmem/.style={visible on=<1-|handout:1->},
+            dmemWB/.style={visible on=<1-|handout:1->},
+            %dmemWBvalENoMux/.style={visible on=<1-|handout:1->},
+            dmemPC/.style={visible on=<1-|handout:1->},
+            dmemLabel/.style={visible on=<0|handout:0>},
+            %
+            pathLine/.style={line width=1.5pt,-{Latex[length=5pt,width=9pt]}},
+        }
+        \circuitState
+        \circuitConnectDetail
+        \node[font=\fontsize{11}{12}\selectfont,align=left] at ([yshift=2cm,xshift=-3cm]regs.north east) {
+            \begin{tabular}{ll}
+                \onslide<2->{\color{green!50!black}path 1: 25 picoseconds} &
+                \onslide<3->{\color{orange!80!black}path 2: 50 picoseconds} \\
+                \onslide<4->{\color{blue!90!black}path 3: 400 picoseconds} & 
+                \onslide<5->{\color{red!60!black}path 4: 900 picoseconds} \\
+                \onslide<5->{\ldots} & \onslide<5->{\ldots} \\
+            \end{tabular} \\
+        };
+
+        \begin{visibleenv}<2->
+            \draw[green!50!black,pathLine,transform canvas={yshift=-.2mm,xshift=.1mm}] (pc.east) -| (iLenPlus.center) -| ([xshift=-2.5mm]muxPc.input 3) -- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \draw[orange!90!black,pathLine,transform canvas={yshift=.2mm,xshift=.2mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitIcode) |- (iLen.west) -| ([xshift=-2.5mm]muxPc.input 3) -- ([yshift=-.1mm]pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<4->
+            \draw[blue!90!black,pathLine,transform canvas={yshift=.4mm,xshift=.3mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitrA) |- (regSelect1) -- (regRead1) -- (regReadAfter1) |- (aluTop) -- (alu.east) -- (afterAlu) |- ([yshift=-.25cm,xshift=-.25cm]regs.south west) |- (regWriteIn2);
+        \end{visibleenv}
+        \begin{visibleenv}<5->
+            \draw[red!60!black,pathLine,transform canvas={yshift=.6mm,xshift=.4mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitrA) |- (regSelect1) -- (regRead1) -- (regReadAfter1) |- (aluTop) -- (alu.east) -- (afterAlu) |- (muxDAddr.input 1) -- (muxDAddr.output) -- (dmemInLow) -- (dmemDataOut) -- ++(2.5mm,0mm) |- ([yshift=-.5cm,xshift=-.5cm]regs.south west) |- ([xshift=1cm]regWriteIn1);
+        \end{visibleenv}
+        \begin{visibleenv}<6-|handout:2>
+            \node[fill=white,draw,rectangle,line width=3pt] at (regs.center) {
+                \ldots and many, many more paths
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=seqAddQPaths]{sequential addq paths}
+    \instrEncodingStyles
+    \begin{tikzpicture}[circuit logic]
+        \tikzset{
+            pathLine/.style={line width=1.5pt,-{Latex[length=5pt,width=9pt]}},
+        }
+        \seqAddQ
+        \node[font=\fontsize{11}{12}\selectfont,align=left] at ([yshift=2cm,xshift=-3cm]regs.north east) {
+            \begin{tabular}{l}
+                \onslide<2->{\color{green!50!black}path 1: 25 picoseconds} \\
+                \onslide<3->{\color{blue!90!black}path 2: 375 picoseconds}  \\
+                \onslide<4->{\color{red!60!black}path 3: \textbf<6>{500 picoseconds}} \\
+                \onslide<5->{\color{yellow!60!black}path 4: \textbf<6>{500 picoseconds}} \\
+                \onslide<6->{overall cycle time: \textbf<6>{500 picoseconds} (longest path)} \\
+            \end{tabular} \\
+        };
+
+        \begin{visibleenv}<2->
+            \draw[green!50!black,pathLine,transform canvas={yshift=-.2mm,xshift=.1mm}] (pc.east) -- ++(.5cm,0cm) -| (pcAdd.east) -- (pcAdd.west) -- ++(-.25cm,0cm) |- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \draw[blue!90!black,pathLine,transform canvas={yshift=.2mm,xshift=.2mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitRBOut) -- (splitrB) |- (regSelect4);
+        \end{visibleenv}
+        \begin{visibleenv}<4->
+            \draw[red!90!black,pathLine,transform canvas={yshift=.4mm,xshift=.3mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitRAOut) -- (splitrA) |- (regSelect1) -- (regRead1) -- (regReadAfter1) |- (aluTop) -- (alu.east) -- (afterAlu) |- (preWriteIn2) |- (regWriteIn2);
+        \end{visibleenv}
+        \begin{visibleenv}<5->
+            \draw[yellow!50!black,pathLine,transform canvas={yshift=-.3mm,xshift=-.1mm}] (pc.east) -- (imemAddr) -- (imemData) -- (splitRBOut) -- (splitrB) |- (regSelect2) -- (regRead2) -- (regReadAfter2) |- (aluBottom) -- (alu.east) -- (afterAlu) |- (preWriteIn2) |- (regWriteIn2);
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

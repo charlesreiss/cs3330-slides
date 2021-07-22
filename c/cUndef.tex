@@ -1,0 +1,103 @@
+\begin{frame}[fragile,label=cEvolve]{C evolution and standards}
+\begin{itemize}
+\item 1978: Kernighan and Ritchie publish {\it The C Programming Language} --- ``K\&R C''
+    \begin{itemize}
+        \item \myemph{very} different from modern C
+    \end{itemize}
+
+\item<2-> 1989: ANSI standardizes C --- C89/C90/{\tt -ansi}
+    \begin{itemize}
+        \item compiler option: {\tt -ansi}, {\tt -std=c90}
+        \item looks mostly like modern C
+    \end{itemize}
+
+\item<3-> 1999: ISO (and ANSI) update C standard --- C99
+    \begin{itemize}
+        \item compiler option: {\tt -std=c99}
+        \item adds: declare variables in middle of block
+        \item adds: \lstinline|//| comments
+    \end{itemize}
+
+\item<4-> 2011: Second ISO update --- C11
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,label=undefExample1]{undefined behavior example (1)}
+\begin{ccodeNL}
+#include <stdio.h>
+#include <limits.h>
+int test(int number) {
+    return (number + 1) > number;
+}
+
+int main(void) {
+    printf("%d\n", test(INT_MAX));
+}
+\end{ccodeNL}
+\begin{itemize}
+\item<2-> without optimizations: \lstinline|0|
+\item<3-> with optimizations: \lstinline|1|
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=undefExample2]{undefined behavior example (2)}
+\small
+\begin{ccodeNL}
+int test(int number) {
+    return (number + 1) > number;
+}
+\end{ccodeNL}
+Optimized:
+\vspace{-1mm}
+\begin{asmcodeNL}
+test:
+    movl    $1, %eax      # eax <- 1
+    ret
+\end{asmcodeNL}
+
+Less optimized:
+\vspace{-1mm}
+\begin{asmcodeNL}
+test:
+    leal    1(%rdi), %eax # eax <- rdi + 1
+    cmpl    %eax, %edi      
+    setl    %al           # al <- eax < edi
+    movzbl  %al, %eax     # eax <- al (pad with zeros)
+    ret
+\end{asmcodeNL}
+\end{frame}
+
+\begin{frame}{undefined behavior}
+\begin{itemize}
+\item compilers can do \myemph{whatever they want}
+    \begin{itemize}
+        \item what you expect
+        \item crash your program
+        \item \ldots{}
+    \end{itemize}
+\item common types:
+    \begin{itemize}
+        \item \textit{signed} integer overflow/underflow
+        \item out-of-bounds pointers
+        \item integer divide-by-zero
+        \item writing read-only data
+        \item out-of-bounds shift
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{undefined behavior}
+    \begin{itemize}
+    \item why undefined behavior?
+    \vspace{.5cm}
+    \item different architectures work differently
+    \begin{itemize}
+        \item allow compilers to expose whatever processor does ``naturally''
+        \item don't encode any particular machine in the standard
+    \end{itemize}
+    \item flexibility for optimizations
+    \end{itemize}
+\end{frame}
+
+

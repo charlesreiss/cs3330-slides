@@ -1,0 +1,25 @@
+\begin{frame}[fragile,label=pcUpdateCircuit]{SEQ circuit}
+    \begin{tikzpicture}[circuit logic]
+    \tikzset{
+        dmemLabel/.style={visible on=<0|handout:0>},
+        dmemInputLabel/.style={visible on=<1-|handout:1>},
+        instrRegs/.style={visible on=<0|handout:0>},
+        regsLogic/.style={visible on=<1-|handout:1>},
+        regsLogicMux/.style={visible on=<0|handout:0>},
+        regsLogicMuxA/.style={visible on=<1-|handout:1>},
+        regsLogicNoMuxB/.style={visible on=<1-|handout:1>},
+        logicDmem/.style={visible on=<1-|handout:1>},
+        dmemPC/.style={visible on=<1-|handout:1>},
+        dmemWB/.style={visible on=<1-|handout:1->},
+        dmemOutToPC/.style={visible on=<1-|handout:1->},
+        instrRegs/.style={visible on=<1-|handout:1>},
+        %instrRegsSplitImmed/.style={visible on=<1-|handout:1>},
+        instrRegsRS1/.style={visible on=<1-|handout:1>},
+        instrRegsMux/.style={visible on=<1-|handout:1>},
+    }
+    \circuitState
+    \circuitConnectDetail
+    \draw[a] (iLenPlus) -- ++ (-1cm, 0cm) node[left,bookLabel] {valP};
+    \end{tikzpicture}
+\end{frame}
+

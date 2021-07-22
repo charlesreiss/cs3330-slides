@@ -1,0 +1,30 @@
+\begin{frame}{moving values in vectors?}
+\begin{itemize}
+\item sometimes values aren't in the right place in vector
+\item example:
+\item have: [1, 2, 3, 4]
+\item want: [3, 4, 1, 2]
+\vspace{.5cm}
+\item there are instructions/intrinsics for doing this
+    \begin{itemize}
+    \item called shuffling/swizzling/permute/\ldots
+    \end{itemize}
+\item sometimes might need combination of them
+\item worst-case: could rearrange on stack\ldots, I guess
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=exampleShuffle]{example shuffling operation (1)}
+goal: [1, 2, 3, 4] to [3, 4, 1, 2] (64-bit values)
+\begin{lstlisting}[language=C++,style=smaller]
+/* x = {1, 2, 3, 4} */
+__m256i x = _mm256_setr_epi64x(1, 2, 3, 4);
+__m256i result = _mm256_permute4x64_epi64(
+        x,
+        /* index 2, then 3, then 0, then 1 */
+        2 | (3 << 2) | (0 << 4) | (1 << 6)
+        /* could also write _MM_SHUFFLE(1, 0, 3, 2) */
+    );
+/* result = {3, 4, 1, 2} */
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,73 @@
+\begin{frame}[fragile,label=loadUseBubbleStall]{stalling: bubbles + stall}
+\lstset{
+    language=myasm,
+    morekeywords={mrmovq,irmovq,rmmovq,rrmovq},
+    moredelim=**[is][\btHL<2|handout:0>]{~2~}{~end~},
+    moredelim=**[is][\btHL<4|handout:0>]{~3~}{~end~},
+}
+\begin{tikzpicture}
+\tikzset{
+    forwardLine/.style={blue!60!black,thick,-Latex},
+    hiForwardOn/.style={alt=#1{blue}{}},
+    forwardLineB/.style={red,dashed,thick,-Latex},
+    sepLine/.style={black!40,densely dotted},
+};
+\tikzset{fetch/.style={fill=yellow!15},decode/.style={fill=orange!15},execute/.style={fill=green!15},
+memory/.style={fill=blue!15},writeback/.style={fill=violet!15}}
+\newcommand{\fdemw}{ \& |[fetch]| F \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W}
+\matrix[tight matrix no line,
+        nodes={text width=.6cm,font=\tt,minimum height=.7cm,align=center},
+        column 1/.style={nodes={text width=6cm,align=left}},
+        ] (tbl) {
+|[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
+                                    \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \\
+\lstinline|mrmovq 0(%rax), %rbx|   \fdemw \& ~ \& ~ \& ~ \& ~ \\
+\lstinline|subq %rbx, %rcx|        \& ~ \& |[fetch]| F \& |[decode]| D \& |[decode]| D \& |[execute]| E \& |[memory]| M \& |[writeback]| W \& ~ \& ~ \\
+inserted nop \& ~ \& ~\& ~ \& |[execute]| E \& |[memory]| M \& |[writeback]| W \\
+\lstinline|irmovq $10, %rbx| \& ~ \& ~ \& |[fetch]| F \fdemw \\
+\ldots \\
+};
+\foreach \x in {1,...,9} {
+    \draw (tbl-1-\x.north east) -- (tbl-5-\x.south east);
+}
+\newcommand{\fwd}[4]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLine,hiForwardOn=#4] ([xshift=-.15cm]tbl-#2-\idx.west) -- ([xshift=-.05cm]tbl-#3-\idx.west);
+}
+\newcommand{\fwdA}[4]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLineB] ([xshift=-.15cm]tbl-#2-\idx.east) -- ([xshift=-.05cm]tbl-#3-\idx.east);
+}
+
+\newcommand{\fwdNo}[3]{
+    \pgfmathtruncatemacro{\idx}{#1+2}
+    \draw[forwardLineB] ([xshift=-.15cm]tbl-#2-\idx.west) -- ([xshift=-.05cm]tbl-#3-\idx.west);
+}
+\begin{visibleenv}<2>
+\begin{scope}[inner sep=0mm,ultra thick]
+    \node[draw=red,fit=(tbl-3-5) (tbl-3-5)] {};
+    \node[draw=red,fit=(tbl-5-5) (tbl-5-5)] {};
+\end{scope}
+\node[red,anchor=north,align=left] at ([yshift=-.5cm]tbl-5-5.south) {
+    keep same instruction in cycle 3 \\
+    during cycle 2: \\
+    stall\_D = 1 \\
+    stall\_F = 1 or extra f\_pc MUX
+};
+\end{visibleenv}
+\begin{visibleenv}<3>
+\begin{scope}[inner sep=0mm,ultra thick]
+    \node[draw=red,fit=(tbl-4-5)] {};
+\end{scope}
+\node[red,anchor=north,align=left] at ([yshift=-.5cm]tbl-5-5.south) {
+    insert nop in cycle 3 \\
+    during cycle 2: \\
+    bubble\_E = 1
+};
+\end{visibleenv}
+\end{tikzpicture}
+\begin{itemize}
+\item need way to keep pipeline register unchanged to repeat a stage
+\item \small (\textit{and} to replace instruction with a nop)
+\end{itemize}
+\end{frame}

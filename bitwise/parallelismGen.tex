@@ -1,0 +1,14 @@
+\begin{frame}{parallelism}
+    \begin{itemize}
+    \item bitwise operations --- each bit is seperate
+    \vspace{.5cm}
+    \item<2-> same idea can apply to more interesting operations
+    \item<2-> $010 + 011 = 101$; $001 + 010 = 011$ $\rightarrow$ $\myemph{010}00\myemph{001} + \myemph{011}00\myemph{010} = \myemph{101}00\myemph{011}$
+    \vspace{.5cm}
+    \item<3-> sometimes specific HW support
+        \begin{itemize}
+        \item e.g. x86-64 has a ``multiply four pairs of floats'' instruction
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+

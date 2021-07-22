@@ -1,0 +1,146 @@
+\begin{frame}[fragile,label=addrEff]{addressing efficiency}
+    \lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<1>]{~2~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+for (int i = 0; i < N; ++i) {
+  for (int j = 0; j < N; ++j) {
+    float Bij = B[i * N + j];
+    for (int k = kk; k < kk + 2; ++k) {
+      Bij += A[~2~i * N~end~ + k] * A[~2~k * N~end~ + j];
+    }
+    B[i * N + j] = Bij;
+  }
+}
+\end{lstlisting}
+\begin{itemize}
+    \item tons of multiplies by N??
+    \item isn't that slow?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=addrXform]{addressing transformation}
+    \lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+for (int kk = 0; k < N; kk += 2 )
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
+      float Bij = B[i * N + j];
+      float *Akj_pointer = &A[kk * N + j];
+      for (int k = kk; k < kk + 2; ++k) {
+        // Bij += A[i * N + k] * A[k * N + j~];
+        Bij += A[i * N + k] * Akj_pointer;
+        Akj_pointer += N;
+      }
+      B[i * N + j] = ~2~Bij~end~;
+    }
+  }
+\end{lstlisting}
+\begin{itemize}
+    \item transforms loop to \myemph{iterate with pointer}
+    \item \myemph{compiler} will usually do this!
+    \item increment/decrement by N ($\times$ sizeof(float))
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=addressEff]{addressing efficiency}
+    \begin{itemize}
+        \item compiler will \myemph{usually} eliminate slow multiplies
+            \begin{itemize}
+            \item doing transformation yourself often slower if so
+            \end{itemize}
+        \item \lstinline|i * N; ++i| into \lstinline|i_times_N; i_times_N += N|
+        \item way to check: see if assembly uses lots multiplies in loop
+        \item if it doesn't --- do it yourself
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=addrXform2]{another addressing transformation}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<2>]{~1~}{~end~},
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+    for (int i = 0; i < n; i += 4) {
+        B[(i+0) * n + j] += ~1~A[(i+0) * n + k]~end~ * A[k * n + j];
+        B[(i+1) * n + j] += ~1~A[(i+1) * n + k]~end~ * A[k * n + j];
+        // ...
+\end{lstlisting}
+\hrule
+\begin{lstlisting}
+    float *Ai0_base = &A[k];
+    float *Ai1_base = Ai0_base + n;
+    float *Ai2_base = Ai1_base + n;
+    // ...
+    for (int i = 0; i < n; i += 4) {
+        B[(i+0) * n + j] += ~1~Ai0_base[i*n]~end~ * A[k * n + j];
+        B[(i+1) * n + j] += ~1~Ai1_base[i*n]~end~ * A[k * n + j];
+        // ...
+\end{lstlisting}
+    \begin{itemize}
+    \item compiler will do this, too
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=addrXform2Backfire]{another addressing transformation}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+    for (int i = 0; i < n; i += ~2~20~end~) {
+        B[(i+0) * n + j] += A[(i+0) * n + k] * A[k * n + j];
+        B[(i+1) * n + j] += A[(i+1) * n + k] * A[k * n + j];
+        // ...
+\end{lstlisting}
+\hrule
+\begin{lstlisting}
+    float *Ai0_base = &A[0*n+k];
+    float *Ai1_base = Ai0_base + n;
+    float *Ai2_base = Ai1_base + n;
+    // ...
+    for (int i = 0; i < n; i += ~2~20~end~) {
+        B[(i+0) * n + j] += Ai0_base[i*n] * A[k * n + j];
+        B[(i+1) * n + j] += Ai1_base[i*n] * A[k * n + j];
+        // ...
+\end{lstlisting}
+    \begin{itemize}
+    \item storing 20 \lstinline|AiX_base|? --- need the stack
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=addrXform2BackfireAlt]{alternative addressing transformation}
+\lstset{language=C,style=smaller,
+    moredelim=**[is][\btHL<2>]{~2~}{~end~},
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+    float *Ai0_base = &A[0*n+k];
+    float *Ai1_base = Ai0_base + n;
+    // ...
+    for (int i = 0; i < n; i += ~2~20~end~) {
+        B[(i+0) * n + j] += Ai0_base[i*n] * A[k * n + j];
+        B[(i+1) * n + j] += Ai1_base[i*n] * A[k * n + j];
+        // ...
+\end{lstlisting}
+\hrule
+\begin{lstlisting}
+    float *Ai0_base = &A[k];
+    for (int i = 0; i < n; i += ~2~20~end~) {
+        float *A_ptr = &Ai0_base[i*n];
+        B[(i+0) * n + j] += *A_ptr * A[k * n + j];
+        A_ptr += n;  // what about multiple accumulators???
+        B[(i+1) * n + j] += *A_ptr * A[k * n + j];
+        // ...
+\end{lstlisting}
+    \begin{itemize}
+    \item more dependencies (latency bound?), more additions?, less registers
+    \item might need multiple accumulator transformation?
+    \end{itemize}
+\end{frame}
+

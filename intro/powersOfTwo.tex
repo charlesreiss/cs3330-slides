@@ -1,0 +1,60 @@
+\begin{frame}[t]{interlude: powers of two}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+\small
+\begin{tabular}{lrl}
+\multicolumn{3}{c}{\ldots} \\
+$2^0$ & $1$ & \\
+$2^1$ & $2$ & \\
+$2^2$ & $4$ & \\
+$2^3$ & $8$ & \\
+$2^4$ & $16$ & \\
+$2^5$ & $32$ & \\
+$2^6$ & $64$ & \\
+$2^7$ & $128$ & \\
+$2^8$ & $256$ & \\
+$2^9$ & $512$ & \\
+$\mathbf 2^{10}$ & $\mathbf{1\;024}$ & {\bf K} (or Ki) \\
+\end{tabular}
+\end{column}
+\begin{column}{0.5\textwidth}
+\small
+\begin{tabular}{lrl}
+\multicolumn{3}{c}{\ldots} \\
+$2^{11}$ & $2\;048$ & \\
+$2^{12}$ & $4\;096$ & \\
+$2^{13}$ & $8\;192$ & \\
+$2^{14}$ & $16\;384$ & \\
+$2^{15}$ & $32\;768$ & \\
+$2^{16}$ & $65\;536$ & \\
+\multicolumn{3}{c}{\ldots} \\
+$\mathbf{2^{20}}$ & $1\;048\;576$ & {\bf M} (or Mi) \\
+\multicolumn{3}{c}{\ldots} \\
+$\mathbf{2^{30}}$ & $1\;073\;741\;824$ & {\bf G} (or Gi) \\
+$2^{31}$ & ${2\;147\;483\;648}$ & \\
+$2^{32}$ & ${4\;294\;967\;296}$ & \\
+\multicolumn{3}{c}{\ldots} \\
+\end{tabular}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{powers of two: forward}
+\begin{itemize}
+    \item<1-> $2^{35}$ \onslide<2->{$=2^5 \cdot 2^{30} = 32G$ (30 = G)}
+    \item<1-> $2^{21}$ \onslide<4->{$=2^1 \cdot 2^{20} = 2M$ (20 = M)}
+    \item<1-> $2^{9}$ \onslide<5->{$= 512$}
+    \item<1-> $2^{14}$ \onslide<6->{$=2^4 \cdot 2^{10} = 16K$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{powers of two: backward}
+\begin{itemize}
+    \item<1-> 16G \onslide<2->{$=16 \cdot 2^{30} = 2^{30 + 4} = 2^{34}$}
+    \item<1-> 128K \onslide<3->{$=128 \cdot 2^{10} = 2^{10 + 7} = 2^{17}$}
+    \item<1-> 4M \onslide<4->{$=4 \cdot 2^{20} = 2^{20 + 2} = 2^{22}$}
+    \item<1-> 256T \onslide<4->{$=256 \cdot 2^{40} = 2^{40 + 8} = 2^{48}$}
+\end{itemize}
+\end{frame}
+
+

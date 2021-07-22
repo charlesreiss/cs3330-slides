@@ -1,0 +1,16 @@
+
+\begin{frame}{on \%rip}
+    \begin{itemize}
+        \item \%rip (\textbf{I}nstruction \textbf{P}ointer) = address of next instruction
+        \item {\tt {\keywordstyle movq} 500(\%rip), \%rax}
+            \begin{itemize}
+                \item rax $\leftarrow$ memory[next instruction address + 500]
+            \end{itemize}
+        \item<2> {\tt label(\%rip)} $\approx$ {\tt label}
+            \begin{itemize}
+            \item different ways of writing address of label in machine code
+            \item (with \%rip --- relative to next instruction)
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+

@@ -1,0 +1,40 @@
+\usetikzlibrary{calc,fit,matrix,positioning}
+
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+
+\begin{frame}[fragile,label=exOpcode1]{extracting opcodes (1)}
+\begin{tikzpicture}
+\node (theTable) {
+\begin{adjustbox}{max width={9cm}}
+\begin{tikzpicture}
+\instrEncodingTable
+    \node[draw,red,ultra thick,fit=(table-2-2) (table-13-2)] {};
+\end{tikzpicture}
+\end{adjustbox}
+};
+\node[above left=-0.25cm and -2cm of theTable] {
+\begin{minipage}{7cm}
+\begin{ccodeNL}
+typedef unsigned char byte;
+int get_opcode(byte *instr) {
+    return ???;
+}
+\end{ccodeNL}
+\end{minipage}
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=exOpcode2]{extracing opcodes (2)}
+\begin{ccodeNL}
+typedef unsigned char byte;
+int get_opcode_and_function(byte *instr) {
+    return instr[0];
+}
+/* first byte = opcode * 16 + fn/cc code */
+int get_opcode(byte *instr) {
+    return instr[0] / 16;
+}
+\end{ccodeNL}
+\end{frame}
+

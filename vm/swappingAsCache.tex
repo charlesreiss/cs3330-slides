@@ -1,0 +1,21 @@
+\begin{frame}{memory as a cache}
+    \begin{itemize}
+    \item fully associative
+        \begin{itemize}
+        \item any virtual address can be stored anywhere in memory
+        \end{itemize}
+    \item cache block $\approx$ page
+    \item cache hits mostly handled by hardware
+        \begin{itemize}
+        \item page table lookup (+ caching of lookup)
+        \end{itemize}
+    \item cache misses handled by OS
+        \begin{itemize}
+        \item via page fault handler
+        \end{itemize}
+    \item OS decides replacement policy
+        \begin{itemize}
+        \item whatever the code in page fault handler does
+        \end{itemize}
+    \end{itemize}
+\end{frame}

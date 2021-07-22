@@ -1,0 +1,32 @@
+\begin{frame}[fragile,label=Muxes]{multiplexers}
+    % FIXME: background colors for output/select 
+    \newcommand{\cA}{\color{red!80!black}}
+    \newcommand{\cB}{\color{blue!80!black}}
+    \newcommand{\cC}{\color{green!60!black}}
+    \newcommand{\cD}{\color{violet!90!black}}
+    \begin{tikzpicture}[circuit logic]
+        \node [draw,mux,inputs={nnnn},info={center:MUX},minimum height=3cm,minimum width=1.5cm] (theMux) {};
+        \draw[thick,latex-] (theMux.input 1) -- +(-.5cm,0cm) node[left] (a) {\cA a};
+        \draw[thick,latex-] (theMux.input 2) -- +(-.5cm,0cm) node[left] (b) {\cB b};
+        \draw[thick,latex-] (theMux.input 3) -- +(-.5cm,0cm) node[left] (c) {\cC c};
+        \draw[thick,latex-] (theMux.input 4) -- +(-.5cm,0cm) node[left] (d) {\cD d};
+        \draw[thick,-latex] (theMux.output) -- +(.5cm,0cm) node[right] (output) {\strut output};
+        \draw[thin,latex-] (theMux.select) -- +(0cm,-.5cm) node[below] (select) {\strut select};
+        \onslide<2->{
+            \node[right=1pt of select] {\strut= {\cA 0} or {\cB 1} or {\cC 2} or {\cD 3}};
+            \node[right=1pt of output] {\strut= {\cA a} or {\cB b} or {\cC c} or {\cD d}};
+        }
+        \onslide<3->{
+            \node[below right=.1cm and -2cm of select,align=left] {
+                truth table: \\
+                \begin{tabular}{ll|l}
+                select bit 1 & select bit 0 & output (many bits) \\
+                \tt 0 & \tt 0 & \cA a \\
+                \tt 0 & \tt 1 & \cB b \\
+                \tt 1 & \tt 0 & \cC c \\
+                \tt 1 & \tt 1 & \cD d \\
+                \end{tabular}
+            };
+        }
+    \end{tikzpicture}
+\end{frame}

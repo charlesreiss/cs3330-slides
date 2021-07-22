@@ -1,0 +1,60 @@
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing}
+
+\begin{frame}[fragile,label=bitwiseReasons]{and/or/xor}
+\begin{tikzpicture}
+\node (and) {
+\color{red!50!black}
+\begin{tabular}{r|ll}
+AND & \bf 0 & \bf 1 \\ \hline
+\bf0 & 0 & 0 \\
+\bf1 & 0 & 1 \\
+\end{tabular}
+};
+\node[right=2.5cm of and] (or) {
+\color{blue!50!black}
+\begin{tabular}{r|ll}
+OR & \bf0 & \bf1 \\ \hline
+\bf0 & 0 & 1 \\
+\bf1 & 1 & 1 \\
+\end{tabular}
+};
+\node[right=2.5cm of or] (xor) {
+\color{green!50!black}
+\begin{tabular}{r|ll}
+XOR & \bf0 & \bf1 \\ \hline
+\bf0 & 0 & 1 \\
+\bf1 & 1 & 0 \\
+\end{tabular}
+};
+\node[below=.5cm of and] {
+    \color{red!50!black}\lstinline|&|
+};
+\node[below=1.5cm of and,align=left] (and why) {
+    \color{red!50!black}conditionally clear bit \\
+    \color{red!50!black}conditionally keep bit
+};
+\node[below=.5cm of and why, align=left,font=\fontsize{9}{10}\selectfont] {
+    mask: 0s = clear; 1s = keep \\
+    e.g. 101010101\ldots = \\ clear every other bit
+};
+\node[below=.5cm of or] {
+    \color{blue!50!black}\lstinline+|+
+};
+\node[below=1.5cm of or] (or why) {
+    \color{blue!50!black}conditionally set bit \\
+};
+\node[below=1.5cm of or why, align=left,font=\fontsize{9}{10}\selectfont] {
+    mask: 1s = set; 0s = keep same \\
+    e.g. 101010101\ldots = \\ set every other bit
+};
+\node[below=.5cm of xor] {
+    \color{green!50!black}\lstinline+^+
+};
+\node[below=1.5cm of xor]  (xor why) {
+    \color{green!50!black}conditionally flip bit
+};
+\node[below=1.5cm of xor why, align=left,font=\fontsize{9}{10}\selectfont] {
+    mask: 1s = flip; 0s = keep same \\
+};
+\end{tikzpicture}
+\end{frame}

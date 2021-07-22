@@ -1,0 +1,159 @@
+\usetikzlibrary{fit,positioning,matrix}
+
+\begin{frame}[label=struct,fragile]{\tt struct}
+\small
+    \highBox<2>{startA}{endA}
+    \highBox<2>{startB}{endB}
+\begin{ccodeNL}
+struct rational {
+    int numerator;
+    int denominator;
+};
+// ...
+@\tikzmark{startA}@struct rational@\tikzmark{endA}@ two_and_a_half;
+two_and_a_half.numerator = 5;
+two_and_a_half.denominator = 2;
+@\tikzmark{startB}@struct rational@\tikzmark{endB}@ *pointer = &two_and_a_half;
+printf("%d/%d\n",
+       pointer->numerator,
+       pointer->denominator);
+\end{ccodeNL}
+\end{frame}
+
+\begin{frame}[fragile,label=typedef]{\tt typedef}
+instead of writing:
+\begin{ccodeNL}
+...
+unsigned int a;
+unsigned int b;
+unsigned int c;
+\end{ccodeNL}
+can write:
+\begin{ccodeNL}
+typedef unsigned int uint;
+...
+uint a;
+uint b;
+uint c;
+\end{ccodeNL}
+\end{frame}
+
+\begin{frame}[fragile,label=typedefStruct1]{\tt typedef struct (1)}
+\small
+\highBox<2>{startA}{endA}
+\begin{ccodeNL}
+struct other_name_for_rational {
+    int numerator;
+    int denominator;
+};
+@\tikzmark{startA}@typedef struct other_name_for_rational rational;@\tikzmark{endA}@
+// ...
+rational two_and_a_half;
+two_and_a_half.numerator = 5;
+two_and_a_half.denominator = 2;
+rational *pointer = &two_and_a_half;
+printf("%d/%d\n",
+       pointer->numerator,
+       pointer->denominator);
+\end{ccodeNL}
+\end{frame}
+
+\begin{frame}[fragile,label=typedefStruct2]{\tt typedef struct (2)}
+\highBox<2>{startA}{endA}
+\highBox<2>{startB}{endB}
+\highBox<3>{startC}{endC}
+\vspace{-8mm}
+\begin{ccodeS}
+struct other_name_for_rational {
+    int numerator;
+    int denominator;
+};
+typedef struct other_name_for_rational rational;
+\end{ccodeS}
+\vspace{-1mm}
+\begin{ccodeS}
+// same as:
+typedef struct @\tikzmark{startA}@other_name_for_rational@\tikzmark{endA}@ {
+    int numerator;
+    int denominator;
+} @\tikzmark{startB}@rational@\tikzmark{endB}@;
+\end{ccodeS}
+\vspace{-1mm}
+\begin{visibleenv}<3->
+\begin{ccodeS}
+// almost the same as:
+typedef struct {
+    int numerator;
+    int denominator;
+} @\tikzmark{startC}@rational@\tikzmark{endC}@;
+\end{ccodeS}
+\end{visibleenv}
+\end{frame}
+
+
+\begin{frame}[fragile,label=typedefStruct3]{\tt typedef struct (3)}
+\highBox<2>{startA}{endA}
+\highBox<2>{startB}{endB}
+\highBox<3>{startC}{endC}
+\vspace{-8mm}
+\begin{ccodeS}
+struct other_name_for_rational {
+    int numerator;
+    int denominator;
+};
+typedef struct other_name_for_rational rational;
+\end{ccodeS}
+valid ways to declare an instance:
+\begin{ccodeS}
+struct other_name_for_rational some_variable;
+rational some_variable;
+\end{ccodeS}
+INVALID ways:
+\begin{ccodeS}
+/* INVALID: */ struct rational some_variable;
+/* INVALID: */ other_name_for_rational some_variable;
+\end{ccodeS}
+\end{frame}
+
+
+\begin{frame}[fragile,label=structRef]{structs aren't references}
+\begin{tikzpicture}
+\node (code) {
+\begin{minipage}{7cm}
+\begin{ccodeNL}
+typedef struct {
+    long a; long b; long c;
+} triple;
+...
+
+triple foo;
+foo.a = foo.b = foo.c = 3;
+triple bar = foo;
+bar.a = 4;
+// foo is {3, 3, 3}
+// bar is {4, 3, 3}
+\end{ccodeNL}
+\end{minipage}
+};
+\matrix (stackFrame) [matrix of nodes,
+    row sep=0mm,
+    inner sep=0mm,
+    font=\small,
+    nodes={draw,rectangle,text width=3cm,minimum height=4mm,fill=white,align=center},
+    right=1cm of code,
+    fill=white,opacity=0.9,
+    outer sep=4mm
+] {
+    \ldots \\
+    return address \\
+    |[minimum height=1cm]| callee saved registers \\
+    \tt foo.c \\
+    \tt foo.b \\
+    \tt foo.a \\
+    \tt bar.c \\
+    \tt bar.b \\
+    \tt bar.a \\
+};
+\end{tikzpicture}
+\end{frame}
+

@@ -1,0 +1,70 @@
+\begin{frame}[fragile,label=squashSB]{squashing with stall/bubble}
+\begin{tikzpicture}
+    \matrix[tight matrix,matrix stages,
+        row sep=.5cm,
+        nodes={text width=2cm,minimum height=0.5cm,text depth=.1ex,font=\small},
+        column 1/.append style={nodes={text width=.8cm}},
+        column 2/.append style={nodes={text width=2.2cm}},
+        column 3/.append style={nodes={text width=1.8cm}},
+        column 4/.append style={nodes={text width=2.6cm}},
+        column 5/.append style={nodes={text width=2.0cm}},
+        column 6/.append style={nodes={text width=1.8cm}}] (timeline) {
+        time \& fetch \& decode \& execute \& memory \& writeback \\
+        1    \& subq   \\
+        2    \& jne \& subq \\
+        3    \& addq [?] \& jne \& subq (set ZF) \\
+        4    \& rmmovq [?] \& addq [?] \& jne (use ZF) \& subq \\
+        5    \& xorq  \& nothing \& nothing \& jne (done) \& subq \\
+    };
+    \tikzset{
+        stall/.style={thick,blue!80!black,-Latex,font=\small,inner sep=0.1mm},
+        bubble/.style={thick,green!80!black,-Latex,font=\small,inner sep=0.1mm},
+        normal/.style={thick,black!80,-Latex,font=\small,inner sep=0.1mm},
+    }
+    \node[align=left,below=0cm of timeline,anchor=north west] at (timeline.south west) {
+        \color{blue!80!black}{stall (S) = keep old value};
+        \color{black!80}{normal (N) = use new value}  \\
+        \color{green!80!black}{bubble (B) = use default (no-op)};  
+    };
+    \draw[normal] (timeline-2-2.south) -- (timeline-3-2.north) node[above left] {};
+    \draw[normal] (timeline-2-2.south) -- (timeline-3-3.north) node[above right] {N};
+    \begin{visibleenv}<2->
+    \draw[normal] (timeline-3-2.south) node[below left] {} -- (timeline-4-2.north);
+    \draw[normal] (timeline-3-2.south) -- (timeline-4-3.north) node[above right] {N};
+    \draw[normal] (timeline-3-3.south) -- (timeline-4-4.north) node[above right] {N};
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+    \draw[normal] (timeline-4-2.south) node [below left] {} -- (timeline-5-2.north);
+    \draw[normal] (timeline-4-2.south) -- (timeline-5-3.north) node[above right] {N} ;
+    \draw[normal] (timeline-4-3.south) -- (timeline-5-4.north) node[above right] {N};
+    \draw[normal] (timeline-4-4.south) -- (timeline-5-5.north) node[above right] {N};
+    \end{visibleenv}
+    \begin{visibleenv}<4->
+    \draw[normal] (timeline-5-2.south)  node[below left] {***} -- (timeline-6-2.north);
+    \draw[bubble] (timeline-5-2.south)  -- (timeline-6-3.north) node[above right] (bubbleA) {B};
+    \draw[bubble] (timeline-5-3.south) -- (timeline-6-4.north) node[above right] (bubbleB) {B};
+    \draw[normal] (timeline-5-4.south) -- (timeline-6-5.north) node[above right] {N};
+    \draw[normal] (timeline-5-5.south) -- (timeline-6-6.north) node[above right] {N};
+    \end{visibleenv}
+    \tikzset{every label/.style={opacity=1.0,black}}
+    \begin{visibleenv}<5->
+        \node[draw,very thick,red,fit=(bubbleA) (bubbleB),label={
+            [font=\small,align=left,fill=white,draw,thick]south:{
+                can compute bubble signal based on execute phase \\
+                won't even start CC write for {\tt addq}
+            }
+        }] {};
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile,label=squashHCL2D]{squashing HCLRS}
+\begin{Verbatim}
+just_detected_mispredict = 
+    e_icode == JXX && !e_branchTaken;
+bubble_D = just_detected_mispredict || ...;
+bubble_E = just_detected_mispredict || ...;
+\end{Verbatim}
+\end{frame}
+

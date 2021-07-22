@@ -1,0 +1,65 @@
+
+\begin{frame}<2->{register tolerances}
+    \tikzset{
+        out1/.style={color=blue!80!black},
+        out2/.style={color=green!40!white},
+        out3/.style={color=violet!60!black},
+        out4/.style={color=orange!40},
+    }
+    \begin{tikzpicture}
+        \node[hReg={}] (pc) {};
+        \draw[a,latex-] (pc.west) -- ++(-1cm, 0cm);
+        \draw[a] (pc.east) -- ++(1cm, 0cm);
+        \node[below=1.5cm of pc] (everyCC) {};
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.5cm)$)}] 
+            \draw[very thick] (0, 0) -- (1, 0) -- (1, 1) -- (2, 1) -- (2, 0) -- (3, 0) -- (3, 1) -- (4, 1);
+            \draw[ultra thick,red!95!black] (1, 0) -- (1, 1);
+            \draw[ultra thick,red!95!black] (3, 0) -- (3, 1);
+        \end{scope}
+        \begin{scope}[shift={($(everyCC.east)+(1cm,-.6cm)$)}] 
+            \fill[out1] (0, 0) rectangle (0.99, -.5);
+            \fill[out2] (1.01, 0) rectangle (2.99, -.5);
+            \fill[out3] (3.01, 0) rectangle (4., -.5);
+            \node[anchor=east,font=\small] at (0,-.25) {register output};
+            \fill[pattern=north west lines] (0.0, -0.6) rectangle (0.2, -1.1);
+            \fill[out2] (0.2, -0.6) rectangle (1.01, -1.1);
+            \fill[pattern=north west lines] (1.01, -0.6) rectangle (1.7, -1.1);
+            \fill[out3] (1.7, -0.6) rectangle (3.01, -1.1);
+            \fill[pattern=north west lines] (3.01, -0.6) rectangle (3.9, -1.1);
+            \fill[out4] (3.9, -0.6) rectangle (4., -1.1);
+            \node[anchor=east,font=\small] at (0,-.85) {register input};
+            \coordinate (changeSouthWest) at (0.9, -1.15);
+            \coordinate (changeNorthEast) at (1.1, 0.05);
+        \end{scope}
+        \begin{visibleenv}<2->
+            \draw[line width=1pt,densely dotted,black] (changeSouthWest) rectangle (changeNorthEast);
+        \end{visibleenv}
+        \begin{visibleenv}<3->
+            \node[draw,rectangle,line width=2pt,anchor=west,fill=white,
+                  inner sep=2pt,outer sep=0pt,
+                  minimum width=6.2cm,minimum height=7.2cm] (zoomBox)at ([xshift=1cm,yshift=1cm]changeNorthEast) {
+                \begin{tikzpicture}
+                \clip (-.1,-.1) rectangle (6.1,7.1);
+                %\draw [help lines,step=1] (-1,-1) grid (7,8);
+                \fill[out1] (-1, 4) rectangle (3, 7);
+                \fill[out2] (5, 4) rectangle (8, 7);
+                \fill[out2] (-1, 0) rectangle (3.1, 3);
+                \fill[pattern=north west lines] (3.1, 0) rectangle (8, 3);
+                \node[anchor=center,align=center] at (4, 5.5) {output \\changes};
+                \draw[dashed, line width=2pt] (3,4) rectangle (5, 7);
+                \node[anchor=center,align=center] at (2, 1.5) {input\\must not\\change};
+                \draw[dashed, line width=2pt] (1,0) rectangle (3.1, 3);
+                \begin{visibleenv}<4->
+                    \draw[Latex-Latex,red, line width=3pt,inner sep=4pt, outer sep=0pt,
+                          fill=none,minimum width=0cm,minimum height=0cm] (1,3.5) -- (5,3.5) node [midway,anchor=center,fill=white] {register delay};
+                \end{visibleenv}
+                \end{tikzpicture}
+                % TODO: picture here of changing region           
+            };
+            \draw[thick] (changeNorthEast) -- (zoomBox.north west);
+            \draw[thick] (changeNorthEast |- changeSouthWest) -- (zoomBox.south west);
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}
+
+

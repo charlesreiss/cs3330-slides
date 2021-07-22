@@ -1,0 +1,104 @@
+
+\begin{frame}{are pages too small?}
+    \begin{itemize}
+    \item program accessing a lot of memory? lots of TLB entries
+        \begin{itemize}
+        \item lots of TLB misses
+        \item lots of space for page tables
+        \end{itemize}
+    \item often, really like larger pages,\ldots
+    \item but not all the time
+        \begin{itemize}
+        \item still want to be able to allocate small amounts of memory to small programs
+        \item want to load/store small amounts of data from disk
+        \end{itemize}
+    \item common to provide variable-sized pages for OS
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{``huge pages''}
+\begin{tikzpicture}
+    \tikzset{
+        addrPart/.style={draw,minimum height=.6cm},
+        pt/.style={draw,ultra thick,minimum height=2cm,minimum width=3.25cm,align=center},
+        pte/.style={draw,thin,minimum height=.6cm,minimum width=3.25cm,font=\small,fill=black!5},
+        pteX/.style={draw,thin,minimum height=.6cm,minimum width=3.25cm,font=\fontsize{11}{11}\selectfont,fill=black!5},
+        >=Latex,
+        compute/.style={thick,->},
+        computeB/.style={thick,->,dashed},
+        computeR/.style={thick,->,red},
+    }
+    \node[addrPart,minimum width=4.25cm] (vpn1) {VPN part 1};
+    \node[addrPart,right=0cm of vpn1,minimum width=4.25cm] (vpn2) {VPN part 2};
+    \node[addrPart,right=0cm of vpn2,minimum width=5cm] (po) {(normal) page offset};
+
+    \node[pt,below=0.25cm of vpn1,xshift=1cm] (first) {
+    };
+    
+    \node[draw,anchor=east] (ptbr) at ([xshift=-.5cm,yshift=.25cm]first.south west) {PTBR};
+    \draw[compute] (ptbr.east) -- ++(.1cm,0cm) |- (first.south west);
+    \node[pteX] (pte1) at ([yshift=1.3cm]first.south) {page table entry~~~~};
+    \node[fill=yellow!50!white,font=\small,anchor=east] at (pte1.east) {0};
+    \draw[computeB] ([xshift=1.2cm]vpn1.south west) |- (pte1.south west);
+
+    \node[pt,below=0.25cm of vpn2,xshift=1cm] (second) {
+    };
+    
+    \draw[compute] (pte1.east) -- ++(.25cm,0cm) |- (second.south west);
+    
+    \node[pte] (pte2) at ([yshift=0.8cm]second.south) {page table entry};
+    \draw[computeB] ([xshift=1.2cm]vpn2.south west) |- (pte2.south west);
+    
+    \node[pt,below=.25cm of po,xshift=1cm] (final) {
+        physical page \\ (normal)
+    };
+    \draw[compute] (pte2.east) -- ++(.25cm,0cm) |- (final.south west);
+    \draw[computeB] ([xshift=1.2cm]po.south west) |- ([yshift=1.5cm]final.south west);
+
+    \node[addrPart,minimum width=4.25cm,below=2.5cm of vpn1] (vpn1B) {VPN part 1};
+    \node[addrPart,minimum width=9.25cm,right=0cm of vpn1B] (vpn2B) {``huge page'' page offset};
+
+    \node[pt,below=1.25cm of first] (firstB) {};
+    \node[draw,anchor=east] (ptbrB) at ([xshift=-.5cm,yshift=.25cm]firstB.south west) {PTBR};
+    \node[pt,overlay,minimum height=5cm,below=1.25cm of final] (finalB) {
+            physical page \\ (huge)
+    };
+    
+    \draw[compute] (ptbrB.east) -- ++(.1cm,0cm) |- (firstB.south west);
+    
+    \node[pteX] (pte1B) at ([yshift=1.3cm]firstB.south) {page table entry~~~};
+    \node[fill=yellow!50!white,font=\small,anchor=east] at (pte1B.east) {1};
+    \draw[compute] (pte1B.east) -- ++ (4.5cm, 0cm) |- (finalB.south west);
+    \draw[computeB] ([xshift=-3.75cm]vpn2B.south east) |- ([yshift=1.5cm]finalB.south west);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{big pages on x86-64}
+\begin{itemize}
+\item option for 2MB or 1GB pages instead of 4KB pages
+\item first, second, third-level page table entries can point to either
+    \begin{itemize}
+    \item next page table (normal case), or
+    \item a ``huge page'' 
+    \end{itemize}
+\item big changes to TLB needed?
+    \begin{itemize}
+    \item Intel/AMD don't seem to disclose what they do,\ldots
+    \item but seems like Intel has a special cache for non-fourth(last)-level PTEs
+    \item (which speeds up page tabe lookup for normal pages)
+    \item and use this for `huge page' PTEs, too
+    \end{itemize}
+    \vspace{1cm}
+\item processes can have mix of huge and normal apges
+\end{itemize}
+\end{frame}
+
+\begin{frame}{why big pages?}
+\begin{itemize}
+\item TLB misses can create same sort of problems as cache misses
+\item can do cache blocking to help with TLB misses but\ldots
+    \vspace{.5cm}
+\item big pages are relatively easy to implement
+\item might dramatically reduce TLB misses
+\end{itemize}
+\end{frame}

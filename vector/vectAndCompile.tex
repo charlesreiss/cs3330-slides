@@ -1,0 +1,18 @@
+
+
+\begin{frame}[fragile,label=explicitVec]{vector instructions and compilers}
+\begin{itemize}
+    \item compilers can sometimes figure out how to use vector instructions
+        \begin{itemize}
+        \item (and have gotten much, much better at it over the past decade)
+        \end{itemize}
+    \item but easily messsed up:
+    \begin{itemize}
+        \item by aliasing
+        \item by conditionals
+        \item by some operation with no vector instruction
+        \item \ldots
+    \end{itemize}
+\end{itemize}
+\end{frame}
+

@@ -1,0 +1,41 @@
+\begin{frame}[fragile,label=seqRearranged]{ret paths}
+    \begin{tikzpicture}[circuit logic,remember picture]
+        \seqStagesStyles
+        \tikzset{
+            dmemPCMux/.style={visible on=<0|handout:0>,overlay},
+            dmemOutToPC/.style={visible on=<0|handout:0>,overlay},
+            dmemPCNoMux/.style={visible on=<1-|handout:1->},
+        }
+        \renewcommand{\pcMemDist}{1.25cm}
+        \renewcommand{\fetchPrePCDist}{.5cm}
+        \renewcommand{\ilenOffset}{.3cm}
+        \renewcommand{\prePcDist}{5mm}
+        \renewcommand{\pcLabel}{pred.\\PC}
+        \seqStagesBase
+        \seqStagesBoxes
+        \node[draw,mux,inputs={nnn},fill=white,minimum width=.1cm,minimum height=1cm,anchor=input 2] (postPCMux) at ([xshift=.45cm]pc.east) {};
+        \draw[aR] (postPCMux.input 1) -| ++(-.3cm,.75cm) node[font=\scriptsize,above,align=center,xshift=.3cm] {jmp target\\(from other stage)};
+
+        \coordinate (dmemOutHeight1) at ([yshift=-.5cm,xshift=-.5cm]regs.south west);
+        \begin{visibleenv}<1>
+            \draw[a,red] (dmemDataOut) -- ++(2.5mm,0) |- ([yshift=-.5cm,xshift=-.5cm]regs.south west) --
+                ++ (0cm,-.25cm) -| ([xshift=-3.5mm]postPCMux.input 3) -- (postPCMux.input 3);
+        \end{visibleenv}
+        \seqStagesRegs
+        \begin{visibleenv}<2-3>
+            \draw[a,red,dotted,ultra thick] (dmemDataOut) -| ([xshift=2.5mm]dmemDataOut |- dmemOutHeight1) --
+                ([xshift=1cm]dmemOutHeight1 -| mwRegs.west) |- ([yshift=-.25cm]mwRegs.south)
+                -| ([xshift=-3.5mm]postPCMux.input 3) -- (postPCMux.input 3);
+        \end{visibleenv}
+        \begin{visibleenv}<3>
+            \draw[red,ultra thick] (dmemInLow -| emRegs.east) -- (dmemInLow) -- (dmemDataOut) -|
+                ([xshift=2.5mm]dmemDataOut |- dmemOutHeight1) -- ([xshift=1cm]dmemOutHeight1 -| mwRegs.west)
+                |- ([yshift=-.25cm]mwRegs.south) -| ([xshift=-3.5mm]postPCMux.input 3) --
+                (postPCMux.input 3) -- (postPCMux.output) -- (imem.east) -| ([xshift=1mm]iLen.east)
+                -| ([xshift=-\prePcDist]pc.west) -- (pc.west);
+            \node[overlay,fill=white,draw=red!50!black,ultra thick,font=\Large] at (current page.center) {
+                very long critical path
+            };
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

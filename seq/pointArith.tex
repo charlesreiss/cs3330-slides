@@ -1,0 +1,44 @@
+\begin{frame}[fragile]{pointer arithmetic}
+\begin{tikzpicture}
+    \tikzset{
+        mybox part/.style={minimum width=2cm,font=\scriptsize,align=left,fill=black!10!white},
+        mybox/.style={draw,rectangle,mybox part},
+        mycodebox/.style={draw,rectangle,mybox part,fill=white},
+        mylabel/.style 2 args={label={[label distance=-1mm,inner sep=1mm,fill=white,draw,rectangle,font=\footnotesize,visible on=#2]90:#1}},
+        myline/.style={line width=1pt,-latex},
+    }
+    \matrix[matrix of nodes,
+        mylabel={read-only data}{<1->},mybox,
+        nodes={draw,rectangle,minimum width=0mm,minimum height=.5cm, inner sep=0mm,anchor=south,
+               font=\tt\scriptsize},
+        xshift=3cm,
+        inner sep=0mm,outer sep=0mm,
+    ] (data) {
+        \sf\ldots\&\lstinline|'H'|\&\lstinline|'e'|\&\lstinline|'l'|\&%
+        \lstinline|'l'|\&\lstinline|'o'|\&\lstinline|' '|\&%
+        \lstinline|'W'|\&\lstinline|'o'|\&\lstinline|'r'|\&%
+        \lstinline|'l'|\&\lstinline|'d'|\&\lstinline|'!'|\&%
+        \lstinline|'\0'|\&\sf\ldots\\
+    };
+    \node[mybox,below=2cm of data-1-2] (ptr0) {\tt hello + 0};
+    \node[below=0pt of ptr0,visible on=<2->] (ptr0ex) {\scriptsize\tt 0x4005C0};
+    \draw[myline] (ptr0) -- (data-1-2);
+    \node[mybox,right=2cm of ptr0] (ptr5) {\tt hello + 5};
+    \draw[myline] (ptr5) -- (data-1-7);
+    \node[below=0pt of ptr5,visible on=<2->] (ptr5ex) {\scriptsize\tt 0x4005C5};
+
+    \node[below=0pt of ptr0ex,visible on=<2->,font=\scriptsize] (ptr0ex2) {
+        \lstinline|*(hello + 0)| is \lstinline|'H'|
+    };
+    \node[below=0pt of ptr5ex,visible on=<2->,font=\scriptsize] (ptr5ex2) {
+        \lstinline|*(hello + 5)| is \lstinline|' '|
+    };
+
+    \node[below=0pt of ptr0ex2,visible on=<3->,font=\scriptsize] (ptr0ex3) {
+        \lstinline|hello[0]| is \lstinline|'H'|
+    };
+    \node[below=0pt of ptr5ex2,visible on=<3->,font=\scriptsize] (ptr5ex3) {
+        \lstinline|hello[5]| is \lstinline|' '|
+    };
+\end{tikzpicture}
+\end{frame}

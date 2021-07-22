@@ -1,0 +1,155 @@
+\begin{frame}[fragile,label=AddCPUHCL]{addq CPU: HCL}
+    \instrEncodingStyles
+    \begin{tikzpicture}
+        \tikzset{
+            dmemNorm/.style={visible on=<0|handout:0>},
+            dmemPre/.style={visible on=<0|handout:0>},
+            ccsNorm/.style={visible on=<0|handout:0>},
+            isStat/.style={visible on=<0|handout:0>},
+            isStatReg/.style={visible on=<0|handout:0>},
+            regPre/.style={visible on=<0|handout:0>},
+            regNormLabelM/.style={visible on=<0|handout:0>},
+            regPreSingle/.style={visible on=<0|handout:0>},
+            instrRegsPre/.style={visible on=<0|handout:0>},
+            regPre/.style={visible on=<0|handout:0>},
+            hiOver/.style={opacity=0.2,fill=green},
+            hiOverS/.style={opacity=0.2,fill=green,inner sep=0.25mm},
+        }
+        \circuitState
+        \circuitStatePre
+        \begin{visibleenv}<1->
+            \node[above right=2cm and 0cm of imem.east,font=\small] (instrSplit) {\rnifyWide{\%rXX}~~\rnifyWide{\%rYY}};
+            \draw[very thick,dashed,-Latex] (instrSplit) -- ([xshift=.15cm]imem.east);
+            \draw (imem.east) -- ++(0.35cm, 0cm);
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \draw[a] (pc.east) -- (imemAddr);
+            \node[logicBlock,right=0.5cm of imem] (split) {split};
+            \draw[a] (imem) -- (split);
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \draw[b] ([yshift=.1cm]split.east) -- ([yshift=.1cm,xshift=.1cm]split.east) |- (regSelect1);
+            \draw[b] ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect2);
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \node[logicBlock,align=center,anchor=north,font=\small] (proc opcode) at ([yshift=-.5cm]split.south) {
+                convert\\opcode
+            };
+            \draw[b] (split.south) -- (proc opcode.north);
+            \draw[b] (proc opcode.south) -- ++(0cm, -.25cm) node[below,font=\fontsize{9}{10}\selectfont\tt] {Stat};
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \coordinate (regReadMid) at ($(regRead1)!0.5!(regRead2)$);
+            \node[logicBlock,right=1.5cm of regReadMid,align=center] (add) {add};
+            \draw[a] (regRead1) -- (add);
+            \draw[a] (regRead2) -- (add);
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \coordinate (addBelowRight) at ($(add.south east) + (.5cm,-3.5cm)$);
+            \coordinate (regWriteIn2Left)  at ($(regWriteIn2) + (-.8cm,0cm)$);
+            \coordinate (addBelowLeft) at (addBelowRight -| regWriteIn2Left);
+            \draw[a] (add.east) -| (addBelowRight) -- (addBelowLeft) -- (regWriteIn2Left) |- (regWriteIn2);
+            \draw[b] ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect4);
+        \end{visibleenv}
+        \begin{visibleenv}<1->
+            \node[logicBlock,above=.5cm of pc,font=\small,xshift=-.2cm] (addOne) {+2};
+            \draw[a] (pc.east) -- +(.8cm, 0cm) |- (addOne.east);
+            \draw[a] (addOne.west) -- +(-.5cm, 0cm) |- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<2->
+        \tikzset{
+            code block/.style={
+                font=\tt\fontsize{9.5}{10.5}\selectfont,
+                inner sep=0mm,
+                text height=.7em,
+                align=left
+            },
+        }
+        \node[code block,anchor=north west] (pc decl 1) at ([yshift=-1.8cm,xshift=-1cm]pc.south) {
+register pP \{
+};
+        \node[code block,anchor=north west] (pc decl 2) at (pc decl 1.south west) {
+\hspace{1cm}pc : 64 = 0;
+};
+        \node[code block,anchor=north west] (pc decl 3) at (pc decl 2.south west) {
+\}
+};
+        \node[code block,anchor=north west] (pc incr) at (pc decl 3.south west) {
+p\_pc = P\_pc + 2;
+};
+        \node[code block,anchor=north west] (imem in) at (pc incr.south west) {
+pc = P\_pc;
+};
+        \coordinate (col 2 base) at ([xshift=1.5cm]pc decl 1.north east);
+        \node[code block,anchor=north west] (decl wires 1) at (col 2 base) {
+wire opcode : 4;
+        };
+        \node[code block,anchor=north west] (decl wires 2) at (decl wires 1.south west) {
+wire rA : 4, rB : 4;
+        };
+        \node[code block,anchor=north west] (split 1) at (decl wires 2.south west) {
+opcode = i10bytes[4..8];
+};
+        \node[code block,anchor=north west] (split 2) at (split 1.south west) {
+rA = i10bytes[12..16];
+};
+        \node[code block,anchor=north west] (split 3) at (split 2.south west) {
+ rB = i10bytes[8..12];
+};
+        \coordinate (col 3 base) at ([xshift=2.5cm]decl wires 1.north east);
+        \node[code block,anchor=north west] (reg srcA) at (col 3 base) {
+reg\_srcA = rA;
+        };
+        \node[code block,anchor=north west] (reg srcB) at (reg srcA.south west) {
+reg\_srcB = rB;
+        };
+        \node[code block,anchor=north west] (reg dstE) at (reg srcB.south west) {
+reg\_dstE = rB;
+        };
+        \node[code block,anchor=north west] (reg inputE 1) at (reg dstE.south west) {
+reg\_inputE =
+        };
+        \node[code block,anchor=north west] (reg inputE 2) at (reg inputE 1.south west) {
+\hspace{1cm} reg\_outputA +
+        };
+        \node[code block,anchor=north west] (reg inputE 3) at (reg inputE 2.south west) {
+\hspace{1cm} reg\_outputB;
+        };
+        \end{visibleenv}
+        \begin{visibleenv}<3>
+            \node[hiOver,fit=(pc)] {};
+            \node[hiOverS,fit=(pc decl 1) (pc decl 2) (pc decl 3)] {};
+        \end{visibleenv}
+        \begin{visibleenv}<4>
+            \node[hiOverS,fit=(pc incr)] {};
+            \draw[line width=10pt,green,opacity=0.2] (pc.east) -- +(.8cm, 0cm) |- (addOne.east);
+            \draw[line width=10pt,green,opacity=0.2] (addOne.west) -- +(-.5cm, 0cm) |- (pc.west);
+        \end{visibleenv}
+        \begin{visibleenv}<5>
+            \node[hiOverS,fit=(imem in)] {};
+            \draw[line width=10pt,green,opacity=0.2] (pc.east) -- (imem.west);
+        \end{visibleenv}
+        \begin{visibleenv}<6>
+            \node[hiOverS,fit=(split 1) (split 2) (split 3)] {};
+            \begin{pgfonlayer}{bg}
+                \begin{visibleenv}<6>
+                \node[hiOver,fit=(split)] {};
+                \end{visibleenv}
+            \end{pgfonlayer}
+        \end{visibleenv}
+        \begin{visibleenv}<7>
+            \node[hiOverS,fit=(reg srcA) (reg srcB)] {};
+            \draw[line width=10pt,green,opacity=0.2] ([yshift=.1cm]split.east) -- ([yshift=.1cm,xshift=.1cm]split.east) |- (regSelect1);
+            \draw[line width=10pt,green,opacity=0.2] ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect2);
+        \end{visibleenv}
+        \begin{visibleenv}<8>
+            \node[hiOverS,fit=(reg dstE) (reg inputE 1) (reg inputE 2) (reg inputE 3)] {};
+            \begin{scope}[line width=10pt,green,opacity=0.2]
+                \draw (regRead1) -- (add);
+                \draw (regRead2) -- (add);
+                \draw (add.east) -| (addBelowRight) -- (addBelowLeft) -- (regWriteIn2Left) |- (regWriteIn2);
+                \draw ([yshift=-.1cm]split.east) -- ([yshift=-.1cm,xshift=.2cm]split.east) |- (regSelect4);
+            \end{scope}
+        \end{visibleenv}
+    \end{tikzpicture}
+\end{frame}

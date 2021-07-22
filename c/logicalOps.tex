@@ -1,0 +1,90 @@
+
+\begin{frame}[fragile,label=shortCircuitOr]{short-circuit (\texttt{||})}
+\lstset{
+    moredelim=**[is][\btHL<1>]{@1*}{*@},
+    moredelim=**[is][\btHL<2|handout:0>]{@2*}{*@},
+    moredelim=**[is][\btHL<3|handout:0>]{@3*}{*@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4*}{*@},
+    moredelim=**[is][\btHL<5|handout:0>\color<5->{black!50}]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+}
+\begin{lstlisting}[numbers=left,xleftmargin=1cm,style=small]
+#include <stdio.h>
+int zero() { printf("zero()\n"); return 0; }
+int one() { printf("one()\n"); return 1; }
+int main() {
+    printf("> %d\n", @2*zero()*@ @1*||*@ @3*one()*@);
+    printf("> %d\n", @4*one()*@ @1*||*@ @5*zero()*@);
+    return 0;
+}
+\end{lstlisting}
+\begin{columns}[b]
+\begin{column}{0.3\textwidth}
+\def\btHLTwo{\btHL<2|handout:0>}
+\def\btHLThree{\btHL<3|handout:0>}
+\def\btHLFour{\btHL<4|handout:0>}
+\def\btHLFive{\btHL<5|handout:0>}
+\begin{Verbatim}[commandchars=\\\{\}]
+\btHLTwo{zero()}
+\btHLThree{one()}
+> 1
+\btHLFour{one()}
+> 1
+\end{Verbatim} 
+\vspace{0pt}
+\end{column}
+\begin{column}[b]{0.7\textwidth}
+\begin{tabular}{r|ll}
+OR & \bf {\btHL<2-3> false} & {\btHL<4-5>\bf true} \\ \hline
+\bf false & {\btHL<2-3> false} & {\btHL<4-5> true} \\
+\bf true & {\btHL<2-3> true} & {\btHL<4-5> true} \\
+\end{tabular}
+\vspace{1em}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile,label=shortCircuitAnd]{short-circuit (\texttt{\&\&})}
+\lstset{
+    moredelim=**[is][\btHL<1-2>]{@1*}{*@},
+    moredelim=**[is][\btHL<2>]{@2*}{*@},
+    moredelim=**[is][\btHL<3>\color<3->{black!50}]{@3*}{*@},
+    moredelim=**[is][\btHL<4>]{@4*}{*@},
+    moredelim=**[is][\btHL<5>]{@5*}{*@},
+    moredelim=**[is][\btHL<6>]{@6*}{*@},
+}
+\begin{lstlisting}[numbers=left,xleftmargin=1cm,style=small]
+#include <stdio.h>
+int zero() { printf("zero()\n"); return 0; }
+int one() { printf("one()\n"); return 1; }
+int main() {
+    printf("> %d\n", @2*zero()*@ && @3*one()*@);
+    printf("> %d\n", @4*one()*@ && @5*zero()*@);
+    return 0;
+}
+\end{lstlisting}
+\begin{columns}[b]
+\begin{column}{0.3\textwidth}
+\def\btHLTwo{\btHL<2|handout:0>}
+\def\btHLFour{\btHL<4|handout:0>}
+\def\btHLFive{\btHL<5|handout:0>}
+\begin{Verbatim}[commandchars=\\\{\}]
+\btHLTwo{zero()}
+> 0
+\btHLFour{one()}
+\btHLFive{zero()}
+> 0
+\end{Verbatim} 
+\vspace{0pt}
+\end{column}
+\begin{column}[b]{0.7\textwidth}
+\begin{tabular}{r|ll}
+AND & \bf {\btHL<2-3> false} & {\btHL<4-5>\bf true} \\ \hline
+\bf false & {\btHL<2-3> false} & {\btHL<4-5> false} \\
+\bf true & {\btHL<2-3> false} & {\btHL<4-5> true} \\
+\end{tabular}
+\vspace{1em}
+\end{column}
+\end{columns}
+\end{frame}
+

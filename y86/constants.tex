@@ -1,0 +1,39 @@
+\begin{frame}[label=Y86immed1,fragile]{Y86-64 constants (1)}
+\begin{itemize}
+\item \lstinline|irmovq $100, %r11|
+\item \myemph{only} instruction with non-address constant operand
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=Y86immed2,fragile]{Y86-64 constants (2)}
+\begin{itemize}
+\item r12 $\leftarrow$ r12 + 1
+\item \myemph{Invalid}: \xcancel{\tt \addq \$1, \%r12} 
+\item<2->Instead, need an extra register:
+\begin{lstlisting}
+  irmovq $1, %r11
+  addq %r11, %r12
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
+\begin{comment}
+\begin{frame}[label=Y86immed3,fragile]{Y86-64 constants (3)}
+\begin{itemize}
+\item r12 $\leftarrow$ memory[0x40000]
+\item \myemph{Invalid}: \xcancel{\tt \mrmovq 0x40000, \%r12}
+\item<2-> Instead:
+\begin{lstlisting}
+  irmovq $0x40000, %r12
+  mrmovq 0(%r12), %r12
+\end{lstlisting}
+\item<3-> Or:
+\begin{lstlisting}
+  xor %r12, %r12
+  mrmovq 0x40000(%r12), %r12
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+\end{comment}
+
+

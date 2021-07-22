@@ -1,0 +1,37 @@
+\begin{frame}{parallel operations}
+    \begin{itemize}
+        \item key observation: bitwise and, or, etc. do many things in parallel
+        \item can have single instruction do work of a loop
+            \vspace{.5cm}
+        \item more than just bitwise operations:
+        \item e.g. ``add four pairs of values together''
+        \item later: single-instruction, multiple data (SIMD)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=base10par]{base-10 parallelism}
+\begin{itemize}
+\item compute 14 + 23 and 13 + 99 in parallel?
+\begin{lstlisting}[language={}]
+  000014000013
++ 000023000099
+--------------
+  000037000114
+\end{lstlisting}
+\item 14+23 = 37 and 13 + 99 = 114 --- one add!
+\item apply same principle in binary?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=base2par]{base-2 parallelism}
+\begin{itemize}
+\item compute $110_\text{TWO} + 011_\text{TWO}$ and $010_\text{TWO} + 101_\text{TWO}$ in parallel?
+\begin{lstlisting}[language={}]
+  000110000010 (base 2)
++ 000011000101
+--------------
+  001001000111
+\end{lstlisting}
+\item $110_\text{TWO} + 011_\text{TWO} = 1001_\text{TWO}$; $010_\text{TWO} + 101_\text{TWO} = 111_\text{TWO}$
+\end{itemize}
+\end{frame}

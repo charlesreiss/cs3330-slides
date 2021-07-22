@@ -1,0 +1,26 @@
+\begin{frame}[fragile,label=exceptHandlerEx]{exception handler structure}
+\begin{itemize}
+\item 1. save process's state somewhere
+\item 2. do work to handle exception
+\item 3. restore a process's state (maybe a different one)
+\item 4. jump back to program
+\end{itemize}
+\lstset{
+    language=myasm,
+    style=small,
+    deletekeywords=loop,
+    morekeywords={return_from_exception,set_exception_table_base,mov_from_saved_pc,movq,mov_to_saved_pc},
+    moredelim=**[is][\btHL<1|handout:1>]{@1}{@},
+}
+\begin{lstlisting}
+handle_timer_interrupt:
+  mov_from_saved_pc save_pc_loc
+  movq %rax, save_rax_loc
+  ... // choose new process to run here
+  movq new_rax_loc, %rax
+  mov_to_saved_pc new_pc
+  return_from_exception
+\end{lstlisting}
+\end{frame}
+
+

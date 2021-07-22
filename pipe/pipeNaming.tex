@@ -1,0 +1,53 @@
+\begin{frame}{pipeline register naming convention}
+\begin{tikzpicture}
+    \tikzset{pipeline regs/.style={}}
+    \begin{pgfonlayer}{bg}
+    \pipeAddQ
+    \node[
+        draw,rectangle,
+        rounded corners,line width=2pt,
+        yellow!50!orange,fill=yellow!50!orange,
+        fill opacity=0.1,
+        fit=(fdSrcA) (fdSrcB)] {};
+
+    \node[
+        draw,rectangle,
+        rounded corners,line width=2pt,
+        orange!50!green,fill=orange!50!green,
+        fill opacity=0.1,
+        fit=(deDstE) (deValA) (deValB)] {};
+
+    \node[
+        draw,rectangle,
+        rounded corners,line width=2pt,
+        green!50!blue,fill=green!50!blue,
+        fill opacity=0.1,
+        fit=(ewDstE) (ewValE)] {};
+    \node[
+        draw,rectangle,
+        rounded corners,line width=2pt,
+        yellow!50!yellow,fill=yellow!50!yellow,
+        fill opacity=0.1,
+        fit=(pc)] {};
+    \end{pgfonlayer}
+
+    \begin{scope}[every pin/.style={red,font=\large},every pin edge/.style={ultra thick,red,Latex-}]
+    \draw (fdSrcA.west) -- ++ (-.3cm,0) node[pin={[]above left:f\_rA}] {}; 
+    \draw (fdSrcA.east) -- ++ (.3cm,0) node[pin={[]above right:D\_rA}] {}; 
+    \draw (deDstE.west) -- ++ (-.3cm,0) node[pin={[]above left:d\_dstE}] {}; 
+    \draw (deDstE.east) -- ++ (.3cm,0) node[pin={[]above right:E\_dstE}] {}; 
+    \draw (ewDstE.east) -- ++ (.3cm,0) node[pin={[]right:e\_dstE}] {}; 
+    \draw (ewDstE.west) -- ++ (-.3cm,0) node[pin={[]left:W\_dstE}] {}; 
+    \end{scope}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{pipeline register naming convention}
+    \begin{itemize}
+    \item f --- fetch sends values here
+    \item D --- decode receives values here
+    \item d --- decode sends values here
+    \item \ldots
+    \end{itemize}
+\end{frame}
+

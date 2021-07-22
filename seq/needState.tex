@@ -1,0 +1,135 @@
+\usetikzlibrary{arrows.meta,calc,chains,matrix,patterns,positioning,shapes.callouts,shapes.geometric,shapes.misc}
+
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw}
+}
+
+\begin{frame}{example: (broken) counter circuit}
+\begin{tikzpicture}
+    \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+    \draw[wire,->] (add1) -- (6, 2) -- (6, 0) -- (0, 0) -- (0, 2) -- (add1);
+    \coordinate (pin point) at (6, 0.5);
+    \coordinate (pin point 2) at (5, 0);
+    \begin{visibleenv}<2->
+    \draw[thick] (pin point) -- ++(0.5, 0) node[right,align=left] (which) {
+        {time 0: \tt 000} \\
+        \only<3->{time 1: \tt \myemph<4>{001}?} \\
+        \only<3->{time 2: \tt \myemph<4>{010}?} \\
+        \only<3->{time 3: \tt 011?} \\
+    };
+    \end{visibleenv}
+    \begin{visibleenv}<4->
+        \begin{visibleenv}<5->
+        \draw[red,very thick,Latex-] ([xshift=-6mm,yshift=-12mm]which.north east) -- ++ (1cm, 0cm)
+            node[right] {in between value???};
+        \end{visibleenv}
+        %\node[cross out,fit=(which),draw,ultra thick,red] {};
+        \coordinate (wire diag bottom left) at ([yshift=-2.5cm,xshift=-2cm]which.south west);
+        \coordinate (wire diag top right) at ([yshift=2.5cm,xshift=4.5cm]wire diag bottom left);
+        %\draw[thick,dotted] (pin point 2) -- (wire diag top right);
+        %\draw[thick,dotted] (pin point 2) -- ([xshift=-.5cm]wire diag bottom left |- wire diag top right);
+        \begin{scope}[shift={(wire diag bottom left)},y=0.5cm,x=2cm]
+            \node[font=\small,anchor=south] at (0, 4.3) {time 1};
+            \node[font=\small,anchor=south] at (2, 4.3) {time 2};
+            \begin{scope}[yshift=2.2cm]
+            \draw[thick,rounded corners] (0, -1)-- (1, -1) -- (2, -1);
+                \node[anchor=east] at (0, -.5) {0};
+                \node[anchor=west] at (2, -.5) {0};
+            \end{scope}
+            \begin{scope}[yshift=1.1cm]
+            \draw[thick,rounded corners] (0, -1)-- (1, -1) -- (1.05, 0) -- (2.0, 0);
+                \node[anchor=east] at (0, -.5) {0};
+                \node[anchor=west] at (2, -.5) {1};
+            \end{scope}
+            \draw[thick,rounded corners] (0, 0) -- (1.07, 0) -- (1.11, -1) --
+                    (2.0, -1);
+                \node[anchor=east] at (0, -.5) {1};
+                \node[anchor=west] at (2, -.5) {0};
+            \draw[dotted,ultra thick, red] (1, -1.1) rectangle (1.2, 4.3);
+            \begin{visibleenv}<5->
+            \node [red,anchor=north,align=left] at (1.1, -1.1) {
+                briefly 011???  halfway voltages??? \\
+                how will add 1 circuit act???
+            };
+            \end{visibleenv}
+        \end{scope}
+    \begin{visibleenv}<6->
+    \node[cross out,fit=(which),draw,ultra thick,red] {};
+    \node[align=left,anchor=north west,fill=white,draw=red,ultra thick] (explain box) at (0, -.5) { 
+        circuit is \myemph{not stable} \\
+        \myemph{transient values} during changes \\
+        hard to predict behavior \\
+    };
+    \end{visibleenv}
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}<0>{example: (broken) counter circuit}
+\begin{tikzpicture}
+    \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+    \draw[wire,->] (add1) -- (6, 2) -- (6, 0) -- (0, 0) -- (0, 2) -- (add1);
+    \coordinate (pinPoint) at (6, 1);
+    \begin{visibleenv}<2->
+    \draw[thick] (pinPoint) -- ++(0.5, 0) node[right,align=left] (which) {
+        {time 0: \tt 000} \\
+        \only<3->{time 1: \tt 001?} \\
+        \only<3->{time 2: \tt 010?} \\
+        \only<3->{time 3: \tt 011?} \\
+    };
+    \end{visibleenv}
+    \begin{visibleenv}<4->
+    \node[cross out,fit=(which),draw,ultra thick,red] {};
+    \node[align=left,anchor=north west] (explain box) at (0, -.5) { 
+        circuit is \myemph{not stable} \\
+        \only<5->{%
+        \myemph{transient values} during changes \\
+        can't transition from 001 to 010 \\ without 011 or 000 \\
+        }%
+        \only<6->{%
+        halfway voltages --- hard to predict behavior \\
+        }
+    };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{circuits: state}
+    \begin{itemize}
+    \item logic performs calculations all the time
+    \item never stores values!
+    \item need \myemph{extra elements} to store values
+        \begin{itemize}
+        \item registers, memory
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{example: counter circuit (corrected)}
+\begin{tikzpicture}
+    \node[draw,minimum width=1cm,minimum height=1cm,fill=blue!20] (add1) at (3, 2) { add 1 };
+    \node[hRegSmall={count},draw=red,thick,fill=red!10] (reg) at (4.5, 2) {};
+    \draw[wire,->] (add1) -- (reg);
+    \draw[wire,->] (reg) -- (6, 2) -- (6, 0) -- (0, 0) -- (0, 2) -- (add1);
+    \coordinate (pinPoint) at (6, 1);
+    \begin{visibleenv}<2->
+    \draw[thick] (pinPoint) -- ++(0.5, 0) node[right,align=left] (which) {
+        {time 0: \tt 000} \\
+        {time 1: \tt 001} \\
+        {time 2: \tt 010} \\
+        {time 3: \tt 011} \\
+    };
+    \end{visibleenv}
+    \begin{visibleenv}<3->
+        \node[align=left] at (4, -3) {
+            add \myemph{register} to store current count \\
+            updates based on ``clock signal'' (not shown) \\
+            avoids intermediate updates
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}

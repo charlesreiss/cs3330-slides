@@ -1,0 +1,132 @@
+\usetikzlibrary{matrix}
+
+\begin{frame}[label=allAttExes]{AT\&T versus Intel syntax by example}
+\fontsize{13}{14}\selectfont
+{\tt {\keywordstyle movq} \$42, (\%rbx)} \\
+\hspace{4cm}{\tt {\keywordstyle mov} QWORD PTR [rbx], 42} \\
+{\tt {\keywordstyle subq} \%rax, \%r8} \\
+\hspace{4cm}{\tt {\keywordstyle sub} r8, rax} \\
+{\tt {\keywordstyle movq} \$42, {100}({\%rbx},{\%rcx,4})} \\
+\hspace{4cm}{\tt {\keywordstyle mov} QWORD PTR [{rbx}+{rcx*4}+{100}], 42} \\
+{\tt {\keywordstyle jmp} *\%rax} \\
+\hspace{4cm} {\tt {\keywordstyle jmp} rax} \\
+{\tt {\keywordstyle jmp} *1000(\%rax,\%rbx,8)} \\
+\hspace{4cm}{\tt {\keywordstyle jmp} QWORD PTR [RAX+RBX*8+1000]} \\
+\end{frame}
+
+\begin{frame}{AT\&T versus Intel syntax (1)}
+    \begin{itemize}
+    \item AT\&T syntax: \\ {\tt {\keywordstyle movq} \$42, (\%rbx)}
+    \item Intel syntax: \\ {\tt {\keywordstyle mov} QWORD PTR [rbx], 42}
+    \item effect (pseudo-C): \\ {\tt memory[rbx] <- 42}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=att2e1]{AT\&T syntax example (1)}
+\lstset{
+    language=[x8664gas]Assembler,
+    %moredelim=**[is][\color{green!60!black}]{@1*}{*@},
+    moredelim=**[is][\btHL<1|handout:0>]{@1*}{*@},
+    moredelim=**[is][\btHL<2|handout:0>]{@2*}{*@},
+    moredelim={**[is][\btHL<2,4|handout:0>]{@24*}{*@}},
+    moredelim=**[is][\btHL<3|handout:0>]{@3*}{*@},
+    moredelim=**[is][\btHL<4|handout:0>]{@4*}{*@},
+    moredelim=**[is][\btHL<5|handout:0>]{@5*}{*@},
+    moredelim=**[is][\btHL<6|handout:0>]{@6*}{*@},
+    escapechar=`,
+}
+\begin{lstlisting}
+mov@5*q*@ @3*$42*@, @2*(*@@24*%rbx*@@2*)*@
+// memory[rbx] <- 42
+\end{lstlisting}
+    \begin{itemize}
+    \item \myemph<2>{destination last}
+    \item {\tt ()}s represent value \myemph<2>{in memory}
+    \item \myemph<3>{constants} start with {\tt \$}
+    \item \myemph<4>{registers} start with {\tt \%}
+    \item {\tt q} (`quad') indicates \myemph<5>{length} (8 bytes)
+    \begin{itemize}\item {\tt l}: 4; {\tt w}: 2; {\tt b}: 1
+                   \item sometimes can be omitted\end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AT\&T versus Intel syntax (2)}
+    \begin{itemize}
+    \item AT\&T syntax: \\ {\tt \textbf{movq} \$42, \myemph<2>{100}(\myemph<3>{\%rbx},\myemph<4>{\%rcx,4})}
+    \item Intel syntax: \\ {\tt \textbf{mov} QWORD PTR [\myemph<3>{rbx}+\myemph<4>{rcx*4}+\myemph<2>{100}], 42}
+    \item effect (pseudo-C): \\ {\tt memory[\myemph<3>{rbx} + \myemph<4>{rcx * 4} + \myemph<2>{100}] <- 42}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AT\&T syntax: addressing}
+    \begin{itemize}
+    \item {\tt 100(\%rbx)}: {\tt memory[rbx + 100]}
+    \item {\tt 100(\%rbx,8)}: {\tt memory[rbx * 8 + 100]}
+    \item {\tt 100(,\%rbx,8)}: {\tt memory[rbx * 8 + 100]}
+    \item {\tt 100(\%rcx,\%rbx,8)}: \\
+          \hspace{2cm}{\tt memory[rcx + rbx * 8 + 100]}
+    \item {\tt 100}: \\
+          \hspace{2cm}{\tt memory[100]}
+  \item {\tt 100(\%rbx,\%rcx)}: \\
+          \hspace{2cm}{\tt memory[rbx+rcx+100]}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=att2e2]{AT\&T versus Intel syntax (3)}
+    \begin{itemize}
+    \item {\tt r8 $\leftarrow$ r8 - rax}
+    \item \begin{tabular}{ll}
+        AT\&T syntax: & {\tt {\keywordstyle subq} \%rax, \%r8} \\ 
+        Intel syntax: & {\tt {\keywordstyle sub} r8, rax} \\
+        \end{tabular}
+    \item same for {\tt {\keywordstyle cmp}}
+        \begin{itemize}
+        \item after {\tt {\keywordstyle cmpq} \%rax, \%r8}, \\
+              {\tt jg} jumps if \textbf{\tt \%r8} is greater
+          \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=attConst]{AT\&T syntax: addresses}
+\begin{asmcodeNL}
+addq 0x1000, %rax
+// Intel syntax: add rax, QWORD PTR [0x1000]
+// rax <- rax + memory[0x1000]
+addq $0x1000, %rax
+// Intel syntax: add rax, 0x1000
+// rax <- rax + 0x1000
+\end{asmcodeNL}
+    \begin{itemize}
+        \item no {\tt \$} --- probably memory address 
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{AT\&T syntax in one slide}
+    \begin{itemize}
+    \item destination \myemph{last}
+    \item {\tt ()} means value \myemph{in memory}
+    \item {\tt disp(base, index, scale)} same as \\ {\tt memory[disp + base + index * scale]}
+        \begin{itemize}
+        \item omit disp (defaults to {\tt 0})
+        \item and/or omit base (defaults to {\tt 0})
+        \item and/or scale (defualts to {\tt 1})
+        \end{itemize}
+    \item {\tt \$} means constant
+    \item plain number/label means value \myemph{in memory}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=compJmpATT]{extra detail: computed jumps}
+\begin{asmcodeNL}
+jmpq *%rax
+// Intel syntax: jmp RAX
+    // goto RAX
+jmpq *1000(%rax,%rbx,8)
+// Intel syntax: jmp QWORD PTR[RAX+RBX*8+1000]
+    // read address from memory at RAX + RBX * 8 + 1000
+    // go to that address
+\end{asmcodeNL}
+\end{frame}
+
+\againframe<2>{allAttExes}

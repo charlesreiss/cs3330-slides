@@ -1,0 +1,126 @@
+\typeout{(body.tex)}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\usepgflibrary{shapes.gates.logic.mux}
+\input{../common/y86Util}
+\usepgflibrary{shapes.gates.logic.mux}
+\usemintedstyle{tango}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
+\tikzset{
+    simple wire/.style={very thick,>=Latex},
+    wire/.style={line width=1.5pt,>=Latex},
+    wire small/.style={line width=1pt,>=Latex},
+    binLabel/.style={font=\tt},
+    hiBox/.style={red, very thick, draw},
+    >=Latex,
+}
+
+\newcommand<>{\highBox}[2]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#3
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,fill=green!20,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\newcommand<>{\highBoxX}[3]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#4
+        \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,#3,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+\newcommand<>{\highBoxB}[2]{%
+    \begin{tikzpicture}[remember picture,overlay]
+        \begin{visibleenv}#3
+        \coordinate (start) at ([yshift=1.7ex,xshift=1.5ex]pic cs:#1);
+        \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+        \node[inner sep=2pt,fill=green!20,fit=(start) (end)] {};
+        \end{visibleenv}
+    \end{tikzpicture}
+}
+
+{
+\setbeamercolor{background canvas}{bg=blue!40!black,fg=blue!10!white}
+\setbeamercolor{normal text}{bg=blue!40!black,fg=blue!10!white}
+\setbeamercolor{itemize/enumerate body}{fg=white}
+\setbeamercolor{itemize/enumerate subbody}{fg=white}
+\setbeamercolor{titlelike}{bg=blue!40!black,fg=blue!10!white}
+\begin{frame}<1|handout:1>[noframenumbering]{Changelog}
+    \begin{itemize}
+        \item Changes made in this version not seen in first lecture:
+        \begin{itemize}
+            \item 6 Feb 2018: arithmetic right shift: x86 arith. shift instruction is \texttt{sar} to \texttt{sra}
+            \item 6 Feb 2018: logical left shift: use {\tt shl} consistently
+            \item 6 Feb 2018: exercise C explanation: correct bcde00 typo for  abcd00
+            \item 6 Feb
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+}
+
+% FIXME: y86 review as needed
+
+\input{y86OpcodeExtractDiv}
+
+\input{onDiv}
+
+\input{wires}
+
+\input{hwWireExtract}
+
+\input{exposeWireExtractShr}
+
+\input{shrMath}
+
+\input{arithRightShift}
+
+\input{constructExShl}
+
+\input{andMotivation}
+
+\input{gates}
+
+\input{andIntro}
+
+\input{otherBitwise}
+
+% FIXME: try to simplify?
+\input{ternaryExample1}
+
+\input{ternaryExample2}
+\input{ternaryExample3}
+
+% FIXME: skip?
+\input{simpleOpSpeed}
+
+\input{anyBit}
+
+\input{strategies}
+
+\input{exercise}
+
+\begin{frame}{backup slides}
+\end{frame}
+
+\input{wrongDivision}
+
+\input{miscBitManip}
+
+\input{parallelismGen}
+
+\input{twosCompl}

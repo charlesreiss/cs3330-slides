@@ -1,0 +1,34 @@
+\begin{frame}{other vector instructions}
+    \begin{itemize}
+    \item multiple extensions to the X86 instruction set for vector instructions
+    \item first version: SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2
+        \begin{itemize}
+        \item 128-bit vectors
+        \end{itemize}
+    \item this class: AVX, AVX2
+        \begin{itemize}
+        \item 256-bit vectors
+        \end{itemize}
+    \item not this class: AVX-512
+        \begin{itemize}
+        \item 512-bit vectors
+        \end{itemize}
+        \vspace{.5cm}
+    \item also other ISAs have these: e.g. NEON on ARM, MSA on MIPS, AltiVec/VMX on POWER, \ldots
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{other vector instructions features}
+    \begin{itemize}
+    \item more flexible vector instruction features:
+        \begin{itemize}
+        \item invented in the 1990s
+        \item often present in GPUs and being rediscovered by modern ISAs
+        \end{itemize}
+    \item reasonable conditional handling
+    \item better variable-length vectors
+    \item ability to load/store non-contiguous values
+    \vspace{.5cm}
+    \item some of these features in AVX2/AVX512
+    \end{itemize}
+\end{frame}

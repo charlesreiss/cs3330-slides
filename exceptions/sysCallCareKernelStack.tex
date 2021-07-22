@@ -1,0 +1,11 @@
+\begin{frame}[fragile,label=careful]{careful exception handlers}
+\begin{itemize}
+    \item \lstinline|movq $important_os_address, %rsp|
+    \item can't trust user's \myemph{stack pointer}!
+    \vspace{.5cm}
+    \item need to have own stack in kernel-mode-only memory 
+    \item need to check all inputs really carefully
+\end{itemize}
+\end{frame}
+
+

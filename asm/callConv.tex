@@ -1,0 +1,82 @@
+\begin{frame}{Linux x86-64 calling convention}
+    \begin{itemize}
+    \item \myemph{registers} for first 6 arguments:
+    \begin{itemize}
+    \item {\tt \%rdi} (or {\tt \%edi} or {\tt \%di}, etc.), then
+    \item {\tt \%rsi} (or {\tt \%esi} or {\tt \%si}, etc.), then
+    \item {\tt \%rdx} (or {\tt \%edx} or {\tt \%dx}, etc.), then
+    \item {\tt \%rcx} (or {\tt \%ecx} or {\tt \%cx}, etc.), then
+    \item {\tt \%r8} (or {\tt \%r8d} or {\tt \%r8w}, etc.), then
+    \item {\tt \%r9} (or {\tt \%r9d} or {\tt \%r9w}, etc.)
+    \end{itemize}
+    \item rest on stack
+    \item return value in {\tt \%rax}
+    \item don't memorize: Figure 3.28 in book
+    \end{itemize}
+\end{frame}
+
+% FIXME: %rip?
+
+\begin{frame}[fragile,label=x8664CCExample]{x86-64 calling convention example}
+\begin{ccodeNL*}{fontsize=\small}
+int foo(int x, int y, int z) { return 42; }
+...
+    foo(1, 2, 3);
+...
+\end{ccodeNL*}
+\hrule
+\begin{asmcodeS}
+...
+    // foo(1, 2, 3)
+    movl $1, %edi
+    movl $2, %esi
+    movl $3, %edx
+    call foo  // call pushes address of next instruction
+              // then jumps to foo
+...
+foo: 
+    movl $42, %eax
+    ret
+\end{asmcodeS}
+\end{frame}
+
+\begin{frame}[fragile,label=stackFrame]{call/ret}
+\begin{itemize}
+\item call:
+    \begin{itemize}
+    \item push address of \myemph{next instruction} on the stack
+    \end{itemize}
+\item ret:
+    \begin{itemize}
+    \item pop address from stack; jump
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=calleeSaved]{callee-saved registers}
+    \begin{itemize}
+    \item functions \myemph{must preserve} these
+    \vspace{.5cm}
+    \item {\tt \%rsp} (stack pointer), {\tt \%rbx}, {\tt \%rbp} (frame pointer, maybe)
+    \item {\tt \%r12-\%r15}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=callerCallee]{caller/callee-saved}
+\lstset{style=small}
+\begin{lstlisting}
+foo:
+    pushq %r12 // r12 is callee-saved
+    ... use r12 ...
+    popq %r12
+    ret
+
+...
+other_function:
+    ...
+    pushq %r11 // r11 is caller-saved
+    callq foo
+    popq %r11
+\end{lstlisting}
+\end{frame}
+

@@ -1,0 +1,25 @@
+\begin{frame}{aside on branch pred. and performance}
+    \begin{itemize}
+    \item modern branch predictors are very good
+        \begin{itemize}
+        \item we might explore how later in semester (if time)
+        \end{itemize}
+    \item \ldots usually can assume most branches will be predicted
+    \vspace{.5cm}
+    \item but could be a problem if really no pattern
+        \begin{itemize}
+        \item e.g. branch based on random number?
+        \end{itemize}
+    \item generally: measure and see
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{if branch prediction is bad\ldots}
+    \begin{itemize}
+    \item avoiding branches --- conditional move, etc.
+    \item replace multiple branches with single lookup?
+        \begin{itemize}
+        \item one misprediction better than $K$?
+        \end{itemize}
+    \end{itemize}
+\end{frame}

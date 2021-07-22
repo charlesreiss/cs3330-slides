@@ -1,0 +1,17 @@
+\begin{frame}[fragile,label=MovRegIntro]{exercise: mov-to-register}
+    \begin{itemize}
+        \item \lstinline|irmovq $constant, %rYY|
+        \item \lstinline|rrmovq %rXX, %rYY|
+        \item \lstinline|mrmovq 10(%rXX), %rYY|
+        \vspace{.5cm}
+        \item for which are these are we going to need MUXes? before\ldots
+            \begin{itemize}
+            \item A. register file's register number (index) inputs ({\small \texttt{reg\_srcA, reg\_srcB, reg\_dstE,} \ldots})
+            \item B. register file's value inputs ({\small \texttt{reg\_inputE/M}})
+            \item C. PC register's input
+            \item D. instruction memory's address input ({\small \texttt{pc}})
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+

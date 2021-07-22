@@ -1,0 +1,28 @@
+\begin{frame}[fragile,label=pipeStages]{pipeline stages}
+\begin{itemize}
+    \item fetch --- instruction memory, \myemph<2|handout:2>{\emph{most}\tikzmark{mostPC} PC computation}
+    \item decode --- reading register file
+    \item execute --- computation, \myemph<3|handout:3>{condition\tikzmark{condc} code read/write}
+    \item memory --- memory read/write
+    \item writeback --- writing register file, \myemph<4|handout:4>{writing Stat\tikzmark{stat} register}
+\end{itemize}
+\begin{tikzpicture}[overlay, remember picture]
+    \begin{visibleenv}<2|handout:2>
+        \node[my callout=mostPC,align=left,anchor=north]  at ([yshift=-1cm,xshift=-2cm]pic cs:mostPC) {
+            common case: fetch next instruction in next cycle\\
+            can't for conditional jump, return
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<3|handout:3>
+        \node[my callout=condc,align=left,anchor=north]  at ([yshift=-1cm,xshift=0cm]pic cs:condc) {
+            read/write in same stage avoids reading wrong value \\
+            get value updated for prior instruction (not earlier/later)
+        };
+    \end{visibleenv}
+    \begin{visibleenv}<4|handout:4>
+        \node[my callout=stat,anchor=north] at ([yshift=-.4cm,xshift=-3cm]pic cs:stat) {
+            don't want to halt until everything else is done
+        };
+    \end{visibleenv}
+\end{tikzpicture}
+\end{frame}

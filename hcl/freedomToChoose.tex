@@ -1,0 +1,15 @@
+\begin{frame}{on design choices}
+    \begin{itemize}
+    \item textbook choices:
+        \begin{itemize}
+        \item memory always goes to `M' port of register file
+        \item RSP +/- 8 uses normal ALU, not seperate adders
+        \item \ldots
+        \end{itemize}
+    \item do you have to do this? \myemph{no}
+    \vspace{.5cm}
+    \item you: single cycle/instruction; use supplied register/memory
+    \item other logic: make it function correctly
+    \end{itemize}
+\end{frame}
+

@@ -1,0 +1,38 @@
+\begin{frame}{C Data Types}
+% Emphasize 64-bit
+Varies between machines(!). For \myemph{this course}: \\
+\begin{tabular}{ll}
+type & size (bytes) \\ \hline
+\texttt{char} & 1 \\
+\texttt{short} & 2 \\
+\texttt{int} & 4 \\
+\texttt{long} & 8 \\
+~&~\\
+\onslide<2->{\texttt{float}} & \onslide<2->{4} \\
+\onslide<2->{\texttt{double}} & \onslide<2->{8} \\
+~&~\\
+\onslide<3->{\texttt{void *}} & \onslide<3->{8} \\
+\onslide<3->{\texttt{\textit{anything} *}} & \onslide<3->{8} \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile,label=truth]{truth}
+\begin{itemize}
+\item \sout{\texttt{bool}}
+\item<2> \cinline|x == 4| is an \cinline|int|
+\begin{itemize}
+    \item \cinline|1| if true; \cinline|0| if false
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=FalseC]{false values in C}
+\begin{itemize}
+\item \cinline|0|
+\begin{itemize}
+\item including null pointers --- \cinline|0| cast to a pointer
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+

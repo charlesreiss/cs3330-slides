@@ -1,0 +1,44 @@
+\usetikzlibrary{arrows.meta,calc,chains,fit}
+
+\begin{frame}[fragile,label=compilation]{compilation pipeline}
+\begin{tikzpicture}
+\begin{scope}[start chain=going below, every node/.style={on chain,join,font=\small},every join/.style={-Latex,thick},node distance=1cm]
+\node[draw,align=center] (mainC) {main.c \\ (C code)};
+\node {compile};
+\node[draw,align=center] {main.s \\ (assembly)};
+\node {assemble};
+\node[draw,align=center,on chain=going right] {main.o \\ (object file) \\ (machine code)};
+\node[on chain=going right] (linking) {linking};
+\node[draw,align=center,on chain=going right] {main.exe \\ (executable) \\ (machine code)};
+\end{scope}
+\begin{visibleenv}<2->
+\node[align=left,font=\small,anchor=north west] at ([xshift=1cm]mainC.north east){
+main.c: \\
+\begin{minipage}{\textwidth}
+\begin{minted}{c}
+#include <stdio.h>
+int main(void) {
+    printf("Hello, World!\n");
+}
+\end{minted}
+\end{minipage}
+};
+\end{visibleenv}
+\begin{visibleenv}<3->
+\node[above=.5cm of linking,draw,align=center,red!90!black,font=\small] (printfO) { printf.o \\ (object file) };
+\draw[red,-Latex,thick] (printfO) -- (linking.north);
+\end{visibleenv}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{compilation commands}
+\begin{tabular}{llll}
+\myemph{compile}: &\texttt{gcc -S file.c} & $\Rightarrow$ & \texttt{file.s} (assembly)\\
+    \myemph{assemble}: & \texttt{gcc -c file.s} & $\Rightarrow$ &\texttt{file.o} (object file)\\
+\myemph{link}: & \texttt{gcc -o file file.o} & $\Rightarrow$ & \texttt{file} (executable) \\
+~&~&~\\
+c+a: &\texttt{gcc -c file.c} & $\Rightarrow$ & \texttt{file.o} \\
+c+a+l: &\texttt{gcc -o file file.c} & $\Rightarrow$ & \texttt{file} \\
+\ldots{} & & & \\
+\end{tabular}
+\end{frame}

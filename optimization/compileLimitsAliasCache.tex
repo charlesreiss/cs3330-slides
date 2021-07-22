@@ -1,0 +1,20 @@
+\begin{frame}[fragile,label=loopOrder]{aliasing and cache optimizations}
+    \lstset{language=C,style=small}
+\begin{lstlisting}
+for (int k = 0; k < N; ++k)
+  for (int i = 0; i < N; ++i)
+    for (int j = 0; j < N; ++j)
+      C[i*N+j] += A[i * N + k] * B[k * N + j];
+\end{lstlisting}
+\hrulefill
+\begin{lstlisting}
+for (int i = 0; i < N; ++i)
+  for (int j = 0; j < N; ++j)
+    for (int k = 0; k < N; ++k)
+      C[i*N+j] += A[i * N + k] * B[k * N + j];
+\end{lstlisting}
+    \begin{itemize}
+        \item \lstinline|C = A|? \lstinline|C = &A[10]|?
+        \item compiler can't generate same code for both
+    \end{itemize}
+\end{frame}

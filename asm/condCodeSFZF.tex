@@ -1,0 +1,44 @@
+\begin{frame}<1-3>[fragile,label=exShort]{condition codes: closer look}
+\begin{itemize}
+    \item \xZF (``zero flag'') --- was result zero? (sub/cmp: equal)
+        \begin{itemize}
+        \item e.g. JE (jump if equal) checks for ZF = 1
+        \end{itemize}
+    \item \xSF (``sign flag'') --- was result negative? (sub/cmp: less)
+        \begin{itemize}
+        \item e.g. JL (jump if less than) checks for SF = 1 (plus extra case for overflow)
+        \item e.g. JLE checks for SF = 1 or ZF = 1 (plus overflow)
+        \end{itemize}
+    \item<2-> \xOF (``overflow flag'') --- did computation overflow (as signed)?
+        \begin{itemize}
+        \item<2-> we won't test on this/use it in later assignments
+        \item<2-> signed conditional jumps: JL, JLE, JG, JGE, \ldots
+        \end{itemize}
+    \item<2-> \xCF (``carry flag'') --- did computation overflow (as unsigned)?
+        \begin{itemize}
+        \item<2-> we won't test on this/use it in later assignments
+        \item<2-> unsigned conditional jumps: JB, JBE, JA, JAE, \ldots
+        \end{itemize}
+    \item \only<1>{(and some more, e.g. to handle overflow)}\only<2->{(and one more)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=ccGdbEx]{condition codes (and other flags) in GDB}
+\begin{lstlisting}[
+    language={},
+    moredelim={**[is][\btHL]{@*}{*@}},
+]
+(gdb) info registers
+rax            0x0                 0
+rbx            0x555555555150      93824992235856
+rcx            0x555555555150      93824992235856
+...
+rip            0x55555555513a      0x55555555513a <main+17>
+@*eflags*@         0x246               [ @*PF ZF IF*@ ]
+cs             0x33                51
+ss             0x2b                43
+...
+\end{lstlisting}
+ZF = 1 (listed); SF, OF, CF clear \\
+some other flags that you can lookup (PF, IF) also shown
+\end{frame}

@@ -1,0 +1,146 @@
+\begin{frame}[fragile,label=perfLabs]{performance labs}
+    \begin{itemize}
+    \item loop optimizations
+    \item vector instructions (AKA SIMD)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=perfAssgn]{performance HWs}
+    \begin{itemize}
+        \item \myemph{INDIVIDUAL ONLY}
+        \item assignment 1: rotate an image
+        \item assignment 2: smooth (blur) an image
+            \begin{itemize}
+            \item two parts
+            \item part 1: due with rotate --- optimizations we've mostly talked about
+            \item part 2: due later --- part with vector instructions
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=imageRep]{image representation}
+\begin{lstlisting}[language=C,style=small]
+typedef struct { 
+    unsigned char red, green, blue, alpha;
+} pixel;
+pixel *image = malloc(dim * dim * sizeof(pixel));
+
+image[0]            // at (x=0, y=0)
+image[4 * dim + 5]  // at (x=5, y=4)
+...
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=rotate]{rotate assignment}
+\lstset{
+    language=C,style=smaller,
+}
+    \vspace{-.25cm}
+\begin{lstlisting}
+void rotate(pixel *src, pixel *dst, int dim) {
+    int i, j;
+    for (i = 0; i < dim; i++)
+        for (j = 0; j < dim; j++)
+            dst[RIDX(dim - 1 - j, i, dim)] =
+                src[RIDX(i, j, dim)];
+}
+\end{lstlisting}
+    \begin{tikzpicture}
+        \draw[thick] (0, 0) rectangle (4, -4);
+        \node at (2, -2) {\includegraphics[width=4cm]{../optimization/example-pic}};
+        \node at (7, -2) {\includegraphics[width=4cm,angle=90]{../optimization/example-pic}};
+        \draw[thin,-Latex] (0.5, .5) --  (3.5, .5);
+        \draw[thin,-Latex] (-0.5, -.5) --  (-0.5, -3.5);
+        \draw[thick] (5, 0) rectangle (9, -4);
+        \draw[thin,-Latex] (5.5, .5) --  (8.5, .5);
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile,label=MacrosExplain1]{preprocessor macros}
+\lstset{
+    language=C,style=small,
+}
+\begin{lstlisting}
+#define DOUBLE(x) x*2
+
+int y = DOUBLE(100);
+// expands to:
+int y = 100*2;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=MacrosExplain2]{macros are text substitution (1)}
+\lstset{
+    language=C,style=small,
+}
+\begin{lstlisting}
+#define BAD_DOUBLE(x) x*2
+
+int y = BAD_DOUBLE(3 + 3);
+// expands to:
+int y = 3+3*2;
+// y == 9, not 12
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=MacrosExplain3]{macros are text substitution (2)}
+\lstset{
+    language=C,style=small,
+}
+\begin{lstlisting}
+#define FIXED_DOUBLE(x) (x)*2
+
+int y = DOUBLE(3 + 3);
+// expands to:
+int y = (3+3)*2;
+// y == 9, not 12
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=RIDXExplain]{RIDX?}
+\lstset{
+    language=C,style=small,
+}
+\begin{lstlisting}
+#define RIDX(x, y, n) ((x) * (n) + (y))
+
+dst[RIDX(dim - 1 - j, 1, dim)]
+// becomes *at compile-time*:
+dst[((dim - 1 - j) * (dim) + (1))]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{performance grading}
+    \begin{itemize}
+    \item you can submit multiple variants in one file
+        \begin{itemize}
+            \item grade: best performance
+            \item don't delete stuff that works!
+        \end{itemize}
+    \item we will measure speedup on \myemph{my machine}
+        \begin{itemize}
+        \item web viewer for results (with some delay --- has to run)
+        \end{itemize}
+    \item grade: achieving certain speedup on my machine
+        \begin{itemize}
+        \item thresholds based on results with certain optimizations
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{general advice}
+    \begin{itemize}
+    \item (for when we don't give specific advice)
+    \item try techniques from book/lecture that seem applicable
+    \item vary numbers (e.g. cache block size)
+        \begin{itemize}
+        \item often --- too big/small is worse
+        \end{itemize}
+    \item some techniques combine well
+        \begin{itemize}
+        \item loop unrolling and cache blocking
+        \item loop unrolling and reassociation/multiple accumulators
+        \end{itemize}
+    \end{itemize}
+\end{frame}

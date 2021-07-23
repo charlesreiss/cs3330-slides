@@ -1,7 +1,75 @@
 \graphicspath{{./figures/}}
-\usepackage{cancel}
-\title{Assembly part 2 / C part 1}
+\title{compilation steps / C}
 \date{}
+\usepackage{cancel}
 \begin{document}
-\input{body}
+\begin{frame}
+    \titlepage
+\end{frame}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+
+\input{../common/highBoxLib}
+\input{../common/programMemory}
+
+\section{C review}
+
+\subsection{C types (and sizes in this class)}
+
+\input{../c/cTypes}
+
+\subsection{pointer arithmetic}
+
+\input{../c/pointerArith}
+
+\subsection{pointer arithmetic exercise}
+
+\input{../c/pointerArithEx} 
+
+\subsection{arrays are not pointers}
+
+\input{../c/arrayNotPointer}
+
+\section{more C}
+
+\subsection{undefined}
+
+\input{../c/cUndef}
+
+\section{backup slides}
+
+\subsection{C and C++ are not the same}
+
+\input{../c/backupCppNotC}
+
+\subsection{dynamic allocation; list types}
+
+\input{../c/dynAllocAndList}
+
+\subsection{a note on precedence}
+
+\input{../c/precedenceNote}
+
+\subsection{unsigned and signed}
+
+\input{../c/unsignedAndSigned}
+
+\subsection{printf (briefly)}
+
+\input{../c/stdioPrintf}
+
+\subsection{struct} 
+
+\input{../c/struct}
+
+\subsection{aside: short-circuiting operators}
+
+\input{../c/logicalOps}
+
 \end{document}

@@ -1,0 +1,60 @@
+\graphicspath{{./figures/}}
+\title{ISAs}
+\date{}
+\usepackage{xspace}
+\usepackage{cancel}
+\usepackage{adjustbox}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\usetikzlibrary{circuits.logic.US}
+%\usepgflibrary{shapes.gates.logic.mux,shapes.geometric}
+\input{../common/y86Util}
+
+\section{ISAS made today}
+\input{../isas/isas-today}
+
+\section{microarchitectures versus ISAs}
+\input{../isas/microarch-v-isa}
+
+% FIXME: which changes are changes to ISA?
+\input{../isas/which-changes-isa-ex}
+
+\subsection{ISA goals?}
+\input{../isas/isa-goals}
+
+\section{ISA choices}
+    % FIXME: probably skip "write multiple values" for time
+\input{../isas/isa-choices}
+
+\section{CISC v RISC}
+
+\input{../isas/cisc-v-risc-intro}
+
+\subsection{really complex instructions: VAX}
+
+\input{../isas/vax-and-microcode}
+
+\subsection{why RISC}
+
+\input{../isas/why-risc}
+
+\subsection{typical RISC properties}
+
+\input{../isas/typical-risc-properties-lib}
+
+\againframe<1>{RISCattrs}
+
+\subsection{philosophical gap: who does the work?}
+
+\input{../isas/complexity-where}
+\section{backup slides}
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{addt'l ISA choices}
+\input{../isas/isa-choices-extra}
+
+\end{document}

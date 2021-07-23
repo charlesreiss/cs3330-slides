@@ -1,7 +1,145 @@
-\graphicspath{{./figures/}}
 \title{bitwise operators}
 \date{}
+\usepackage{xspace}
 \usepackage{cancel}
 \begin{document}
-\input{body}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\input{../common/y86Util}
+\input{../common/highBoxLib}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+
+\section{bitwise operators}
+
+\subsection{interlude: wires}
+
+\input{../bitwise/hwWires}
+
+\subsection{problem: extracting a hex digit}
+
+%\input{../bitwise/y86OpcodeExtractDiv}
+\input{../bitwise/topExtract}
+
+\subsubsection{aside: division is slow}
+
+\input{../bitwise/onDiv}
+
+\subsubsection{hardware extraction}
+
+\input{../bitwise/hwWireExtractNoOp}
+
+\section{shift right}
+
+\subsection{exposing wire extraction}
+
+\input{../bitwise/exposeWireExtractShrNoOp}
+
+\subsection{shr math}
+
+\input{../bitwise/shrMath}
+
+\subsection{shift right and negative numbers}
+
+\subsubsection{logical shift and negative division?}
+
+\input{../bitwise/shrNegativeEx}
+
+\subsubsection{review: two's complement}
+
+\input{../bitwise/twosCompl}
+
+\subsubsection{negative division}
+
+\input{../bitwise/negativeDivision}
+
+\subsection{arithmetic shift right}
+
+\input{../bitwise/arithRightShift}
+
+\input{../bitwise/shrNegativeEx2}
+
+\subsection{nit: division in C}
+
+\againframe<3>{divideNegTwo}
+
+\input{../bitwise/correctedDivision}
+
+\section{shift left, moving digits into place}
+
+\input{../bitwise/constructExShlNoOp}
+
+\section{bitwise gate ops}
+
+\subsection{motivation: extracting a nibble}
+
+\input{../bitwise/andMotivationExNibble}
+
+\subsubsection{exercise}
+
+\input{../bitwise/andMotivationExNibbleExercise}
+
+\subsubsection{without bitwise-and}
+
+\againframe<2>{extractICodeMore}
+
+\subsection{idea of bitwise operations}
+
+\input{../bitwise/andMotivationExplain}
+
+\subsection{gates}
+
+\input{../bitwise/gates}
+
+\subsection{and: the operation}
+
+\input{../bitwise/andIntroNoOp}
+
+\input{../bitwise/andExtractNoOp}
+\subsection{or/xor}
+
+\input{../bitwise/bitwiseReasons}
+
+\input{../bitwise/otherBitwise}
+
+\section{bit puzzles}
+
+\input{../bitwise/bit-puzzles}
+
+\subsection{case study: ternary operator}
+% FIXME: try to simplify?
+\input{../bitwise/ternaryExampleIntro}
+
+\subsubsection{options to simplify}
+\input{../bitwise/ternaryOptionsToSimplify}
+
+\subsubsection{one-bit case}
+\input{../bitwise/ternaryExample1}
+
+\subsubsection{multi-bit x/y}
+\input{../bitwise/ternaryExample2}
+
+\subsubsection{multi-bit everything}
+\input{../bitwise/ternaryExample3}
+
+% FIXME: skip?
+\input{../bitwise/simpleOpSpeed}
+\subsection{case study: any-bit?}
+
+\input{../bitwise/anyBit}
+
+\subsection{general strategies}
+
+\input{../bitwise/strategies}
+
+\section{bitwise exercise}
+\input{../bitwise/exercise}
+
 \end{document}

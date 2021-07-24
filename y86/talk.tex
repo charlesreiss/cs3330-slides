@@ -1,0 +1,97 @@
+\title{Y86-64}
+\date{}
+\usepackage{xspace}
+\usepackage{cancel}
+\usepackage{adjustbox}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+\usetikzlibrary{circuits.logic.US}
+\usepgflibrary{shapes.gates.logic.mux,shapes.geometric}
+\usetikzlibrary{patterns}
+\input{../common/y86Util}
+\newmintinline{c}{}
+\newminted{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeNL]{c}{linenos=false,beameroverlays,escapeinside=@@,texcomments}
+\newminted[ccodeS]{c}{linenos=false,fontsize=\small,beameroverlays,escapeinside=@@,texcomments}
+\lstnewenvironment{asmcodeNL}{\lstset{language=myasm,escapeinside=@@,deletekeywords=test,texcl=false}}{}
+\lstnewenvironment{asmcodeS}{\lstset{language=myasm,style=small,escapeinside=@@}}{}
+\lstnewenvironment{asmcodeT}{\lstset{language=myasm,style=smaller,escapeinside=@@}}{}
+
+
+\providecommand{\vemphA}[1]{\myemph<2>{#1}}
+\providecommand{\vemphB}[1]{\myemph<3>{#1}}
+\providecommand{\vemphC}[1]{\myemph<4>{#1}}
+
+\input{../isas/typical-risc-properties-lib}
+
+\section{Y86-64 assembly}
+
+\input{../y86/instr-list-lib}
+
+\againframe<1>{Y86instrs}
+
+\subsection{mov}
+
+\againframe<2>{Y86instrs}
+
+\input{../y86/mov}
+
+\subsection{cmov}
+
+\againframe<3>{Y86instrs}
+
+\input{../y86/cmov}
+
+\subsection{halt}
+
+\input{../y86/halt}
+
+\subsection{addressing memory}
+
+%\input{../y86/addressing-memory}
+
+\input{../y86/address-memory-as-ex}
+
+\subsection{constants}
+
+\input{../y86/constants}
+
+\subsection{operand uniqueness}
+
+\input{../y86/operand-uniqueness}
+\subsection{push/pop}
+
+\input{../y86/pushpop}
+
+\subsection{call/ret}
+
+\input{../y86/callret}
+\subsection{state}
+
+\input{../y86/state}
+
+\subsection{\ldots and RISC}
+
+\againframe<2>{RISCattrs}
+
+\section{Y86-64 machine code}
+
+\subsection{instruction encoding summary}
+
+\input{../y86/instrFormats}
+
+\subsection{using YAS}
+\input{../y86/using-yas}
+
+\subsection{encoding example}
+
+%\input{../y86/encoding-example-setup-no-ex}
+\input{../y86/encoding-example-setup-with-ex}
+\input{../y86/encoding-example}
+
+\subsection{decoding example}
+\input{../y86/decoding-example}
+
+\end{document}

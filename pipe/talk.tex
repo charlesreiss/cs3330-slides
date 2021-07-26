@@ -1,6 +1,132 @@
 \graphicspath{{./figures/}}
-\title{}
+\title{pipelining}
 \date{}
+\usepackage{pgfplots}
 \begin{document}
-\input{body}
+\usepgflibrary{shapes.gates.logic.mux}
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+\input{../common/y86Util}
+\input{../pipe/seqToPipeUtil}
+\input{../pipe/pipeAddQTools}
+\input{../pipe/pipePicUtils}
+\input{../pipe/laundryTools}
+\input{../pipe/countTools}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{pipelining concept}
+
+\subsection{example: laundry}
+
+\input{../pipe/laundryPipeline}
+
+\subsection{example: times three circuit}
+
+% FIXME: modify to show ??? on input and output throughout
+
+\subsubsection{without a pipeline}
+
+\input{../pipe/countNoPipeline}
+
+\subsubsection{with a pipeline; register tolerances}
+
+\input{../pipe/countPipeline}
+
+\subsubsection{register tolerances}
+
+\input{../pipe/registerTolerance}
+
+\subsubsection{exercise: timing}
+\input{../pipe/countPipelineTiming}
+
+\input{../pipe/deeperPipelineLib}
+
+\section{deeper pipeline: diminishing returns}
+
+\againframe<1-2>{deeperPipeline}
+
+\subsection{preview: problems}
+
+\againframe<9>{deeperPipeline}
+
+\subsection{exercise: throughput now?}
+
+\againframe<4-5>{deeperPipeline}
+
+\subsection{generally}
+
+\againframe<10>{deeperPipeline}
+
+\input{../pipe/deeperPipelineDiminish}
+    
+\section{deeper pipeline: uneven returns}
+
+\againframe<11>{deeperPipeline}
+
+\againframe<6>{deeperPipeline}
+
+\subsection{exercise: throughput now?}
+
+\againframe<7-8>{deeperPipeline}
+
+\subsection{generally}
+
+\input{../pipe/deeperPipelineUneven}
+    
+    % FIXME: split out exercise for computing uneven cycle time
+ 
+\section{revisiting SEQ stages for pipelining}
+
+\input{../pipe/seqToPipeStages}
+
+\section{pipelining addq}
+
+\subsection{starting sequential; stages}
+
+\input{../pipe/seqAddQStages}
+
+\subsection{dividing stages with registers}
+
+\input{../pipe/pipeAddQIntro}
+
+\subsection{determining performance: critical paths}
+
+\input{../pipe/criticalPaths}
+
+\subsection{example execution timing}
+
+\input{../pipe/pipeAddQTiming}
+
+    % FIXME: exercise for this?
+        % when does X, Y, Z happen
+
+\subsection{exercise}
+\input{../pipe/pipeAddQTimingEx}
+
+\section{pipelining in HCL}
+
+\subsection{book's naming of pipeline registers}
+
+\input{../pipe/pipeNaming}
+
+\subsection{pipelined addq in HCL}
+
+\input{../pipe/addqHcl}
+
+
+\section{tackling the whole processor}
+
+\subsection{overall idea}
+
+\input{../pipe/seqToPipeSimple}
+
+\subsection{don't mix the stages}
+
+\input{../pipe/controlRule}
+
+\input{../pipe/memoryRW}
+
 \end{document}

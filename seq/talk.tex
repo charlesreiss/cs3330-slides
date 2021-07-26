@@ -1,8 +1,214 @@
 \graphicspath{{./figures/}}
 \usepackage{xspace}
 \usepackage{cancel}
-\title{Exam Review}
+\title{SEQ + HCL}
 \date{}
 \begin{document}
-\input{body}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% FIXME: -q/--quiet
+\input{../common/y86Util}
+\usepgflibrary{shapes.gates.logic.mux}
+\usetikzlibrary{calc,chains,shapes.misc,shapes.callouts,shapes.geometric,shapes.gates.logic.US,circuits.logic.US}
+\providecommand{\vemphA}[1]{\myemph<2>{#1}}
+\providecommand{\vemphB}[1]{\myemph<3>{#1}}
+\providecommand{\vemphC}[1]{\myemph<4>{#1}}
+
+\section{HCLs, generally}
+\input{../hcl/descHW}
+
+\section{wires}
+
+\subsection{abstractly}
+\input{../seq/wires} % FIXME: split out logic part to interleave better with HCLRS stuff
+
+\subsection{in HCLRS}
+\input{../hcl/hclWiresIntro}
+
+\section{circuits and state}
+
+\subsection{counter example}
+
+% FIXME: show counter circuit, then interlude:
+    % this output should be + 1?
+    % when will it change?
+
+\input{../seq/needStateHCL}
+
+\subsection{registers}
+
+\input{../seq/regOperation}
+
+\subsection{registers in HCLRS}
+
+% FIXME
+\input{../seq/needStateHCLFinalCode}
+
+\subsection{exercise}
+\input{../hcl/registerCircuitExercise}
+
+% FIXME: register operation exercise
+
+\subsection{instruction memory}
+
+\input{../seq/instr-memory}
+% FIXME: value in example exercise?
+
+\subsection{Stat signal}
+
+\input{../hcl/stat-signal}
+
+\subsection{nop CPU}
+\input{../hcl/nopHCL}
+
+\subsection{running nop CPU}
+\input{../hcl/nopHCLRun}
+
+
+
+
+\section{aside: MUXes}
+\subsection{motivation}
+\againframe<8>{nopCPU}
+\subsection{the HW component}
+\input{../seq/muxes}
+
+\subsection{abstraction in HCL}
+\input{../hcl/HCLMux}
+
+\subsection{exercise}
+\input{../hcl/muxExercise}
+
+\section{nop+halt CPU}
+% FIXME: nop+halt ISA
+% FIXME: nop+halt CPU picture
+% FIXME: nop+halt HCL
+
+\input{../seq/nopHaltIntro}
+\input{../hcl/nopHaltLib}
+
+\againframe<1-2>{nopHltCPU}
+
+\subsection{using i10bytes}
+\input{../hcl/instr-memory-hcl}
+
+\subsection{extracting bits?}
+\againframe<3>{nopHltCPU}
+
+\input{../hcl/HCLExtract}
+
+\subsection{instruction bit numbering}
+\input{../hcl/instrEndianness}
+    % FIXME: inverted instruction table
+
+\subsection{finishing the CPU}
+
+\againframe<4-6>{nopHltCPU}
+
+\begin{frame}{demo}
+\end{frame}
+
+\section{nop+jmp(+halt) CPU}
+
+\subsection{extending the nop+halt CPU}
+\input{../seq/nopJmpBuild}
+
+\subsection{in HCLRS}
+\input{../hcl/nopJmp}
+
+\subsection{nop+jmp CPU}
+\begin{frame}{demo: running nop/jmp}
+\end{frame}
+\begin{frame}{demo: debug and interactive mode}
+\end{frame}
+\begin{frame}{demo: yis}
+\end{frame}
+\input{../hcl/nopJmpRun}
+
+\section{addq CPU}
+
+\subsection{new ISA: addq}
+
+\input{../seq/addqCpuIntro}
+
+\subsection{the regsiter file}
+\input{../seq/regFile}
+
+\subsection{addq processor}
+\input{../seq/addqCpuPic} % FIXME: w/ with halt base
+
+\subsection{\ldots in HCLRS}
+\input{../hcl/addqCpu}
+
+\subsection{HCLRS versus book}
+\input{../hcl/bookDiff}
+
+\section{ALUs}
+\subsection{abstractly}
+\input{../seq/alus}
+
+\subsection{in HCLRS}
+\input{../hcl/aluNote}
+
+
+\section{review: nop+halt CPU}
+\againframe<7>{nopHltCPU}
+
+\section{exercise: nop+add CPU}
+\input{../seq/postMuxQ}
+\section{mov-to-register CPU}
+\input{../seq/movLib}
+\input{../seq/movToRegCpuIntro}
+
+\subsection{data memory}
+\input{../seq/data-mem}
+
+\subsection{exercise: MUXes in mov-to-register}
+\input{../seq/movToRegCpuEx}
+
+\subsection{building mov-to-register}
+\input{../seq/movToRegCpuBody}
+
+\section{mov CPU}
+\input{../seq/movCpu}
+
+\section{aside: data paths and control paths}
+\input{../seq/dPathVCPath}
+
+\againframe<6>{MovCPU}
+
+\section{the textbook's stages}
+
+\subsection{mov stages}
+
+\input{../seq/movStages}
+
+\subsection{describing stages}
+
+\input{../seq/stagesDesc}
+
+\subsection{exercise: stages versus time}
+
+\input{../seq/stagesAndTimeQ}
+
+\subsection{walking through the stages}
+
+\input{../seq/stagesWalk}
+
+\subsection{exercises: setting muxes}
+
+\input{../seq/settingMuxes} % FIXME: remove push/pop examples
+
+\section{backup slides}
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{reference implementation: yis}
+\input{../hcl/compareToYis}
+
+\subsection{HCL summary}
+\input{../hcl/summary}
 \end{document}

@@ -1,6 +1,233 @@
 \graphicspath{{./figures/}}
-\title{}
+\title{Optimization and OOO}
 \date{}
 \begin{document}
-\input{body}
+\input{../common/y86Util}
+
+\section{loop unrolling}
+\input{../optimization/loopOptIntro}
+
+% FIXME: combining loop unrolling and cache blocking
+\subsection{performance difference}
+\input{../optimization/loopUnrollPerf}
+
+\subsection{aside: combining loop unrolling and cache blocking}
+\input{../optimization/loopUnrollPlusCB}
+
+\subsection{exercise}
+\input{../optimization/loopUnrollVCBEx}
+
+\section{out-of-order, multiple issue CPUs}
+% FIXME: introduction to OOO
+
+\subsection{introduction}
+
+\input{../ooo/realCpuIntro}
+
+\subsubsection{multiple issue}
+\input{../pipe/missingPiecesMI}
+
+\subsubsection{out-of-order issue}
+\input{../pipe/missingPiecesOOO}
+
+\subsection{complex hazards examples}
+\input{../ooo/oooHazards.tex} %FIXME
+
+\subsection{superscalar overall design}
+\input{../ooo/oooPipeline}
+\againframe<1-9>{oooPipe}
+
+\subsection{register renaming}
+
+\againframe<12>{oooPipe}
+\input{../ooo/oooRename.tex}
+% FIXME: EXERCISE
+
+\subsection{renaming exercise?}
+\input{../ooo/oooRenameEx.tex}
+
+
+\subsection{complex instructions and condition codes}
+\input{../ooo/oooMicrocodeSummary.tex}
+
+\subsection{instruction dispatch}
+\againframe<10>{oooPipe}
+\input{../ooo/oooDispatch}
+
+% FIXME: EXERCISE
+\subsection{dispatch exercise 1}
+\input{../ooo/oooDispatchEx1}
+
+\subsection{functional units}
+\againframe<11>{oooPipe}
+\input{../ooo/realCpuFU}
+
+\subsection{instruction dispatch (two-cycle multiplier)}
+\input{../ooo/oooDispatchAlt}
+
+
+\subsection{OOO limits}
+\input{../ooo/oooLimitations}
+% FIXME: examples of each bottleneck
+
+\subsection{the data flow limit}
+\input{../optimization/dataFlowLimit}
+
+\subsection{reassociation and data float}
+\input{../optimization/reassocDataFlow}
+
+\section{multiple accumulators}
+
+\subsection{data flow for multiple accumulators}
+\input{../optimization/dataFlowMult}
+
+\subsection{using multiple accumulators}
+\input{../optimization/multAcc}
+
+\subsection{loop unrolling performance difference} % FIXME: is this in the right place?
+\input{../optimization/loopUnrollPerf}
+
+\section{what compilers do/don't do}
+
+
+\subsection{compiler limits}
+\input{../optimization/compilerLimits}
+
+\section{aliasing}
+\againframe<2>{compileLimits}
+
+\subsection{what is aliasing}
+\input{../optimization/compileLimitsAlias}
+
+\subsection{avoiding aliasing}
+\input{../optimization/regReuseCheck}
+\subsection{`register blocking'}
+\input{../optimization/regBlocking} 
+
+\subsection{aliasing exercise}
+\input{../optimization/aliasEx}
+
+\subsection{aliasing as cache blocking problem}
+\input{../optimization/compileLimitsAliasCache}
+
+
+
+
+\section{inlining}
+\input{../optimization/inlining}
+
+\againframe<3>{compileLimits}
+
+\section{loop hoisting}
+\input{../optimization/loopHoist}
+
+\againframe<4>{compileLimits}
+
+\section{exercise: which hurts\ldots}
+\input{../optimization/exercise-which-hurts}
+
+\section{vector instructions}
+\input{../optimization/loopLabSpeeds}
+
+\subsection{add example}
+\input{../vector/vectAddUnvect}
+
+\subsection{assembly}
+\input{../vector/vectAddAsm}
+
+\subsection{vector instruction operation}
+\input{../optimization/vectPicture}
+
+\subsection{hardware for vector instructions}
+\input{../optimization/vectHW}
+
+\subsection{autovectorization?}
+\input{../optimization/vectAndCompile}
+
+\subsection{vector instructions are fickle}
+\input{../optimization/vectFickle}
+
+\subsection{vector instrinsics: why}
+\input{../vector/vectIntrIntro}
+
+\subsection{add example}
+\input{../vector/vectIntrAdd}
+\input{../vector/vectPictureIntr}
+
+\subsection{exercise}
+\input{../vector/vectExercise}
+
+\subsection{note on 128-bit version}
+\input{../vector/vectIntrTo128}
+
+\subsection{vectorizing matmul}
+\input{../vector/vectMatmul}
+
+\subsection{exercise}
+\input{../vector/vectExercise2}
+
+\subsection{moving values in vector}
+\input{../vector/vectShuffle}
+
+\subsection{other vector ISAs}
+\input{../vector/otherVectIsas}
+
+\subsection{other vector instr. features}
+\input{../vector/otherVectFeatures}
+
+\subsection{interfaces other than intrinisics}
+\input{../vector/vectAlt}
+
+\section{profilers}
+\input{../optimization/profShort}
+
+
+
+
+
+\section{backup slides}
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{OOO: handling branch misprediction}
+\againframe<15>{oooPipe}
+\input{../ooo/branch-mispred}
+
+\subsection{remembering branches: branch target buffer}
+\againframe<14>{oooPipe}
+\input{../bpred/btb}
+
+% FIXME: section on branch prediction and optimization?
+\section{avoiding branch misprediction?}
+\input{../optimization/bpred}
+
+\subsection{dispatch exercise 2}
+\againframe<2>{iqueueDisEx}
+
+\subsection{aside: strength reduction}
+\input{../optimization/strRed}
+
+\subsection{real OOO sizes}
+\input{../ooo/oooSkylakeSizes}
+
+\subsection{exceptions and OOO}
+
+\input{../exceptions/and-ooo} % FIXME: move to later?
+    % FIXME: remove or explain free list
+    % FIXME: possibly use or mention two register files instead of mappings?
+
+
+\subsection{misc. topic: efficiently computing addresses in loops}
+\input{../optimization/addrEff}
+
+\subsection{aside: strength reduction}
+\input{../optimization/strRed}
+
+\subsection{compiler limits and loop optimizations}
+\input{../optimization/limits-and-loop-opt}
+\subsection{optimizing compiler examples}
+\input{../optimization/optExample}
+
+
+
 \end{document}

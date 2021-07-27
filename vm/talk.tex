@@ -1,0 +1,138 @@
+\graphicspath{{./figures/}}
+\title{virtual memory}
+\date{}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\usepgflibrary{shapes.gates.logic.mux}
+\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
+\section{virtual memory}
+
+\subsection{address spaces}
+
+\input{../vm/recallAddr}  % FIXME: some duplication with memProtect exceptions slides
+
+\subsection{address translation overview}
+
+\input{../vm/translationOverview}
+
+% FIXME: reminder about this and context switches
+
+\subsection{simple paging with four pages}
+
+\input{../vm/fourPages}
+
+\subsection{switching address spaces}
+
+\input{../vm/switchAddr}
+
+\subsection{\ldots kernel-only}
+
+\input{../vm/kernelOnlyBit}
+
+\subsection{on address space sizes}
+
+\input{../vm/sizeNotes}
+
+\subsection{exercise: address splitting}
+
+\input{../vm/ptSizeEx}
+
+
+\section{handling big page tables}
+\input{../vm/bigPageOptions}
+
+\subsection{two-level page tables}
+\input{../vm/twoLevelPT}
+\input{../vm/twoLevelPTAlt}
+
+\subsection{more than two levels}
+\input{../vm/multiLevelGen}
+
+\subsection{exercises: multi-level lookup}
+\subsubsection{part 0}
+\input{../vm/multiSplitExPt0}
+\subsubsection{part 2}
+\input{../vm/multiSplitExPt2}
+\subsubsection{part 3}
+\input{../vm/multiSplitExPt3}
+\input{../vm/multiSplitExPt3b}
+\subsubsection{part 4}
+\input{../vm/multiSplitExPt4}
+\subsubsection{part 5}
+\input{../vm/multiSplitExPt5}
+
+
+\section{TLB}
+\subsection{why does caching work?}
+\input{../vm/tlbWhy}
+
+\subsection{how TLBs fit in the pipeline}
+\input{../vm/tlbPipeline}
+
+\subsection{how TLB fits in page table lookup}
+\input{../vm/tlbMulti}
+
+\subsection{how TLBs are organized}
+\input{../vm/tlbOrganization} % FIXME: emphasize that AFTER this is normal cache access
+
+\subsection{exercise: splitting for TLBs}
+\subsubsection{1}
+\input{../vm/tlbSplitEx1}
+\subsubsection{2}
+\input{../vm/tlbSplitEx2}
+
+
+\subsection{exercise: TLB access pattern}
+\input{../vm/tlbAccessExPrep}
+\input{../vm/tlbAccessEx}
+
+
+\subsection{TLBs and context switches}
+\input{../vm/tlbSwitch}
+
+\section{reality: actual PTEs}
+\input{../vm/actualPTE}
+
+
+\subsection{exercise: splitting for TLBs}
+\subsubsection{3}
+\input{../vm/tlbSplitEx3}
+
+\section{overlapping TLB and cache accesses}
+\input{../vm/tlbPerformance}
+
+\subsection{exercise}
+\input{../vm/physIndexEx}
+
+\subsection{alternative: virtual caches}
+\input{../vm/physIndex}
+\input{../vm/virtCaches}
+% FIXME: example of virtual caches
+% FIXME: example of antialiasing mechanism
+
+\section{i7 memory}
+\input{../vm/i7Diag}
+
+\section{huge pages}
+\input{../vm/bigPages}
+
+\subsection{space saving or not with multi-level}
+\input{../vm/ptSplit64A}
+
+\subsubsection{part 1}
+\input{../vm/multiSplitExPt1}
+
+\section{backup slides}
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsubsection{copy-on-write?} % FIXME: consider skipping
+\input{../vm/copyOnWrite}
+
+\subsection{approximating LRU (long)}
+\input{../vm/swapReplacement}
+
+\end{document}

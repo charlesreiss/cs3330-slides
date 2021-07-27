@@ -1,0 +1,28 @@
+\begin{frame}[fragile,label=vectorExercise2A]{vector exercise (2a)}
+\begin{lstlisting}[language=C++,style=smaller]
+long A[1024], B[1024];
+...
+for (int i = 0; i < N; i += 1)
+    for (int j = 0; j < N; j += 1)
+        A[i] += B[i] * B[j];
+\end{lstlisting}
+\hrule
+{\fontsize{9}{10}\selectfont (casts omitted below to reduce clutter:)}
+\begin{lstlisting}[language=C++,style=smaller]
+for (int i = 0; i < 1024; i += 4) {
+    A_part = _mm256_loadu_si256(&A[i]);
+    Bi_part = _mm256_loadu_si256(&B[i]);
+    for (int j = 0; j < 1024; /* BLANK 1 */) {
+        Bj_part = _mm256_/* BLANK 2 */;
+        A_part = _mm256_add_epi64(A_part, _mm256_mullo_epi64(Bi_part, Bj_part));
+    }
+    _mm256_storeu_si256(&A[i], A_part);
+}
+\end{lstlisting}
+\small
+What goes in BLANK 1 and BLANK 2? \\
+\begin{tabular}{ll}
+A. {\small\tt loadu\_si256(\&B[j])}, j += 1 & B. {\small\tt loadu\_si256(\&B[j])}, j += 4 \\
+C. {\small \tt set1\_epi64(B[j])}, j += 1 & D. {\small\tt set1\_epi64(B[j])}, j += 4 \\
+\end{tabular}
+\end{frame}

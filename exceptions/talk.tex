@@ -1,0 +1,108 @@
+\graphicspath{{./figures/}}
+\title{exceptions}
+\date{}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\input{../exceptions/exceptKindInfoLib}
+\section{exceptions}
+
+\subsection{timing doing nothing}
+% infinite empty loop
+\input{../exceptions/doNothing}
+
+\input{../exceptions/timeMulti}
+
+\subsection{the context switch}
+\input{../exceptions/contextSwitch}
+
+\subsection{preview: memory protection}
+\subsubsection{exercise: expected behavior?}
+\input{../exceptions/memProtectQ}
+
+\subsubsection{address spaces}
+\input{../exceptions/memProtectAddressSpaces}
+
+\againframe<2>{context}
+
+\subsection{preview: the process}
+    % FIXME: probably needs more explanation of thread defn?
+\input{../exceptions/processIdea}
+
+\subsection{exception types: sync v async}
+%\input{../exceptions/syncVAsync}
+
+\againframe<1-2>{exceptTypesN}
+
+\subsection{exception types: detailed}
+
+%\input{../exceptions/exceptKindInfo}  % FIXME: replace with sync v async
+
+\againframe<3>{exceptTypesN}
+
+\input{../exceptions/timerExcept}
+
+\againframe<4>{exceptTypesN} % interrupt + system call
+
+\input{../exceptions/keyInTimeline}
+
+\againframe<5>{exceptTypesN} % faults
+
+\subsection{hardware for exceptions}
+
+\input{../exceptions/exceptImplHW}
+
+\input{../exceptions/exceptImplHWAdded}
+
+\subsection{exception handlers}
+    
+\input{../exceptions/exceptImplSW}
+
+\subsection{privileged instructions}
+
+\input{../exceptions/privTimerExcept}
+
+\againframe<6>{exceptTypesN} % faults
+
+\input{../exceptions/privInstr}
+
+\againframe<7>{exceptTypesN}
+
+\begin{frame}{what about editing exception table?}
+\end{frame}
+
+\againframe<3>{progMem}
+
+\againframe<3>{addrSpace}
+
+\input{../exceptions/protFault}
+
+\againframe<8>{exceptTypesN}
+
+\subsubsection{exercise}
+\input{../exceptions/whichKernel}
+
+\subsection{system calls}
+
+\input{../exceptions/sysCallWhy}
+
+    % FIXME: discussion of saved PC being after syscall instruction here
+
+\input{../exceptions/sysCallLinux}
+
+\input{../exceptions/sysCallWrapperShort}
+
+% FIXME: exercise: how many exceptions
+\subsection{which exceptions?}
+\input{../exceptions/howManyEx}
+
+\subsection{exception terminology note}
+
+\input{../exceptions/termNote}
+
+\subsection{and OOO}
+\input{../exceptions/and-ooo} % keep?
+
+\end{document}

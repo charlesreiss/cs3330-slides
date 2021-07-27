@@ -267,6 +267,17 @@
     \end{tikzpicture}
 }
 
+
+\newcommand{\changelogmode}{
+    \setbeamercolor{background canvas}{bg=blue!40!black,fg=blue!10!white}
+    \setbeamercolor{normal text}{bg=blue!40!black,fg=blue!10!white}
+    \setbeamercolor{itemize/enumerate body}{fg=white}
+    \setbeamercolor{itemize/enumerate subbody}{fg=white}
+    \setbeamercolor{titlelike}{bg=blue!40!black,fg=blue!10!white}
+}
+
 \makeatother
+
+\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
 
 \endinput

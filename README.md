@@ -3,7 +3,7 @@
 Topics in order. A main slide deck for each topic is generated from the `talk.tex` file in each
 directory.
 
-*  intro: course instroduction
+*  intro: course instroduction (pretty UVa-specific)
 *  compileSteps: compilation pipeline (object files, linking)
 *  asm: x86-64 assembly review
 *  isas: instruction set architectures
@@ -15,4 +15,6 @@ directory.
 *  optimization: optimizations and out-of-order processors and vector instructions
     *  OOO slides sources are from the `ooo/` directory
     *  vector instruction slides are partially from the `vector/` directory
+*  exceptions: exceptions (including potentail short section on exceptions and OOO)
+*  vm: virtual memory
 

@@ -1,0 +1,104 @@
+\title{branch prediction}
+\date{}
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+\input{../ooo/oooPipeline}
+\input{../common/y86Util}
+\usepgflibrary{shapes.gates.logic.mux}
+
+\section{squashing with OOO}
+\againframe<15>{oooPipe}
+\input{../ooo/branch-mispred}
+
+\begin{frame}{question}
+    \begin{itemize}
+    \item how much does a branch misprediction cost?
+    \end{itemize}
+\end{frame}
+
+\section{branch prediction}
+\againframe<14>{oooPipe}
+
+% separating target and direction prediction
+\section{direction versus target prediction}
+\input{../bpred/direction-versus-target} 
+
+% branch target buffer idea
+\section{target prediction}
+
+\subsection{branch target buffer}
+\input{../bpred/btb}  % FIXME: step through need for offset bit?
+
+\subsection{return address prediction}
+\input{../bpred/retStack} % FIXME: animation
+
+\subsection{aside: indirect branch prediction?}
+\input{../bpred/indirectBranch}
+
+\section{direction prediction}
+\input{../bpred/dir-predict-intro}
+
+\subsection{static predictors}
+\input{../bpred/staticPredict}
+% review: static predictors
+
+\subsection{local history predictors}
+\input{../bpred/local-history-intro}
+
+\subsubsection{intuition: repeat last?}
+\input{../bpred/local-repeat-why}
+
+\subsubsection{1-bit predictor}
+\input{../bpred/local-1bit}
+
+\subsubsection{exercise}
+\input{../bpred/local-1bit-ex}
+
+% FIXME: exercise (1): prediction rate
+
+\subsubsection{saturating counter}
+\input{../bpred/local-saturating}
+
+\subsubsection{exercise}
+\input{../bpred/local-sat-ex}
+
+% FIXME: exercise (2): prediction rate
+
+% local history-based direction prediction
+    % 1-bit predictor
+    % 1-bit predictor and loops?
+    % saturating counter predictors
+
+\subsection{pattern-based predictors}
+\subsubsection{intuition: local branch patterns}
+\input{../bpred/local-patterns-intuition}
+\subsubsection{local pattern based predictor}
+\input{../bpred/local-pattern-predict}
+
+\subsubsection{local pattern predictor and collisions}
+\input{../bpred/local-and-collision}
+
+\subsection{global pattern predictor}
+\input{../bpred/global-history-predictor} 
+
+\section{combined approaches}
+
+\subsection{correlating branch predictor}
+\input{../bpred/corr-predict} % FIXME: picture
+
+\subsection{mixing predictors}
+\input{../bpred/mixing-predict}
+
+\section{specialized predictors}
+\subsubsection{loop count predictors}
+\input{../bpred/loop-count-predict}
+
+\section{branch predictor performance?}
+\input{../bpred/bench-results}
+
+\section{reversed engineering Haswell BP}
+\input{../bpred/re-haswell}
+
+\end{document}

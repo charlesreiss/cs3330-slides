@@ -89,6 +89,8 @@
 
 \section{what compilers do/don't do}
 
+\subsection{optimizing compiler examples}  % FIXME: skip if not time
+\input{../optimization/optExample}
 
 \subsection{compiler limits}
 \input{../optimization/compilerLimits}
@@ -111,7 +113,8 @@
 \input{../optimization/compileLimitsAliasCache}
 
 
-
+\subsection{compiler limits and loop optimizations} % FIXME: skip if not time:
+\input{../optimization/limits-and-loop-opt}
 
 \section{inlining}
 \input{../optimization/inlining}
@@ -182,9 +185,6 @@
 \input{../optimization/profShort}
 
 
-
-
-
 \section{backup slides}
 \begin{frame}{backup slides}
 \end{frame}
@@ -216,18 +216,8 @@
     % FIXME: remove or explain free list
     % FIXME: possibly use or mention two register files instead of mappings?
 
-
 \subsection{misc. topic: efficiently computing addresses in loops}
 \input{../optimization/addrEff}
-
-\subsection{aside: strength reduction}
-\input{../optimization/strRed}
-
-\subsection{compiler limits and loop optimizations}
-\input{../optimization/limits-and-loop-opt}
-\subsection{optimizing compiler examples}
-\input{../optimization/optExample}
-
 
 
 \end{document}

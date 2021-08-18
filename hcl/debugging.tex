@@ -13,18 +13,24 @@
 |  0x0000000_:   10 70 13 00  00 00 00 00   00 00 70 1c  00 00 00 00    |
 |  0x0000001_:   00 00 00 70  0a 00 00 00   00 00 00 00  10 10 00       |
 +-----------------------------------------------------------------------+
-\vemphA{i10bytes set to 0x137010 (reading 10 bytes from memory at pc=0x0)}
-\vemphA{pc = 0x0; loaded [10 : nop]}
-\vemphA{Values of wires:}
-\vemphA{Wire                       Value}
-\vemphA{dest          0x0000000000001370}
-\vemphA{i10bytes  0x00000000000000137010}
-\vemphA{icode                        0x1}
-\vemphA{pc            0x0000000000000000}
-\vemphA{P_thePc       0x0000000000000000}
-\vemphA{p_thePc       0x0000000000000001}
-\vemphA{Stat                         0x1}
-\vemphA{valP          0x0000000000000001}
+i10bytes set to 0x137010 (reading 10 bytes from memory at pc=0x0)
+pc = 0x0; loaded [10 : nop]
+\vemphA{Values of inputs to built-in components:}
+\vemphA{pc                   0x0000000000000000}
+\vemphA{Stat                                0x1}
+
+\vemphA{Values of outputs of built-in components:}
+\vemphA{i10bytes         0x00000000000000137010}
+
+\vemphA{Values of register bank signals:}
+\vemphA{P_thePc              0x0000000000000000}
+\vemphA{p_thePc              0x0000000000000001}
+
+\vemphA{Values of other wires:}
+\vemphA{dest                 0x0000000000001370}
+\vemphA{icode                               0x1}
+\vemphA{valP                 0x0000000000000001}
+
 .------------------- between cycles    1 and    2 ----------------------+
 ...
 \end{Verbatim}
@@ -47,18 +53,8 @@ $ ./nopjmp_cpu.exe -i -d nopjmp.yo
 \vemphA{(press enter to continue)}
 i10bytes set to 0x137010 (reading 10 bytes from memory at pc=0x0)
 pc = 0x0; loaded [10 : nop]
-Values of wires:
-Wire                       Value
-dest          0x0000000000001370
-i10bytes  0x00000000000000137010
-icode                        0x1
-pc            0x0000000000000000
-P_thePc       0x0000000000000000
-p_thePc       0x0000000000000001
-Stat                         0x1
-valP          0x0000000000000001
-+------------------- between cycles    1 and    2 ----------------------+
-...
+\vemphA{Values of inputs to built-in components:}
+....
 \end{Verbatim}
 \end{frame}
 

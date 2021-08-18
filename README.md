@@ -18,3 +18,14 @@ directory.
 *  exceptions: exceptions (including potentail short section on exceptions and OOO)
 *  vm: virtual memory
 
+# Building
+
+There is a Makefile in this directory. You will need available:
+
+*  latexrun (https://github.com/aclements/latexrun);
+*  a TeX installation similar to TeXLive;
+
+Running `make` will produce a bunch of PDFs in the `dist` directory.
+
+Within subdirectories, you can use `make` to build `talk-slides.pdf` (full PDF)
+and `talk-slides-heldback.pdf` (omits some question answers).

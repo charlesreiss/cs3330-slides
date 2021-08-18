@@ -1,0 +1,13 @@
+\begin{frame}{SIMD versus ...}
+    \begin{itemize}
+    \item instruction that does multiple adds: \\
+        single-instruction, multiple data (SIMD)
+    \vspace{.5cm}
+    \item form of parallelism \textit{in addition to}:
+    \begin{itemize}
+        \item pipelining (single `thread' of instructions, different parts executed at once)
+        \item multiple-issue (single thread of instructions, more than one started at a time)
+        \item simulatenous multithreaded (multiple threads of instructions with shared ALUs, etc.)
+        \item multiple cores/processors (multiple threads of instructions with independent ALUs, etc.)
+    \end{itemize}
+\end{frame}

@@ -1,9 +1,7 @@
 \documentclass[aspectratio=1610]{mytalk}
-\graphicspath{{./figures/}}
 \title{}
 \date{}
 \begin{document}
-\input{../common/layers}
 \usemintedstyle{tango}
 \newmintinline{c}{}
 \newminted[ccode]{c}{linenos=true,xleftmargin=1cm,beameroverlays,escapeinside=@@,texcomments}
@@ -18,8 +16,6 @@
 \renewcommand{\theFancyVerbLine}{\small\textcolor[rgb]{.25,.25,.25}{\arabic{FancyVerbLine}}}
 
 
-\iftoggle{heldback}{\newcommand<>{\maybeEmph}[1]{#1}}{\newcommand<>{\maybeEmph}[1]{\myemph#2{#1}}}
-
 \newcommand<>{\mathHL}[1]{%
 \alt#2{
 \text{\colorbox{green!20}{\ensuremath{#1}}}%
@@ -27,5 +23,5 @@
 \text{\colorbox{white!20}{\ensuremath{#1}}}%
 }%
 }
-\input{lea}
+\input{overlapRegDiag}
 \end{document}

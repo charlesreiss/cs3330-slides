@@ -1,0 +1,21 @@
+\begin{frame}[fragile,label=ccExOF2]{condition codes example plus overflow (2)}
+\begin{lstlisting}
+  movq $5000000000000000000, %rax
+  movq $6000000000000000000, %rbx
+  addq %rax, %rbx
+    // %rbx + %rax = (incorrect) -7446744073709551616 (signed but overflow)
+    // %rbx + %rax = 11000000000000000000 (unsigned, no overflow)
+  jle foo // not taken; true signed result > 0
+  jbe foo // not taken; true unsigned result > 0
+\end{lstlisting}
+SF = 1 (negative as signed), ZF = 0 (not zero) \\
+\begin{tabular}{ll}
+$\xOF = 1$ (true) & overflow as signed \\
+$\xCF = 0$ (false) & overflow as unsigned \\
+\end{tabular}
+\begin{itemize}
+\item jle uses OF to realize true result is positive, even though SF is set
+\end{itemize}
+\end{frame}
+
+

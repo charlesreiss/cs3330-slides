@@ -1,6 +1,6 @@
 \usetikzlibrary{decorations.pathreplacing}
 
-\begin{frame} %{overlapping registers (1)}
+\begin{frame}{overlapping registers}
 \begin{tikzpicture}
     \tikzset{
         main reg/.style={draw,very thick},
@@ -9,15 +9,15 @@
         reg divider/.style={draw,thin,dashed,black!75},
         reg divider minor/.style={draw,thin,dotted,black!50},
     }
-    \draw[overlay,thick,dotted] (-1, -2.8) -- ++(16, 0);
-    \draw[overlay,thick,dotted] (-1, -6.2) -- ++(16, 0);
-    \providecommand{\regheight}{0.4}
+    \draw[overlay,thick,dotted] (-1, -2.7) -- ++(16, 0);
+    \draw[overlay,thick,dotted] (-1, -5.9) -- ++(16, 0);
+    \providecommand{\regheight}{0.3}
     \begin{scope}[x=0.9cm]
-    \node[anchor=south east,bit label] at (16, 0) {0};
-    \node[anchor=south east,bit label] at (14, 0) {8};
-    \node[anchor=south east,bit label] at (12, 0) {16};
-    \node[anchor=south east,bit label] at (8, 0) {32};
-    \node[anchor=south west,bit label] at (0, 0) {63};
+    \node[overlay,anchor=south east,bit label] at (16, 0) {0};
+    \node[overlay,anchor=south east,bit label] at (14, 0) {8};
+    \node[overlay,anchor=south east,bit label] at (12, 0) {16};
+    \node[overlay,anchor=south east,bit label] at (8, 0) {32};
+    \node[overlay,anchor=south west,bit label] at (0, 0) {63};
     \draw[main reg] (0, 0) rectangle (16, -\regheight);
         \foreach \x in {2,4,6,8,10,12,14} {
             \draw[reg divider] (\x, 0) -- ++(0, -\regheight);
@@ -34,10 +34,10 @@
         \draw[decorate,decoration={brace,mirror}] (14, -0.1) -- (16, -0.1) node[midway, below, reg label]{ \%al };
         \draw[decorate,decoration={brace,mirror}] (12, -0.1) -- (14, -0.1) node[midway, below, reg label]{ \%ah };
         \end{scope}
-            \node[font=\small] at (8, -2.3) { + similar for {\tt \%rcx}, {\tt \%rbx}, {\tt \%rdx} };
+            \node[font=\fontsize{9}{10}\selectfont] at (8, -2.3) { + similar for {\tt \%rcx}, {\tt \%rbx}, {\tt \%rdx} };
     \end{scope}
 
-    \begin{scope}[yshift=-3.25cm]
+    \begin{scope}[yshift=-3.05cm]
         \begin{scope}[x=0.9cm]
     \node[anchor=south east,bit label] at (16, 0) {0};
     \node[anchor=south east,bit label] at (14, 0) {8};
@@ -59,10 +59,10 @@
         \draw[decorate,decoration={brace,mirror}] (12, -0.5) -- (16, -0.5) node[midway, below, reg label]{ \%di };
         \draw[decorate,decoration={brace,mirror}] (14, -0.1) -- (16, -0.1) node[midway, below, reg label]{ \%dil };
         \end{scope}
-            \node[font=\small] at (8, -2.3) { + similar for {\tt \%rbp}, {\tt \%rsi}, {\tt \%rsp} };
+            \node[font=\fontsize{9}{10}\selectfont] at (8, -2.3) { + similar for {\tt \%rbp}, {\tt \%rsi}, {\tt \%rsp} };
         \end{scope}
     \end{scope}
-    \begin{scope}[yshift=-6.6cm]
+    \begin{scope}[yshift=-6.1cm]
         \begin{scope}[x=0.9cm]
     \node[anchor=south east,bit label] at (16, 0) {0};
     \node[anchor=south east,bit label] at (14, 0) {8};
@@ -84,7 +84,7 @@
         \draw[decorate,decoration={brace,mirror}] (12, -0.5) -- (16, -0.5) node[midway, below, reg label]{ \%r8w };
         \draw[decorate,decoration={brace,mirror}] (14, -0.1) -- (16, -0.1) node[midway, below, reg label]{ \%r8b };
         \end{scope}
-            \node[font=\small] at (8, -2.3) { + similar for {\tt \%r9} through {\tt \%r15} };
+            \node[font=\fontsize{9}{10}\selectfont] at (8, -2.3) { + similar for {\tt \%r9} through {\tt \%r15} };
         \end{scope}
     \end{scope}
 

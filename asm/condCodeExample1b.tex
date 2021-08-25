@@ -1,0 +1,26 @@
+\begin{frame}[fragile,label=ccEx1b]{condition codes example (1b)}
+\begin{lstlisting}[style=small]
+  movq $-10, %rax
+  movq $20, %rbx
+  subq %rax, %rbx // %rbx - %rax = 30 
+  jle foo // not taken; 30 > 0
+\end{lstlisting}
+30: SF = 0 (not negative), ZF = 0 (not zero)
+\hrule
+\begin{lstlisting}[style=small]
+  movq $20, %rax
+  movq $20, %rbx
+  subq %rax, %rbx // %rbx - %rax = 0
+  jle foo // taken; 0 <= 0
+\end{lstlisting}
+0: SF = 0 (not negative), ZF = 1 (zero)
+\hrule
+\begin{lstlisting}[style=small]
+  movq $-10, %rax
+  movq $0, %rbx
+  subq %rax, %rbx // %rbx - %rax = -10
+  jle foo // taken; -10 <= 0
+\end{lstlisting}
+0: SF = 1 (negative), ZF = 0 (not zero)
+\end{frame}
+

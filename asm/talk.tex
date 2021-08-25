@@ -27,18 +27,17 @@
 \newcommand{\xSF}{\ensuremath{\mathtt{SF}}\xspace}
 \newcommand{\xCF}{\ensuremath{\mathtt{CF}}\xspace}
 \newcommand{\xZF}{\ensuremath{\mathtt{ZF}}\xspace}
+
 \section{assembly: syntax, registers}
-\input{../common/layers}
-\layersHighlighting{asm}
 
 \subsection{AT\&T syntax}
 \input{../asm/attSyn}
 
-\subsection{swap example}  % FIXME: interleave swap example and split AT\&T syntax
+\subsection{swap example}  % FIXME: maybe interleave swap example and split AT\&T syntax
 \input{../asm/attSwap}
 
 \subsection{x86-64 registers}
-\input{../asm/overlapRegsDiag}
+\input{../asm/overlapRegDiag}
 \input{../asm/overlapRegs}
 
 \subsection{on labels}
@@ -70,6 +69,8 @@
 \subsection{condition code example}
 \input{../asm/condCodeExample1}  %FIXME: loop reference?
 
+\input{../asm/condCodeExample1b}
+
 \subsection{cmp}
 \input{../asm/condCodeCmp}
 
@@ -82,8 +83,20 @@
 \subsection{omitting cmps}
 \input{../asm/condCodeExampleLoopNoCmp}
 
-\subsection{exercise}
+\subsection{exercise: what possible? (1)}
 \input{../asm/condCodeExer}
+
+\subsection{exercise: how used?}
+\input{../asm/condCodeUseExer}
+
+\subsection{condition codes with OF, CF}
+
+\subsubsection{first example w/ OF, CF}
+\input{../asm/condCodeExample1OF}
+
+\subsubsection{example where OF = 1}
+\input{../asm/condCodeExampleOFSet}
+% FIXME
 
 \section{C to assembly}
 
@@ -111,13 +124,12 @@
 \subsection{switch statements}
 
 \input{../asm/compilingSwitches}  % FIXME: picture
-\section{backup slides}
 
+
+
+\section{backup slides}
 \begin{frame}{backup slides}
 \end{frame}
-
-\subsection{addt'l CC examples}
-\input{../asm/condCodeExample2}
 
 \subsection{do-while to asm}
 
@@ -126,6 +138,15 @@
 \subsection{condition codes [more]}
 
 \input{../asm/condCode}
+
+\subsection{addt'l CC examples} % FIXME: skip?
+\input{../asm/condCodeExample2}
+
+\subsection{oveflow with condition codes}
+\input{../asm/condCodeOflow}
+
+\subsection{alternate register diagram}
+\input{../asm/overlapRegsOld}
 
 \end{document}
 

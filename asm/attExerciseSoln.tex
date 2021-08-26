@@ -1,0 +1,36 @@
+\usetikzlibrary{arrows.meta,matrix}
+
+\begin{frame}[fragile,label=attExerciseSoln]{exercise (explanation)}
+\begin{lstlisting}[language=myasm,style=smaller,morekeywords=subb,deletekeywords=bl]
+hello:
+  .string "Hello, World!" ; nul-terminated string
+example:
+  movb hello+1, %bl
+    // hello = address of 'H' in string, hello+1 = addr of 'e', ...
+    // %bl becomes 'e'
+  subb $1, %bl
+    // %bl becomes 'd'
+  movb %bl, hello
+    // move 'd' to where 'H' is stored; string now "dello, World!"
+  movq $hello, %rdi
+    // move address of (first char in) the string "dello, World"
+  ; int puts(const char *s [%rdi])
+  callq puts
+  ret
+\end{lstlisting}
+\begin{tikzpicture}
+    \matrix[tight matrix,nodes={font=\small\tt,text width=.5cm}] (string text) {
+        |[alt=<2>{fill=red!10}]| \alt<2->{d}{H} \& e \& l \& l \& o \& \ldots \\
+};
+\node[align=center,font=\small\tt,anchor=north] (hello label) at ([yshift=-.2cm]string text.south west) {
+    {hello} \\
+    {0x123456}
+};
+    \draw[very thick,-Latex] (hello label.north) -- (string text-1-1.south);
+\node[align=center,font=\small\tt,anchor=north] (hello1 label) at ([xshift=3cm,yshift=-.2cm]string text.south west) {
+    {hello + 1} \\
+    {0x123457}
+};
+    \draw[very thick,-Latex] (hello1 label.north) -- (string text-1-2.south);
+\end{tikzpicture}
+\end{frame}

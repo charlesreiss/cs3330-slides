@@ -1,11 +1,12 @@
 \begin{frame}[fragile,label=ccEx1OF]{condition codes example plus overflow (1)}
 \begin{lstlisting}
-  movq $-10, %rax // same as: mov $0xFFFFFFFFFFFFFFF6, %rax
+  movq $-10, %rax
+    // same as: mov $0xFFFFFFFFFFFFFFF6, %rax
   movq $20, %rbx
-  subq %rax, %rbx
+  cmpq %rax, %rbx
     // %rbx - %rax
-  jle foo // not taken; signed result = 30 > 0
-  jbe foo // taken; unsigned result = very negative <= 0
+  jle foo // not taken; signed: 30 > 0
+  jbe foo // taken; unsigned: very negative <= 0
 \end{lstlisting}
 as signed: 30: SF = 0 (not negative), ZF = 0 (not zero) \\
 as unsigned: $20 - (2^{64} - 10) = \xcancel{-2^{64} - 30}\;\;30$ (overflow!) \\
@@ -14,7 +15,7 @@ $\xOF = 0$ (false) & no overflow as signed \\
 $\xCF = 1$ (true) & overflow as unsigned \\
 \end{tabular}
 \begin{itemize}
-\item \texttt{jbe} (jump below/equal) uses CF to realize true unsigned result is negative
+\item \texttt{jbe} (jump below/equal) uses CF to give correct result w/ overflow 
 \end{itemize}
 \end{frame}
 

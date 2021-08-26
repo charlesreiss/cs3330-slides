@@ -1,4 +1,4 @@
-\begin{frame}[fragile,label=ccEx3]{condition codes: exercise with overflow (1)}
+\begin{frame}[fragile,label=ccExOf]{condition codes: exercise with overflow (1)}
 \begin{lstlisting}[language=myasm,style=small]
   // 2^63 - 1
   movq $0x7FFFFFFFFFFFFFFF, %rax
@@ -15,7 +15,7 @@
 \end{tabular}
 \end{frame}
 
-\begin{frame}[fragile,label=ccEx3Soln]{condition codes: exercise with overflow (1)}
+\begin{frame}[fragile,label=ccExOfSoln]{condition codes: exercise with overflow (1)}
 \begin{lstlisting}[language=myasm,style=small]
   // 2**63 - 1
   movq $0x7FFFFFFFFFFFFFFF, %rax

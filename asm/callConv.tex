@@ -44,7 +44,10 @@ foo:
 \begin{itemize}
 \item call:
     \begin{itemize}
-    \item push address of \myemph{next instruction} on the stack
+    \item push address just past the end of the call instruction on the stack
+        \begin{itemize}
+        \item ``return address'' -- where we expect to go when function finishes
+        \end{itemize}
     \end{itemize}
 \item ret:
     \begin{itemize}

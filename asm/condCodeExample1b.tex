@@ -16,8 +16,8 @@
 0: SF = 0 (not negative), ZF = 1 (zero)
 \hrule
 \begin{lstlisting}[style=small]
-  movq $-10, %rax
-  movq $0, %rbx
+  movq $0, %rax
+  movq $-10, %rbx
   subq %rax, %rbx // %rbx - %rax = -10
   jle foo // taken; -10 <= 0
 \end{lstlisting}

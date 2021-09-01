@@ -1,3 +1,5 @@
+\usetikzlibrary{arrows.meta,shapes}
+
 \begin{frame}[fragile,label=ifToAsmEx]{exercise}
 \begin{lstlisting}[language=myasm,style=smaller]
     subq %rax, %rbx
@@ -21,6 +23,7 @@ if (rcx == 0) {
 }
 \end{lstlisting}
 };
+    \node [red,font=\large\bfseries] (not mark) at ([yshift=-1.2cm,xshift=.2cm]code1.north) {!};
 \node[code box] (code2) at (7.5,0) {
 \begin{lstlisting}[language=C,style=smaller]
 rbx -= rax;
@@ -47,8 +50,12 @@ if (rcx == (rbx - rax)) {
 }
 \end{lstlisting}
 };
+    \draw[Latex-, red, very thick,overlay] (not mark.north east) -- ++(2cm, 3cm) node[above right,fill=white] {
+        would be correct with flipped compare
+    };
 \foreach \x/\lbl in {1/A,2/B,3/C,4/D} {
-    \node[red,draw,thick,circle,anchor=center,fill=white]  at (code\x.north west) {\lbl};
+    \node[draw,thick,circle,anchor=center,fill=white] (mark \lbl) at (code\x.north west) {\lbl};
+    \node[draw,cross out,red,ultra thick] at (mark \lbl) {};
 }
 \end{tikzpicture}
 \end{frame}

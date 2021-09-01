@@ -42,21 +42,21 @@ end_loop:
 \end{asmcodeT}
 };
 \begin{comment}
-\node[anchor=north west] (vD) at ([xshift=1cm]vC.north east) {
-\begin{asmcodeT}
-// version D
-  cmpq $10, %rbx
-  jge end_loop
-  movq $10, %r12
-  subq %rbx, %r12
-start_loop:
-  call foo
-  decq %r12
-  jge start_loop
-end_loop:
-  movq $10, %rbx
-\end{asmcodeT}
-};
+%\node[anchor=north west] (vD) at ([xshift=1cm]vC.north east) {
+%\begin{asmcodeT}
+%// version D
+%  cmpq $10, %rbx
+%  jge end_loop
+%  movq $10, %r12
+%  subq %rbx, %r12
+%start_loop:
+%  call foo
+%  decq %r12
+%  jge start_loop
+%end_loop:
+%  movq $10, %rbx
+%\end{asmcodeT}
+%};
 \end{comment}
     \draw[thick] ([xshift=.5cm]vA.north east) -- ([xshift=.5cm]vA.south east);
     \draw[thick] ([xshift=.5cm]vB.north east) -- ([xshift=.5cm]vB.south east);

@@ -1,0 +1,7 @@
+    nop
+    jmp C
+B:  jmp D
+C:  jmp B
+D:  nop
+    nop
+    halt

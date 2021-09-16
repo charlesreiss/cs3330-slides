@@ -1,17 +1,5 @@
 \usetikzlibrary{chains,fit,positioning}
 
-\begin{frame}{bit numbers and instructions}
-\instrEncodingStyles
-\begin{itemize}
-    \item value from instruction memory in {\tt i10bytes}
-    \item HCLRS numbers bits from LSB to MSB
-    \item 80-bit integer, little-endian order:
-    \vspace{.5cm}
-    \item \myemph{first} byte is \myemph{least significant} byte
-    \item HCLRS bit `0' is least significant bit
-    \end{itemize}
-\end{frame}
-
 \begin{frame}[fragile,label=altView]{example}
 \instrEncodingStyles
     \begin{itemize}

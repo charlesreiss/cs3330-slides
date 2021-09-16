@@ -1,24 +1,28 @@
 \usetikzlibrary{chains,fit,positioning}
 
-\begin{frame}[fragile,label=altView]{example}
+\begin{frame}[fragile,label=altView]{i10bytes example}
 \instrEncodingStyles
     \begin{itemize}
-    \item {\tt pushq \%rbx} at memory address $x$: \opify{A}\literalify{F} \rnifyWide{2}\literalify{F}
+    \item {\tt pushq \%rbx} at memory address $x$: \opify{A}\literalify{0} \rnifyWide{2}\literalify{F}
     \item memory at $x+0$: \opifyWide{pushq} \literalify{F}; at $x+1$: \rnifyWide{rbx} \literalify{F}
-    \item $x+0$: \opify{A}\literalify{F}; at $x+1$: \rnify{2}\literalify{F}
-    \item as a little-endian 2-byte number in typical English order:
+    \item $x+0$: \opify{A}\literalify{F}; at $x+1$: \rnify{2}\literalify{F}; at $x+2$: (next instruction)
+    \item 10-byte instruction memory output:
 \begin{tikzpicture}
 \begin{scope}[every node/.style={font=\large\tt,inner sep=1mm,on chain},start chain=going right,node distance=10mm]
-\node[register] (n1) {2}; \node[literal] (n2) {F}; \node[opcode] (n3) {A}; \node[literal] (n4) {F};
+    \node (n0) {\ldots\hspace{2cm}\ldots};
+\node[register] (n1) {2}; \node[literal] (n2) {F}; \node[opcode] (n3) {A}; \node[literal] (n4) {0};
 \end{scope}
-\begin{scope}[every node=/style={font=\tt}]
+\begin{scope}[every node/.style={font=\tt,minimum height=1cm}]
 \node[below=2mm of n1] (n1b){ 0010 };
 \node[below=2mm of n2] (n2b) { 1111 };
 \node[below=2mm of n3] (n3b) { 1010 };
-\node[below=2mm of n4] (n4b) { 1111 };
+\node[below=2mm of n4] (n4b) { 0000 };
+    \node[anchor=north] (n0b) at (n1b.north west -| n0.south){ \ldots \hspace{2cm} \ldots };
 \end{scope}
-\draw[Latex-,very thick] (n1b.south west) -- ++(-.5cm,-.5cm) node[below,font=\small,align=center] {most sig. bit\\(bit 15)};
-\draw[Latex-,very thick] (n4b.south east) -- ++(.5cm,-.5cm) node[below,font=\small,align=center] {least sig. bit\\(bit 0)};
+    \draw[Latex-,very thick] ([xshift=2mm,yshift=1mm]n0b.south west) -- ++(-.5cm,-.5cm) node[below,font=\small,align=center] {most sig. bit\\~(bit 80)};
+    \draw[Latex-,very thick] ([xshift=2mm,yshift=1mm]n1b.south west) -- ++(-.5cm,-.5cm) node[below,font=\small,align=center] {$\;$\\(bit 15)};
+    \draw[Latex-,very thick] ([xshift=2mm,yshift=1mm]n3b.south west) -- ++(-.5cm,-.5cm) node[below,font=\small,align=center] {$\;$\\(bit 7)};
+    \draw[Latex-,very thick] ([yshift=-2mm,yshift=1mm]n4b.south east) -- ++(.5cm,-.5cm) node[below,font=\small,align=center] {least sig. bit\\(bit 0)};
 \end{tikzpicture}
     \end{itemize}
 \end{frame}

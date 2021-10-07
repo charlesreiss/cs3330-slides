@@ -1,11 +1,9 @@
 \begin{frame}<1>[fragile,label=stallCosts]{stalling costs}
     \begin{itemize}
     \item with only stalling:
+    \item up to 3 extra cycles for data dependencies\tikzmark{data}
     \item extra 3 cycles (total 4) for every {\tt ret}\tikzmark{forRet}
     \item extra 2 cycles (total 3) for conditional jmp\tikzmark{cJmp}
-    \item up to 3 extra cycles for data dependencies\tikzmark{data}
-        \vspace{.5cm}
-    \item<2-> can we do better?
     \end{itemize}
 
     \begin{tikzpicture}[overlay,remember picture]

@@ -171,7 +171,7 @@ can't use same forwarding logic
 |[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
                                     \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \\
 \lstinline|addq %r10, ~2~%r8~end~|   \F \& ~ \& ~ \& ~ \&\dem \& |[writeback,draw=red,very thick]| W \& ~ \& ~ \& ~ \& ~ \\
-\lstinline|rmmovq ~3~%r8~end~, (%rax)|        \F \& ~ \& ~ \& ~ \& ~ \& ~ \& ~ \&\demw \& ~ \& ~ \& ~ \& ~ \\
+\lstinline|rmmovq ~3~%r8~end~, (%rax)|        \F \& ~ \& ~ \& ~ \& ~ \& ~ \& ~ \& ~ \&\demw \& ~ \& ~ \& ~ \& ~ \\
 \lstinline|rrmovq %r11, ~2~%r8~end~|   \& ~ \fdemw \\
 \lstinline|rmmovq ~3~%r8~end~, 8(%rax)|     \& ~ \F \& ~ \& ~ \& ~ \& ~ \& ~ \demw \& ~ \& ~ \& ~ \& ~ \\
     \lstinline|irmovq $100, ~2~%r8~end~|   \& \& \fdem \& |[writeback,draw=red,very thick]| W  \\

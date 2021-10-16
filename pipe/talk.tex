@@ -125,4 +125,162 @@
 
 \input{../pipe/memoryRW}
 
+\section{data hazards}
+
+\subsection{data hazard in addq}
+\input{../pipe/addqhazard}
+
+\subsection{solving addq hazard with stalling}
+\input{../pipe/addqhazardstall}
+
+\subsection{interlude: hazards versus dependencies}
+\input{../pipe/hazardvdep}
+
+\section{exercise: data hazard find/resolve}
+\input{../pipe/hazardexercise}
+
+\section{forwarding}
+\subsection{why forwarding}
+\input{../pipe/forwardwhy}
+
+\subsection{logic to implement forwarding}
+\input{../pipe/forwardlogic}
+
+\subsection{exercise: forwarding conditions}
+\input{../pipe/forwardcondquestion}
+
+\subsection{aside: computing dste/etc. early}
+\input{../pipe/seqtopipedsthilite}
+
+\subsection{forwarding versus stalling}
+\input{../pipe/forwardlogicdiag1}
+
+\subsection{more forwarding paths?}
+\input{../pipe/forwardlogictwostage}
+
+\subsection{forwarding paths}
+\input{../pipe/forwardpaths}  %xxx reg_outputb
+% fixme: exercise
+
+\subsection{forwarding paths exercise}
+\input{../pipe/forwardpathsex}
+
+\section{unsolved problem: the load/use hazard}
+\input{../pipe/loadusehazard}
+
+\section{control hazards}
+\input{../pipe/controlhazard}
+
+\subsection{forwarding paths exercise}
+\input{../pipe/forwardPathsEx}
+
+
+\section{unsolved problem: the load/use hazard}
+\input{../pipe/loadUseHazard}
+
+\section{a nit about missing forwarding}
+\input{../pipe/loadToStoreFwd}
+
+\subsection{aside: forwarding timings}
+\begin{frame}{aside: forwarding timings}
+    \begin{itemize}
+    \item forwarding: adds MUXes for forwarding to critical path
+        \begin{itemize}
+        \item might slightly increase cycle time, considered acceptable
+        \end{itemize}
+    \item should not add much more to critical path:
+        \begin{itemize}
+        \item example: can't use value read from memory in ALU in same cycle
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\subsection{exercise: different hazards}
+\input{../pipe/diffHazardEx}
+
+\section{control hazards}
+\input{../pipe/controlHazard}
+
+\section{stalling costs}
+\input{../pipe/hazardIssues}
+
+\section{hazard v dependency exercises}
+\subsection{exercise 2}
+\input{../pipe/hazardVDepEx2}
+
+\section{branch prediction}
+\subsection{overview}
+\input{../pipe/predIntro}
+
+% FIXME: consider turning this into exercise (with nicer numbers)
+\subsection{performance after prediction}
+\input{../pipe/predEffect}
+
+
+\section{HCLRS support for prediction/stalling}
+\input{../pipe/stallLogic}
+\input{../pipe/bubbleLogic}
+\input{../pipe/hclrsBubbleStallBuiltIn}
+
+\subsection{bubble/stall exercise (1)}
+\input{../pipe/bubbleStallEx}
+
+\subsection{bubble/stall exercise (2)}
+\input{../pipe/squashStallEx}
+
+\section{implementing prediction + stalling}
+
+\subsection{overview}
+\input{../pipe/stallSquashPieces}
+
+\subsection{pipeline registers during stall}
+\input{../pipe/stallPipelineDiagBubbleRepeat}
+
+\subsection{bubbling on jump misprediction}
+\input{../pipe/jumpMispredBubblePipeDiag}
+
+\subsection{signals for jXX squash}
+\input{../pipe/predSquash}
+
+\subsection{bubbling on ret}
+\input{../pipe/retBubblePipeDiag}
+
+
+\subsection{signals for ret/stall}
+\input{../pipe/retStallDetail}
+
+\subsection{ret stall in HCL}
+\input{../pipe/retStallHCL}
+
+\subsection{PC update with jmp/etc.}
+\input{../pipe/pcUpdate}
+
+\section{overall CPU}
+\input{../pipe/overallCpu}
+
+
+\section{backup slides}
+\begin{frame}{backup slides}
+\end{frame}
+
+\subsection{example execution timing}
+\input{../pipe/pipeaddqtiming}
+
+\subsection{jmp hazard with stalling}
+\input{../pipe/jmpstall}
+
+\subsection{ret hazard with stalling}
+\input{../pipe/retstall}
+
+\subsection{pc update logic [rearranging]}
+\input{../pipe/pcupdaterearr}
+
+\subsection{repeat same logic}
+\input{../pipe/stalllogic}
+
+\subsection{dependency hazard exercise 1}
+\input{../pipe/hazardvdepex}
+
+\subsection{timing exericse}
+\input{../pipe/timingExericse}
 \end{document}

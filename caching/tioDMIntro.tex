@@ -33,8 +33,8 @@
         column 4/.append style={nodes={text width=3cm,align=center,dataColor}},
         label={$4$ byte blocks, $2$ sets}] (cache2) at ([yshift=-0.5cm]cache1.south west){
     index \& valid \& tag \& value \\
-    0 \& 1 \& 00 \& 00 11 22 33\\
-    1 \& 1 \& 01 \& CC DD EE \myemph{FF}\\
+    0 \& 1 \& 000 \& 00 11 22 33\\
+    1 \& 1 \& 001 \& CC DD EE \myemph{FF}\\
 };
 
 \matrix[tight matrix,anchor=north west,
@@ -58,17 +58,17 @@
     \begin{tabular}{llll}
     cache & tag & index & offset \\\hline
     \myemph<2>{2 byte blocks}, \myemph<4>{4 sets} &
-    \only<1-6|handout:0>{???}\only<7->{\itag{001}} &
-    \only<1-3|handout:0>{???}\only<4->{\iindex{11}} &
-    \only<1|handout:0>{???}\only<2->{\offset{1}} \\
+    \only<0|handout:0>{???}\only<7->{\itag{001}} &
+    \only<0|handout:0>{???}\only<4->{\iindex{11}} &
+    \only<0|handout:0>{???}\only<2->{\offset{1}} \\
     \myemph<2>{2 byte blocks}, \myemph<4>{8 sets} &
-    \only<1-6|handout:0>{???}\only<7->{\itag{00}} &
-    \only<1-3|handout:0>{???}\only<5->{\iindex{111}} &
-    \only<1|handout:0>{???}\only<2->{\offset{1}} \\
+    \only<0|handout:0>{???}\only<7->{\itag{00}} &
+    \only<0|handout:0>{???}\only<5->{\iindex{111}} &
+    \only<0|handout:0>{???}\only<2->{\offset{1}} \\
     \myemph<3>{4 byte blocks}, \myemph<4>{2 sets} &
-    \only<1-6|handout:0>{???}\only<7->{\itag{001}} &
-    \only<1-3|handout:0>{???}\only<4->{\iindex{1}} &
-    \only<1-2|handout:0>{???}\only<3->{\offset{11}}\\
+    \only<0|handout:0>{???}\only<7->{\itag{001}} &
+    \only<0|handout:0>{???}\only<4->{\iindex{1}} &
+    \only<0|handout:0>{???}\only<3->{\offset{11}}\\
     \end{tabular}
 };
 \tikzset{

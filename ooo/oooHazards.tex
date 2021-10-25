@@ -165,15 +165,15 @@ can't use same forwarding logic
 \matrix[tight matrix no line,
         nodes={text width=.6cm,font=\tt,minimum height=.7cm,align=center},
         column 1/.style={nodes={text width=6cm,align=left}},
-        row 3/.append style={nodes={opacity=0.4}},
-        row 5/.append style={nodes={opacity=0.4}},
+        row 3/.append style={nodes={alt=<1-2>{opacity=0.4}}},
+        row 5/.append style={nodes={alt=<1-2>{opacity=0.4}}},
         ] (tbl) {
 |[align=right]| \normalfont\textit{cycle \#} \hspace{.5cm}
                                     \& 0 \& 1 \& 2 \& 3 \& 4 \& 5 \& 6 \& 7 \& 8 \\
 \lstinline|addq %r10, ~2~%r8~end~|   \F \& ~ \& ~ \& ~ \&\dem \& |[writeback,draw=red,very thick]| W \& ~ \& ~ \& ~ \& ~ \\
-\lstinline|rmmovq %r8, (%rax)|        \F \& ~ \& ~ \& ~ \& ~ \&\demw \& ~ \& ~ \& ~ \& ~ \\
+\lstinline|rmmovq ~3~%r8~end~, (%rax)|        \F \& ~ \& ~ \& ~ \& ~ \& ~ \& ~ \& ~ \&\demw \& ~ \& ~ \& ~ \& ~ \\
 \lstinline|rrmovq %r11, ~2~%r8~end~|   \& ~ \fdemw \\
-\lstinline|rmmovq %r8, 8(%rax)|     \& ~ \F \& ~ \demw \& ~ \& ~ \& ~ \& ~ \\
+\lstinline|rmmovq ~3~%r8~end~, 8(%rax)|     \& ~ \F \& ~ \& ~ \& ~ \& ~ \& ~ \demw \& ~ \& ~ \& ~ \& ~ \\
     \lstinline|irmovq $100, ~2~%r8~end~|   \& \& \fdem \& |[writeback,draw=red,very thick]| W  \\
 \lstinline|addq %r13, ~2~%r8~end~|   \& ~ \& ~  \F \& ~ \& ~ \& ~ \& ~ \& ~ \& \demw \& ~ \& ~ \\
 };
@@ -183,10 +183,18 @@ can't use same forwarding logic
 }
 \end{tikzpicture}
 \begin{tikzpicture}[overlay,remember picture]
+\begin{visibleenv}<2>
 \node[align=left,draw=red,very thick,fill=white,anchor=south] at ([yshift=.5cm]current page.south) {
 out-of-order execution: \\
 if we don't do something, newest value could be overwritten!
 };
+\end{visibleenv}
+\begin{visibleenv}<3>
+\node[align=left,draw=red,very thick,fill=white,anchor=south] at ([yshift=.5cm]current page.south) {
+two instructions that haven't been started \\
+could need \textit{different versions} of \%r8!
+};
+\end{visibleenv}
 \end{tikzpicture}
 \end{frame}
 

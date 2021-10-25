@@ -157,7 +157,6 @@
     morecomment=[l]{\#},
     morecomment=[l]{\/\/},
     morecomment=[s]{/*}{*/},
-    literate={<-}{$\leftarrow$}2{+}{$+$}1,
     sensitive=false,
     keepspaces=true} % et
 

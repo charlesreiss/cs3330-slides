@@ -52,9 +52,9 @@
 };
 \matrix[tight matrix,label={[alias=free label]free reg list},anchor=west,nodes={font=\tt\small},
         alt=<3>{fill=red!10}] (free) at ([xshift=1cm]rmap.east) {
-\xAfter{2}{\%x18} \\
-\xAfter{3}{\%x20} \\
-\xAfter{4}{\%x21} \\
+\%x18 \\
+\%x20 \\
+\%x21 \\
 \%x23 \\
 \%x24 \\
 \ldots \\
@@ -113,7 +113,7 @@
 \%rax \& \%x04 \\
 \%rcx \& \%x09 \\
 \ldots \& \ldots \\
-    \%r8 \& \xAfter{2}{\%x13}\showAfter{2}{\xAfter{3}{\%x18}}\showAfter{3}{\%x20}\\
+    \%r8 \& \xAfter{2}{\%x13}\showAfter{2}{\xAfter{3}{\%x18}}\showAfter{3}{\xAfter{4}{\%x20}}\showAfter{4}{\%x21}\\
 \%r9 \& \%x17 \\
 \%r10 \& \%x19 \\
 \%r11 \& \%x07 \\

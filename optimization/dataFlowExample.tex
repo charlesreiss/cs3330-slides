@@ -1,0 +1,56 @@
+\usetikzlibrary{arrows.meta,shapes.geometric}
+
+\begin{frame}[fragile,label=dataFlowExamples]{a data flow example}
+\begin{tikzpicture}
+\node[draw,very thick,font=\fontsize{9}{10}\selectfont] (code)  {
+\begin{lstlisting}
+addq %rax, %rbx
+addq %rax, %rcx
+imulq %rdx, %rcx
+movq (%rbx, %rdx), %r8
+imulq %r8, %rcx
+addq %rax, %rbx
+\end{lstlisting}
+};
+\tikzset{
+    var/.style={draw,rectangle,fill=blue!30,font=\fontsize{9}{10}\selectfont,align=center},
+    op/.style={draw,ellipse,fill=yellow!40,font=\small},
+    e/.style={draw,very thick,-Latex},
+    node distance=5mm,
+}
+\node[var,anchor=north west] (rax) at ([xshift=1cm]code.north east) {\%rax \\ (initial)};
+\node[var,anchor=west] (rbx) at ([xshift=.5cm]rax.east){\%rbx \\ (initial)};
+\node[var,anchor=west] (rcx) at ([xshift=.5cm]rbx.east){\%rcx \\(initial)};
+\node[var,anchor=west] (rdx) at ([xshift=.5cm]rcx.east){\%rdx \\ (initial)};
+\node[op] (addq 1) at ([yshift=-1.5cm,xshift=.5cm]rax.south east) {addq};
+\draw[e] (rax) -- (addq 1);
+\draw[e] (rbx) -- (addq 1);
+\node[op] (addq 2) at ([yshift=-1.5cm,xshift=2.5cm]rax.south east) {addq};
+\draw[e] (rax) -- (addq 2);
+\draw[e] (rcx) -- (addq 2);
+\node[op] (addr 1) at ([yshift=-1.5cm,xshift=2cm]addq 1.south) {compute addr};
+\draw[e] (addq 1) -- (addr 1);
+\draw[e] (rdx) -- (addr 1);
+\node[op] (addq 3) at ([yshift=-1.5cm,xshift=-1.5cm]addq 1.south west) {addq};
+\draw[e] (rax) -- (addq 3);
+\draw[e] (addq 1) -- (addq 3);
+\node[op,anchor=north] (load) at ([yshift=-0.5cm]addr 1.south) {load};
+\draw[e] (addr 1) -- (load);
+\node[op,anchor=west] (mul 1) at ([xshift=1cm]addr 1.east) {imulq};
+\draw[e] (addq 2) -- (mul 1);
+\draw[e] (rdx) -- (mul 1);
+\node[op,anchor=north] (mul 2) at ([yshift=-0.5cm]load.south) {imulq};
+\draw[e] (load) -- (mul 2);
+\draw[e] (mul 1) -- (mul 2);
+
+\node[anchor=north west,draw,very thick,align=left,font=\small] at ([yshift=-2.5cm]code.south west) {
+    addq, compute addr: 1 cycle \\
+    mulq: 3 cycle latency \\
+    load: 3 cycle latency \\
+    Q1: latency bound on cycles? \\
+    Q2: what can be done \\
+    at same time as compute addr?
+};
+\end{tikzpicture}
+\end{frame}
+

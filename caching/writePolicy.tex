@@ -129,10 +129,11 @@ index \& valid \& tag \& value \& dirty \& ~\& valid \& tag \& value \& dirty \&
 \item \myemph{write-allocate}
     \begin{itemize}
     \item fetch rest of cache block, replace written part
+    \item (then follow write-through or write-back policy)
     \end{itemize}
 \item \myemph{write-no-allocate}
     \begin{itemize}
-    \item send write through to memory
+    \item don't use cache at all (send write to memory \textit{instead})
     \item guess: not read soon?
     \end{itemize}
 \end{itemize}

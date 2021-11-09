@@ -42,7 +42,6 @@ addq %rax, %rbx
 \node[op,anchor=north] (mul 2) at ([yshift=-0.5cm]load.south) {imulq};
 \draw[e] (load) -- (mul 2);
 \draw[e] (mul 1) -- (mul 2);
-
 \node[anchor=north west,draw,very thick,align=left,font=\small] at ([yshift=-2.5cm]code.south west) {
     addq, compute addr: 1 cycle \\
     imulq: 3 cycle latency \\

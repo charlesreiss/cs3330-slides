@@ -25,10 +25,11 @@ int sum(int *array, int n) {
     moredelim=**[is][\btHL<2>]{~2~}{~end~},
     }
 \begin{lstlisting}
+    ... loop stuff ...
     movl (%rbx), %esi // mov array[i]
     movl %eax, %edi   // mov sum
     call addWithLimit
-    ...
+    ... more loop stuff ...
     ...
 addWithLimit:
     ... /* code here */
@@ -40,9 +41,10 @@ addWithLimit:
     \end{itemize}
 \begin{visibleenv}<2->
 \begin{lstlisting}
+    ... loop stuff ...
     ... /* code here (+ small changes for arguments
                         being in different places) */
-    ret
+    ... more loop stuff ...
 \end{lstlisting}
 \end{visibleenv}
 \end{frame}

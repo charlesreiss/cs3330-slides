@@ -1,12 +1,12 @@
 
 \begin{frame}[fragile,label=vecAddAsm]{desired assembly}
-\begin{lstlisting}[language=myasm,style=small]
+\begin{lstlisting}[language=myasm,style=smaller]
   xor %rax, %rax
 the_loop:
   vmovdqu A(%rax), %ymm0      /* load 256 bits of A into ymm0 */
   vmovdqu B(%rax), %ymm1      /* load 256 bits of B into ymm1 */
   vpaddd %ymm1, %ymm0, %ymm0  /* ymm1 + ymm0 -> ymm0 */
-  vmovdqu %ymm0, A(%rax)  /* store ymm0 into A */
+  vmovdqu %ymm0, A(%rax)      /* store ymm0 into A */
   addq $32, %rax              /* increment index by 32 bytes */
   cmpq $2048, %rax            /* offset < 2048 (= 512 * 4) bytes */
   jne the_loop

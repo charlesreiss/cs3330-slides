@@ -2,8 +2,8 @@
 \begin{lstlisting}[language=C++,style=smaller]
 long A[1024], B[1024];
 ...
-for (int i = 0; i < N; i += 1)
-    for (int j = 0; j < N; j += 1)
+for (int i = 0; i < 1024; i += 1)
+    for (int j = 0; j < 1024; j += 1)
         A[i] += B[i] * B[j];
 \end{lstlisting}
 \hrule
@@ -14,7 +14,8 @@ for (int i = 0; i < 1024; i += 4) {
     Bi_part = _mm256_loadu_si256(&B[i]);
     for (int j = 0; j < 1024; /* BLANK 1 */) {
         Bj_part = _mm256_/* BLANK 2 */;
-        A_part = _mm256_add_epi64(A_part, _mm256_mullo_epi64(Bi_part, Bj_part));
+        A_part = _mm256_add_epi64(A_part,
+            _mm256_mullo_epi64(Bi_part, Bj_part));
     }
     _mm256_storeu_si256(&A[i], A_part);
 }
@@ -22,7 +23,58 @@ for (int i = 0; i < 1024; i += 4) {
 \small
 What goes in BLANK 1 and BLANK 2? \\
 \begin{tabular}{ll}
-A. {\small\tt loadu\_si256(\&B[j])}, j += 1 & B. {\small\tt loadu\_si256(\&B[j])}, j += 4 \\
-C. {\small \tt set1\_epi64(B[j])}, j += 1 & D. {\small\tt set1\_epi64(B[j])}, j += 4 \\
+A. j += 1, {\small\tt loadu\_si256(\&B[j])} & B. j += 4, {\small\tt loadu\_si256(\&B[j])} \\
+C. j += 1, {\small \tt set1\_epi64(B[j])} & D. j += 4, {\small\tt set1\_epi64(B[j])} \\
 \end{tabular}
+\end{frame}
+
+\begin{frame}<0>[fragile,label=vectEx2Soln]{vector exercise 2 explanation}
+\begin{lstlisting}[
+        language=C++,style=smaller,
+        moredelim={**[is][\btHL<all:1>]{~1~}{~end~}},
+]
+for (int i = 0; i < 1024; i += 1)
+    for (int j = 0; j < 1024; j += 1)
+        A[i] += B[i] * B[j];
+/* -- transformed into -- */
+for (int i = 0; i < 1024; i += 4)
+    for (int j = 0; j < 1024; j += 1) {
+        A[i+0] += B[i+0] * ~1~B[j]~end~;
+        A[i+1] += B[i+1] * ~1~B[j]~end~;
+        A[i+2] += B[i+2] * ~1~B[j]~end~;
+        A[i+3] += B[i+3] * ~1~B[j]~end~;
+    }
+
+/* not the much harder to vectorize: */
+for (int i = 0; i < 1024; i += 1)
+    for (int j = 0; j < 1024; j += 4) {
+        A[i] += B[i] * B[j+0];
+        A[i] += B[i] * B[j+1];
+        A[i] += B[i] * B[j+2];
+        A[i] += B[i] * B[j+3];
+    }
+\end{lstlisting}
+\end{frame}
+
+\iftoggle{heldback}{}{\againframe<1>{vectEx2Soln}}
+
+\begin{frame}<0>[fragile,label=vectEx2SolnAlt]{vector exercise 2 explanation}
+\begin{lstlisting}[
+        language=C++,style=smaller,
+        moredelim={**[is][\btHL<all:1>]{~1~}{~end~}},
+]
+/* and not the more expanded: */;
+for (int i = 0; i < 1024; i += 4)
+    for (int j = 0; j < 1024; j += 4) {
+        A[i+0] += B[i+0] * ~1~B[j]~end~;
+        A[i+1] += B[i+1] * ~1~B[j]~end~;
+        A[i+2] += B[i+2] * ~1~B[j]~end~;
+        A[i+3] += B[i+3] * ~1~B[j]~end~;
+        A[i+0] += B[i+0] * ~1~B[j+1]~end~;
+        A[i+1] += B[i+1] * ~1~B[j+1]~end~;
+        A[i+2] += B[i+2] * ~1~B[j+1]~end~;
+        A[i+3] += B[i+3] * ~1~B[j+1]~end~;
+        ...
+    }
+\end{lstlisting}
 \end{frame}

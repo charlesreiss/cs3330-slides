@@ -1,3 +1,4 @@
+\usetikzlibrary{arrows.meta,fit,matrix}
 \begin{frame}{kernel-mode only}
 \begin{tikzpicture}
 \tikzset{
@@ -31,6 +32,5 @@
     \node[inner sep=0mm,draw=black,thin,fit=(newAddrLeft) (newAddrRight)] (newAddrBox) {};
     \draw[->,very thick] (newAddrBox.south) -- ++(0cm,-.5cm) node[below] {to cache};
 \end{visibleenv}
-
 \end{tikzpicture}
 \end{frame}

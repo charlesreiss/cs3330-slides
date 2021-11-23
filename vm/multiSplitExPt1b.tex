@@ -4,7 +4,7 @@
 \begin{itemize}
 \item 6-bit virtual addresses, 6-bit physical; 8 byte pages, 1 byte PTE
 \item page tables 1 page; PTE: 3 bit PPN (MSB), 1 valid bit, 4 other bits;
-\item page table base register {\tt 0x20}; translate virtual address {\tt 0x30}
+\item page table base register {\tt 0x20}; translate virtual address {\tt 0x12}
 \end{itemize}
 \begin{tikzpicture}
 \matrix[tight matrix,anchor=north west,
@@ -46,9 +46,9 @@
     \textit{PTE addr:} \\
     \texttt{0x20} + 2 \times 1 = {\tt \myemph<2>{0x22}} \\
     \textit{PTE value:} \\
-    {\tt \myemph<2>{0xD1}} = {\tt \myemph<3>{110}1 0001} \\
-    PPN {\tt \myemph<3>{101}}, valid {\tt 1} \\
-    M[{\tt \myemph<3>{101} \myemph<4>{010}}] = \textbf{M[\tt{0x2A}]}\\ $\rightarrow$ {\tt 0xAB}
+    {\tt \myemph<2>{0xD2}} = {\tt \myemph<3>{110}1 0010} \\
+    PPN {\tt \myemph<3>{110}}, valid {\tt 1} \\
+    M[{\tt \myemph<3>{110} \myemph<4>{010}}] = \textbf{M[\tt{0x32}]}\\ $\rightarrow$ {\tt 0xBA}
 };
 \end{visibleenv}
 %}

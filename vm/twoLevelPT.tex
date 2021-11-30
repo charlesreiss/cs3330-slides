@@ -1,4 +1,4 @@
-\usetikzlibrary{arrows.meta,matrix,shapes.misc,calc,fit}
+\usetikzlibrary{arrows.meta,matrix,shapes.misc,calc,fit,positioning}
 
 % FIXME: with VPN ranges labelled?
 \begin{frame}<all:1-8>[fragile,label=twoLevelPT]{two-level page tables}
@@ -153,7 +153,10 @@ nodes={ptNode},
 \node[anchor=west,pageOffset] (addrRight) at (addrLeftB.east) {00 1101 1111};
 \node[inner sep=0mm,draw=none,fit=(addrLeftA) (addrLeftB),alt=<1>{draw=red,very thick}] (addrLeft) {};
 \begin{visibleenv}<all:1>
-\node[below=1cm of addrLeft,xshift=2cm] {VPN --- split into two parts (one per level)};
+\node[below=1cm of addrLeft,xshift=2cm] (vpn split explain) {VPN --- split into two parts (one per level)};
+\node[below=1cm of vpn split explain,font=\small] {
+    this example: parts equal sized --- common, but not required
+};
 \end{visibleenv}
 \begin{visibleenv}<all:2->
 \node[draw,comp,below=1cm of addrLeftA,align=center,xshift=-1cm] (timesPte) {$\times$ \\ PTE \\ size};
@@ -183,7 +186,9 @@ nodes={ptNode},
     \node[comp,align=center,right=.75cm of splitA,pageNumberExpand] (timesSize){$\times$ \\ page \\ size};
     \node[comp,align=center,right=1.25cm of timesSize] (plusB) {+};
     \draw[brown!60!black,->,thick,pageNumberExpand] (splitA) -- (timesSize);
+    \draw[dotted,black,thick] ($(splitA.east)!0.5!(timesSize.west)$) -- ++ (0cm, .5cm) node[above,font=\fontsize{10}{11}\selectfont,align=center] {phys\\page \#};
     \draw[brown!60!black,->,thick,pageNumberExpand] (timesSize) -- (plusB);
+    \draw[dotted,black,thick] ($(plusB.east)!0.5!(timesSize.west)$) -- ++ (0cm, .5cm) node[above,font=\fontsize{10}{11}\selectfont,align=center] {phys\\addr};
     \draw[memAccess,->,thick] (plusB) -- (plusB |- cache.north) node[midway,smallLabel]{2nd PTE \\ addr.};
     \node[comp,align=center,above=.5cm of plusB] (timesPteB) {$\times$ \\ PTE \\ size};
     \draw[brown!60!black,->,thick] (addrLeftB) -- ++(0cm,-.5cm) -| (timesPteB.north);

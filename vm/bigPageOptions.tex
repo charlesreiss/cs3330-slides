@@ -60,10 +60,15 @@
     \item lookup usually implemented \myemph{in hardware}
         \begin{itemize}
         \item lookup should be simple
+        \item solution: lookup splits up address bits (no complex calculations)
         \end{itemize}
     \item lookup should not involve many memory accesses
         \begin{itemize}
         \item doing two memory accesses is already very slow
+        \item solution: tree with many children from each node
+            \begin{itemize}
+            \item (far from binary tree's left/right child)
+            \end{itemize}
         \end{itemize}
     \end{itemize}
 \end{frame}

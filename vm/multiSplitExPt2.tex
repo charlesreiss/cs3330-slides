@@ -42,16 +42,16 @@
 \iftoggle{heldback}{}{
 \begin{visibleenv}<2->
 \node[right=0cm of memB,align=left,font=\small] {
-    {\tt 0x131} = {\tt \myemph<2>{1 00}\myemph<3>{11 0}\myemph<5>{001}} \\
-    \texttt{0x20} + 4 \times 1 = {\tt 0x24} \\
+    {\tt 0x131} = {\tt \myemph<2>{\color<6>{blue}1 00}\myemph<3>{\color<6>{violet}11 0}\myemph<5>{\color<6>{orange}001}} \\
+    \texttt{0x20} + {\color<6>{blue}4} \times 1 = {\tt 0x24} \\
     \textit{PTE 1 value:} \\
     {\tt 0xD4} = {\tt 1101 0100} \\
-    PPN {\tt 110}, valid {\tt 1} \\
+    PPN {\tt {\color<6>{green} 110}}, valid {\tt 1} \\
     \only<3->{\textit{PTE 2 addr:}} \\
-    \only<3->{\texttt{110 000} +  \texttt{110} = {\tt 0x36}}\\
+    \only<3->{\texttt{{\color<6>{green} 110} 000} +  \texttt{\myemph<3>{\color<6>{violet} 110}} $\times$ 1 = {\tt 0x36}}\\
     \only<3->{\textit{PTE 2 value:} {\tt 0xDB}} \\
-    \only<4->{PPN {\tt \myemph<4>{110}}; valid {\tt 1}} \\
-    \only<4->{M[\texttt{\myemph<4>{110} \myemph<5>{001}} (\texttt{0x31})] = \texttt{0x0A}}
+    \only<4->{PPN {\tt \myemph<4>{\color<6>{red}110}}; valid {\tt 1}} \\
+    \only<4->{M[\texttt{\myemph<4>{\color<6>{red}110} \myemph<5>{\color<6>{orange}001}} (\texttt{0x31})] = \texttt{0x0A}}
 };
 \end{visibleenv}
 }

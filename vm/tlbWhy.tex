@@ -79,13 +79,14 @@
 \begin{visibleenv}<2>
 \node[my callout=copyPTE,align=left] at ([xshift=-6cm,yshift=-1cm]pic cs:copyPTE) {
     only caches the page table lookup itself \\
-    (generally) just entries from the last-level page table
+    (generally) just entries from the last-level page tables
 };
 \end{visibleenv}
 \begin{visibleenv}<3>
 \node[my callout=onePerBlock,align=left] at ([xshift=-9cm,yshift=-1cm]pic cs:onePerBlock) {
     not much spatial locality between page table entries \\
-    (they're used for kilobytes of data already)
+    (they're used for kilobytes of data already) \\
+    (and if spatial locality, maybe use larger page size?)
 };
 \end{visibleenv}
 \begin{visibleenv}<4>
